@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TÁM Kitchen — Quản lý nội bộ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c; --bg2: #161512; --bg3: #1e1c18; --bg4: #252320;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+    --text: #e8e4dc; --text2: #9b9690; --text3: #5c5a56;
+    --accent: #c8a96e; --accent2: #a07c3e; --accent-soft: rgba(200,169,110,0.12);
+    --red: #e05c5c; --red-soft: rgba(224,92,92,0.12);
+    --green: #5cb87a; --green-soft: rgba(92,184,122,0.12);
+    --blue: #6aa3d4; --blue-soft: rgba(106,163,212,0.12);
+    --purple: #a88fd4; --purple-soft: rgba(168,143,212,0.12);
+    --radius: 10px; --radius-lg: 16px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Be Vietnam Pro',sans-serif; font-size:14px; line-height:1.6; display:flex; min-height:100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width:220px; min-width:220px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+  .sidebar-logo { padding:24px 20px 20px; border-bottom:1px solid var(--border); }
+  .sidebar-logo .brand { font-family:'Playfair Display',serif; font-size:22px; color:var(--accent); letter-spacing:1px; }
+  .sidebar-logo .sub { font-size:11px; color:var(--text3); letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
+  .sidebar-nav { padding:16px 10px; flex:1; }
+  .nav-section-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text3); padding:8px 10px 6px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); cursor:pointer; color:var(--text2); font-size:13px; font-weight:400; transition:all 0.15s; margin-bottom:2px; border:none; background:none; width:100%; text-align:left; }
+  .nav-item:hover { background:var(--bg3); color:var(--text); }
+  .nav-item.active { background:var(--accent-soft); color:var(--accent); font-weight:500; }
+  .nav-item .icon { width:16px; text-align:center; font-size:15px; }
+  .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); }
+  .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-right:6px; }
+
+  /* MAIN */
+  .main { margin-left:220px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
+  .topbar { background:var(--bg2); border-bottom:1px solid var(--border); padding:0 28px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+  .topbar-title { font-size:15px; font-weight:600; }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .topbar-date { font-size:12px; color:var(--text3); }
+  .avatar { width:32px; height:32px; border-radius:50%; background:var(--accent-soft); border:1px solid var(--accent2); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--accent); font-weight:600; }
+
+  .page { display:none; padding:28px; }
+  .page.active { display:block; }
+
+  /* CARDS & GRID */
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  .kpi-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; }
+  .kpi-label { font-size:11px; color:var(--text3); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; }
+  .kpi-value { font-size:24px; font-weight:700; letter-spacing:-0.5px; }
+  .kpi-value.gold { color:var(--accent); }
+  .kpi-value.green { color:var(--green); }
+  .kpi-value.red { color:var(--red); }
+  .kpi-sub { font-size:11px; color:var(--text3); margin-top:4px; }
+  .kpi-badge { display:inline-block; padding:2px 7px; border-radius:20px; font-size:11px; font-weight:500; margin-top:6px; }
+  .kpi-badge.up { background:var(--green-soft); color:var(--green); }
+  .kpi-badge.blue { background:var(--blue-soft); color:var(--blue); }
+
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px; }
+  .card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .card-title { font-size:13px; font-weight:600; }
+  .card-action { font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; font-family:inherit; }
+
+  /* TABLE */
+  .tbl-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  thead th { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; padding:10px 16px; text-align:left; border-bottom:1px solid var(--border); background:var(--bg3); }
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.1s; }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:var(--bg3); }
+  tbody td { padding:11px 16px; font-size:13px; }
+  td.muted { color:var(--text2); }
+
+  .badge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:500; }
+  .badge.green { background:var(--green-soft); color:var(--green); }
+  .badge.red { background:var(--red-soft); color:var(--red); }
+  .badge.gold { background:var(--accent-soft); color:var(--accent); }
+  .badge.blue { background:var(--blue-soft); color:var(--blue); }
+  .badge.purple { background:var(--purple-soft); color:var(--purple); }
+  .badge.gray { background:rgba(255,255,255,0.05); color:var(--text2); }
+
+  /* TOOLBAR */
+  .page-header { margin-bottom:24px; }
+  .page-header h1 { font-size:20px; font-weight:700; }
+  .page-header p { font-size:13px; color:var(--text3); margin-top:3px; }
+  .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .search-input { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:8px 14px; color:var(--text); font-family:inherit; font-size:13px; width:220px; outline:none; transition:border-color 0.2s; }
+  .search-input:focus { border-color:var(--accent2); }
+  .search-input::placeholder { color:var(--text3); }
+  .filter-btn { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:8px 14px; color:var(--text2); font-family:inherit; font-size:13px; cursor:pointer; transition:all 0.15s; }
+  .filter-btn:hover { border-color:var(--border2); color:var(--text); }
+  .filter-btn.active { background:var(--accent-soft); border-color:var(--accent2); color:var(--accent); }
+  .btn-primary { background:var(--accent); border:none; border-radius:var(--radius); padding:8px 16px; color:#1a1400; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; margin-left:auto; transition:opacity 0.15s; }
+  .btn-primary:hover { opacity:0.85; }
+  .full-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+
+  /* MINI CHART */
+  .mini-chart { padding:16px 20px; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .bar-label { width:60px; font-size:12px; color:var(--text2); text-align:right; }
+  .bar-track { flex:1; height:7px; background:var(--bg3); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; }
+  .bar-val { width:60px; font-size:12px; color:var(--text); font-weight:500; }
+
+  /* SUAT LIST */
+  .suat-list { padding:12px 16px; }
+  .suat-item { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); }
+  .suat-item:last-child { border-bottom:none; }
+  .suat-name { font-size:13px; font-weight:500; }
+  .suat-khu { font-size:11px; color:var(--text3); margin-top:1px; }
+  .suat-num { font-size:20px; font-weight:700; min-width:30px; text-align:right; }
+
+  /* FINANCE */
+  .finance-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+  .fin-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; }
+  .fin-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .fin-val { font-size:22px; font-weight:700; }
+
+  /* PRODUCTION */
+  .prod-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+  .prod-goi { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; }
+  .prod-goi-title { font-size:12px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+  .prod-row { display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--border); }
+  .prod-row:last-child { border-bottom:none; }
+  .prod-qty { font-size:16px; font-weight:700; color:var(--accent); }
+  .prod-unit { font-size:11px; color:var(--text3); }
+
+  /* LOADING */
+  .loading { display:flex; align-items:center; justify-content:center; padding:40px; color:var(--text3); font-size:13px; }
+  .spinner { width:20px; height:20px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin-right:10px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius-lg); padding:28px; width:480px; max-width:90vw; }
+  .modal h3 { font-size:16px; font-weight:600; margin-bottom:20px; }
+  .form-group { margin-bottom:14px; }
+  .form-group label { display:block; font-size:12px; color:var(--text3); margin-bottom:5px; }
+  .form-control { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:9px 12px; color:var(--text); font-family:inherit; font-size:13px; outline:none; }
+  .form-control:focus { border-color:var(--accent2); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+  .btn-cancel { background:none; border:1px solid var(--border); border-radius:var(--radius); padding:8px 16px; color:var(--text2); font-family:inherit; font-size:13px; cursor:pointer; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--bg3); border:1px solid var(--border2); border-radius:var(--radius); padding:12px 18px; font-size:13px; z-index:300; transform:translateY(20px); opacity:0; transition:all 0.3s; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--red); color:var(--red); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .page.active > * { animation:fadeUp 0.3s ease both; }
+  .page.active > *:nth-child(2) { animation-delay:0.04s; }
+  .page.active > *:nth-child(3) { animation-delay:0.08s; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">TÁM Kitchen</div>
+    <div class="sub">Quản lý nội bộ</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Tổng quan</div>
+    <button class="nav-item active" onclick="goPage('dashboard',this)"><span class="icon">◈</span> Dashboard</button>
+    <div class="nav-section-label" style="margin-top:10px">Vận hành</div>
+    <button class="nav-item" onclick="goPage('khachhang',this)"><span class="icon">◎</span> Khách hàng</button>
+    <button class="nav-item" onclick="goPage('donhang',this)"><span class="icon">◻</span> Đơn hàng</button>
+    <button class="nav-item" onclick="goPage('sanxuat',this)"><span class="icon">◈</span> Sản xuất ngày</button>
+    <button class="nav-item" onclick="goPage('thucdon',this)"><span class="icon">◑</span> Thực đơn & Nguyên liệu</button>
+    <div class="nav-section-label" style="margin-top:10px">Tài chính</div>
+    <button class="nav-item" onclick="goPage('taichinh',this)"><span class="icon">◐</span> Tài chính</button>
+  </nav>
+  <div class="sidebar-footer"><span class="dot"></span> TÁM Kitchen v1.0</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topbar-date"></div>
+      <div class="avatar">TK</div>
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="kpi-grid" id="dash-kpi">
+      <div class="loading"><span class="spinner"></span> Đang tải...</div>
+    </div>
+    <div class="row2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Phân bổ gói ăn</span></div>
+        <div class="mini-chart" id="dash-chart"><div class="loading"><span class="spinner"></span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Sắp hết suất (≤ 5)</span>
+          <button class="card-action" onclick="goPage('khachhang',document.querySelectorAll('.nav-item')[2])">Xem tất cả →</button>
+        </div>
+        <div class="suat-list" id="dash-saphet"><div class="loading"><span class="spinner"></span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Đơn hàng gần đây</span>
+        <button class="card-action" onclick="goPage('donhang',document.querySelectorAll('.nav-item')[3])">Xem tất cả →</button>
+      </div>
+      <div class="tbl-wrap" id="dash-donhang"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+  </div>
+
+  <!-- KHÁCH HÀNG -->
+  <div class="page" id="page-khachhang">
+    <div class="page-header"><h1>Quản lý khách hàng</h1><p>Theo dõi gói ăn và số suất còn lại</p></div>
+    <div class="toolbar">
+      <input class="search-input" placeholder="Tìm tên, SĐT..." oninput="searchKH(this.value)">
+      <button class="filter-btn active" onclick="filterKH(this,'all')">Tất cả</button>
+      <button class="filter-btn" onclick="filterKH(this,'low')">Sắp hết (≤5)</button>
+      <button class="filter-btn" onclick="filterKH(this,'out')">Hết suất</button>
+      <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
+    </div>
+    <div class="full-card">
+      <div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span> Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- ĐƠN HÀNG -->
+  <div class="page" id="page-donhang">
+    <div class="page-header"><h1>Quản lý đơn hàng</h1><p>Tháng 3/2026</p></div>
+    <div class="toolbar">
+      <input class="search-input" placeholder="Tìm tên, SĐT..." oninput="searchDH(this.value)">
+      <button class="filter-btn active" onclick="filterDH(this,'all')">Tất cả</button>
+      <button class="filter-btn" onclick="filterDH(this,'chuatt')">Chưa thanh toán</button>
+      <button class="filter-btn" onclick="filterDH(this,'dangchay')">Đang chạy</button>
+      <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
+    </div>
+    <div class="full-card">
+      <div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span> Đang tải...</div></div>
+    </div>
+  </div>
+
+  <!-- SẢN XUẤT -->
+  <div class="page" id="page-sanxuat">
+    <div class="page-header"><h1>Sản xuất hàng ngày</h1><p>Lấy số liệu từ bảng khách hàng</p></div>
+    <div class="kpi-grid" id="sx-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div class="prod-grid" id="sx-goi"><div class="loading"><span class="spinner"></span></div></div>
+    <div class="full-card">
+      <div class="card-header"><span class="card-title">Lịch giao theo khu vực</span></div>
+      <div class="tbl-wrap" id="sx-table-wrap"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+  </div>
+
+  <!-- THỰC ĐƠN -->
+  <div class="page" id="page-thucdon">
+    <div class="page-header"><h1>Thực đơn & Nguyên liệu</h1><p>Tính tự động từ số suất sản xuất — order ngày mai</p></div>
+    <div class="kpi-grid" id="td-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="full-card">
+        <div class="card-header"><span class="card-title">Thực đơn theo gói</span></div>
+        <div class="tbl-wrap" id="td-thucdon"><div class="loading"><span class="spinner"></span></div></div>
+      </div>
+      <div class="full-card">
+        <div class="card-header"><span class="card-title">Order nguyên liệu ngày mai</span></div>
+        <div class="tbl-wrap" id="td-nguyenlieu"><div class="loading"><span class="spinner"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TÀI CHÍNH -->
+  <div class="page" id="page-taichinh">
+    <div class="page-header"><h1>Tài chính nội bộ</h1><p>TÁM Kitchen</p></div>
+    <div class="finance-grid" id="tc-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <div class="fin-card" id="tc-tylele" style="border-radius:var(--radius-lg)"></div>
+      <div class="fin-card" id="tc-sodu" style="border-radius:var(--radius-lg)"></div>
+    </div>
+    <div class="full-card">
+      <div class="card-header">
+        <span class="card-title">Sổ thu chi</span>
+        <button class="btn-primary" onclick="openModal('modal-tc')" style="margin-left:auto">+ Thêm giao dịch</button>
+      </div>
+      <div class="tbl-wrap" id="tc-table-wrap"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL THÊM KHÁCH HÀNG -->
+<div class="modal-overlay" id="modal-kh">
+  <div class="modal">
+    <h3>Thêm khách hàng mới</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Tên khách hàng *</label><input class="form-control" id="kh-ten" placeholder="Nguyễn Văn A"></div>
+      <div class="form-group"><label>Số điện thoại</label><input class="form-control" id="kh-sdt" placeholder="0912345678"></div>
+      <div class="form-group"><label>Khu vực</label><input class="form-control" id="kh-kv" placeholder="Láng Hạ"></div>
+      <div class="form-group"><label>Gói ăn</label>
+        <select class="form-control" id="kh-goi">
+          <option>35K</option><option>49K</option><option>56K</option><option>68K</option><option>35K+</option><option>49K+</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Tổng suất</label><input class="form-control" id="kh-tong" type="number" placeholder="10"></div>
+      <div class="form-group"><label>Suất còn lại</label><input class="form-control" id="kh-con" type="number" placeholder="10"></div>
+    </div>
+    <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="kh-diachi" placeholder="Toà nhà ABC, 123 đường XYZ"></div>
+    <div class="form-group"><label>Ghi chú suất ăn</label><input class="form-control" id="kh-ghichu" placeholder="VD: Không ăn bún, thêm thịt..."></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-kh')">Huỷ</button>
+      <button class="btn-primary" style="margin-left:0" onclick="addKhachHang()">Lưu khách hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL THÊM ĐƠN HÀNG -->
+<div class="modal-overlay" id="modal-dh">
+  <div class="modal">
+    <h3>Thêm đơn hàng mới</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Tên khách hàng *</label><input class="form-control" id="dh-ten" placeholder="Nguyễn Văn A"></div>
+      <div class="form-group"><label>Số điện thoại</label><input class="form-control" id="dh-sdt" placeholder="0912345678"></div>
+      <div class="form-group"><label>Ngày đặt</label><input class="form-control" id="dh-ngay" type="date"></div>
+      <div class="form-group"><label>Tổng đơn (đ)</label><input class="form-control" id="dh-tong" type="number" placeholder="560000"></div>
+      <div class="form-group"><label>Sản phẩm</label>
+        <select class="form-control" id="dh-sp">
+          <option>Combo Standard</option><option>Combo Plus</option><option>Combo Plus M</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Thanh toán</label>
+        <select class="form-control" id="dh-tt">
+          <option>Chưa TT</option><option>Đã TT</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="dh-diachi" placeholder="Toà nhà ABC, 123 đường XYZ"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-dh')">Huỷ</button>
+      <button class="btn-primary" style="margin-left:0" onclick="addDonHang()">Lưu đơn hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL THÊM TÀI CHÍNH -->
+<div class="modal-overlay" id="modal-tc">
+  <div class="modal">
+    <h3>Thêm giao dịch</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Ngày *</label><input class="form-control" id="tc-ngay" type="date"></div>
+      <div class="form-group"><label>Doanh thu (đ)</label><input class="form-control" id="tc-dt" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Chi tiêu (đ)</label><input class="form-control" id="tc-ct" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Marketing (đ)</label><input class="form-control" id="tc-mk" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-group"><label>Nội dung *</label><input class="form-control" id="tc-nd" placeholder="VD: KH chuyển khoản, Mua nguyên liệu..."></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-tc')">Huỷ</button>
+      <button class="btn-primary" style="margin-left:0" onclick="addTaiChinh()">Lưu giao dịch</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// SUPABASE CONFIG
+// =============================================
+const SUPABASE_URL = 'https://qwehlngnasxstizulhre.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZWhsbmduYXN4c3RpenVsaHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDI1MTUsImV4cCI6MjA5MTM3ODUxNX0.ZViu2wnK4MssHFuzaZz8Fg7ftCCOXRXpE4L2H-yX3k0';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// =============================================
+// STATE
+// =============================================
+let allKH = [], allDH = [], allTC = [], allSX = [], allTD = [];
+
+// =============================================
+// HELPERS
+// =============================================
+const fmt = n => n ? Number(n).toLocaleString('vi-VN') : '0';
+const fmtDate = s => s ? new Date(s).toLocaleDateString('vi-VN') : '—';
+const goiColor = g => {
+  if (!g) return 'gray';
+  if (g.includes('68')) return 'purple';
+  if (g.includes('56')) return 'blue';
+  if (g.includes('49')) return 'gold';
+  return 'gray';
+};
+const ttColor = t => t === 'Đã TT' ? 'green' : t === 'Chưa TT' ? 'red' : 'gray';
+const trangThaiColor = t => {
+  if (t === 'Đang chạy') return 'blue';
+  if (t === 'Sắp hết') return 'gold';
+  if (t === 'Hết suất') return 'red';
+  return 'gray';
+};
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+
+// =============================================
+// NAVIGATION
+// =============================================
+const pageTitles = { dashboard:'Dashboard', khachhang:'Khách hàng', donhang:'Đơn hàng', sanxuat:'Sản xuất hàng ngày', thucdon:'Thực đơn & Nguyên liệu', taichinh:'Tài chính' };
+
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbar-title').textContent = pageTitles[id] || id;
+  window.scrollTo(0,0);
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'khachhang') loadKhachHang();
+  if (id === 'donhang') loadDonHang();
+  if (id === 'sanxuat') loadSanXuat();
+  if (id === 'thucdon') loadThucDon();
+  if (id === 'taichinh') loadTaiChinh();
+}
+
+// =============================================
+// DATE
+// =============================================
+const d = new Date();
+document.getElementById('topbar-date').textContent = d.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.querySelectorAll('input[type=date]').forEach(i => i.value = d.toISOString().split('T')[0]);
+
+// =============================================
+// DASHBOARD
+// =============================================
+async function loadDashboard() {
+  const [{ data: kh }, { data: dh }, { data: tc }] = await Promise.all([
+    db.from('khach_hang').select('*'),
+    db.from('don_hang').select('*').order('ngay_dat', { ascending: false }).limit(5),
+    db.from('tai_chinh').select('*')
+  ]);
+  allKH = kh || []; allDH = dh || []; allTC = tc || [];
+
+  // KPI
+  const doanhThu = allTC.reduce((s,r) => s + (r.doanh_thu||0), 0);
+  const chiTieu = allTC.reduce((s,r) => s + (r.chi_tieu||0) + (r.marketing||0), 0);
+  const loiNhuan = doanhThu - chiTieu;
+  const tongSuat = allKH.reduce((s,r) => s + (r.suat_con||0), 0);
+
+  document.getElementById('dash-kpi').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Doanh thu</div><div class="kpi-value gold">${fmt(doanhThu)}</div><div class="kpi-sub">đồng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Lợi nhuận</div><div class="kpi-value green">${fmt(loiNhuan)}</div><div class="kpi-sub">đồng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Tổng khách</div><div class="kpi-value">${allKH.length}</div><div class="kpi-sub">khách hàng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value">${tongSuat}</div><div class="kpi-sub">suất tổng</div></div>`;
+
+  // Chart gói
+  const goiCount = {};
+  allKH.forEach(k => { if(k.goi && k.suat_con > 0) goiCount[k.goi] = (goiCount[k.goi]||0) + 1; });
+  const maxG = Math.max(...Object.values(goiCount), 1);
+  const colors = { '35K':'var(--blue)','56K':'var(--accent)','49K':'var(--purple)','68K':'var(--green)','35K+':'var(--red)','49K+':'var(--text3)' };
+  document.getElementById('dash-chart').innerHTML = Object.entries(goiCount).map(([g,c]) =>
+    `<div class="bar-row"><div class="bar-label">${g}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxG*100)}%;background:${colors[g]||'var(--text3)'}"></div></div><div class="bar-val">${c} KH</div></div>`
+  ).join('') || '<div style="color:var(--text3);padding:10px;font-size:13px">Chưa có dữ liệu</div>';
+
+  // Sắp hết suất
+  const sapHet = allKH.filter(k => k.suat_con >= 0 && k.suat_con <= 5).sort((a,b) => a.suat_con - b.suat_con).slice(0,6);
+  document.getElementById('dash-saphet').innerHTML = sapHet.length ? sapHet.map(k =>
+    `<div class="suat-item"><div><div class="suat-name">${k.ten}</div><div class="suat-khu">${k.khu_vuc||''} · ${k.goi||''}</div></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="suat-num" style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=2?'var(--accent)':'var(--text)'}">${k.suat_con}</div><div style="font-size:11px;color:var(--text3)">còn</div></div></div>`
+  ).join('') : '<div style="padding:16px;color:var(--text3);font-size:13px">Không có khách nào sắp hết suất</div>';
+
+  // Đơn hàng gần đây
+  document.getElementById('dash-donhang').innerHTML = renderDonHangTable(allDH.slice(0,5));
+}
+
+// =============================================
+// KHÁCH HÀNG
+// =============================================
+let khFilter = 'all', khSearch = '';
+
+async function loadKhachHang() {
+  const { data } = await db.from('khach_hang').select('*').order('stt');
+  allKH = data || [];
+  renderKH();
+}
+
+function renderKH() {
+  let data = [...allKH];
+  if (khSearch) data = data.filter(k => (k.ten+k.sdt+k.khu_vuc).toLowerCase().includes(khSearch.toLowerCase()));
+  if (khFilter === 'low') data = data.filter(k => k.suat_con > 0 && k.suat_con <= 5);
+  if (khFilter === 'out') data = data.filter(k => k.suat_con <= 0);
+
+  document.getElementById('kh-table-wrap').innerHTML = `<table>
+    <thead><tr><th>STT</th><th>Khu vực</th><th>Tên khách</th><th>SĐT</th><th>Gói</th><th>Suất còn</th><th>Tổng suất</th><th>Ghi chú</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>${data.map((k,i) => `<tr>
+      <td class="muted">${k.stt||i+1}</td>
+      <td>${k.khu_vuc||'—'}</td>
+      <td><strong>${k.ten}</strong></td>
+      <td class="muted">${k.sdt||'—'}</td>
+      <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
+      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--accent)':'var(--green)'}">${k.suat_con}</strong></td>
+      <td class="muted">${k.tong_suat||0}</td>
+      <td class="muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td>
+      <td><span class="badge ${trangThaiColor(k.trang_thai)}">${k.trang_thai}</span></td>
+      <td><button onclick="deleteKH('${k.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px">Xoá</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function searchKH(v) { khSearch = v; renderKH(); }
+function filterKH(btn, type) {
+  document.querySelectorAll('#page-khachhang .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); khFilter = type; renderKH();
+}
+
+async function addKhachHang() {
+  const ten = document.getElementById('kh-ten').value.trim();
+  if (!ten) return showToast('Vui lòng nhập tên khách hàng', 'error');
+  const { error } = await db.from('khach_hang').insert({
+    ten, sdt: document.getElementById('kh-sdt').value,
+    khu_vuc: document.getElementById('kh-kv').value,
+    goi: document.getElementById('kh-goi').value,
+    tong_suat: parseInt(document.getElementById('kh-tong').value)||0,
+    suat_con: parseInt(document.getElementById('kh-con').value)||0,
+    dia_chi: document.getElementById('kh-diachi').value,
+    ghi_chu_suat_an: document.getElementById('kh-ghichu').value,
+    trang_thai: 'Đang chạy', stt: allKH.length + 1
+  });
+  if (error) return showToast('Lỗi: ' + error.message, 'error');
+  showToast('Đã thêm khách hàng!');
+  closeModal('modal-kh');
+  document.querySelectorAll('#modal-kh input, #modal-kh select').forEach(i => i.value = '');
+  loadKhachHang();
+}
+
+async function deleteKH(id) {
+  if (!confirm('Xoá khách hàng này?')) return;
+  await db.from('khach_hang').delete().eq('id', id);
+  showToast('Đã xoá!'); loadKhachHang();
+}
+
+// =============================================
+// ĐƠN HÀNG
+// =============================================
+let dhFilter = 'all', dhSearch = '';
+
+async function loadDonHang() {
+  const { data } = await db.from('don_hang').select('*').order('ngay_dat', { ascending: false });
+  allDH = data || [];
+  renderDH();
+}
+
+function renderDonHangTable(data) {
+  return `<table><thead><tr><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Sản phẩm</th><th>Tổng đơn</th><th>Thanh toán</th><th>Trạng thái</th></tr></thead>
+    <tbody>${data.map(d => `<tr>
+      <td class="muted">${fmtDate(d.ngay_dat)}</td>
+      <td>${d.ten_kh}</td><td class="muted">${d.sdt||'—'}</td>
+      <td>${d.san_pham ? `<span class="badge gold">${d.san_pham}</span>` : '—'}</td>
+      <td>${fmt(d.tong_don)} đ</td>
+      <td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td>
+      <td><span class="badge ${trangThaiColor(d.trang_thai)}">${d.trang_thai||'—'}</span></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function renderDH() {
+  let data = [...allDH];
+  if (dhSearch) data = data.filter(d => (d.ten_kh+d.sdt).toLowerCase().includes(dhSearch.toLowerCase()));
+  if (dhFilter === 'chuatt') data = data.filter(d => d.thanh_toan === 'Chưa TT');
+  if (dhFilter === 'dangchay') data = data.filter(d => d.trang_thai === 'Đang chạy');
+  document.getElementById('dh-table-wrap').innerHTML = `<table><thead><tr>
+    <th>Ngày đặt</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Sản phẩm</th><th>Tổng đơn</th><th>Thanh toán</th><th>Trạng thái</th><th></th>
+  </tr></thead><tbody>${data.map(d => `<tr>
+    <td class="muted">${fmtDate(d.ngay_dat)}</td><td><strong>${d.ten_kh}</strong></td>
+    <td class="muted">${d.sdt||'—'}</td>
+    <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.dia_chi||'—'}</td>
+    <td>${d.san_pham ? `<span class="badge gold">${d.san_pham}</span>` : '—'}</td>
+    <td>${fmt(d.tong_don)} đ</td>
+    <td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td>
+    <td><span class="badge ${trangThaiColor(d.trang_thai)}">${d.trang_thai||'—'}</span></td>
+    <td><button onclick="deleteDH('${d.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px">Xoá</button></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function searchDH(v) { dhSearch = v; renderDH(); }
+function filterDH(btn, type) {
+  document.querySelectorAll('#page-donhang .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); dhFilter = type; renderDH();
+}
+
+async function addDonHang() {
+  const ten = document.getElementById('dh-ten').value.trim();
+  if (!ten) return showToast('Vui lòng nhập tên khách hàng', 'error');
+  const { error } = await db.from('don_hang').insert({
+    ten_kh: ten, sdt: document.getElementById('dh-sdt').value,
+    ngay_dat: document.getElementById('dh-ngay').value,
+    tong_don: parseInt(document.getElementById('dh-tong').value)||0,
+    san_pham: document.getElementById('dh-sp').value,
+    thanh_toan: document.getElementById('dh-tt').value,
+    dia_chi: document.getElementById('dh-diachi').value,
+    trang_thai: 'Mới'
+  });
+  if (error) return showToast('Lỗi: ' + error.message, 'error');
+  showToast('Đã thêm đơn hàng!');
+  closeModal('modal-dh');
+  document.querySelectorAll('#modal-dh input, #modal-dh select').forEach(i => i.value = '');
+  loadDonHang();
+}
+
+async function deleteDH(id) {
+  if (!confirm('Xoá đơn hàng này?')) return;
+  await db.from('don_hang').delete().eq('id', id);
+  showToast('Đã xoá!'); loadDonHang();
+}
+
+// =============================================
+// SẢN XUẤT
+// =============================================
+async function loadSanXuat() {
+  const { data: kh } = await db.from('khach_hang').select('*').gt('suat_con', 0).order('khu_vuc');
+  allKH = kh || [];
+
+  // Tính số suất theo gói
+  const goiMap = {};
+  allKH.forEach(k => { if(k.goi) goiMap[k.goi] = (goiMap[k.goi]||0) + 1; });
+  const tongSuat = Object.values(goiMap).reduce((s,v) => s+v, 0);
+
+  document.getElementById('sx-kpi').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Tổng suất hôm nay</div><div class="kpi-value gold">${tongSuat}</div><div class="kpi-sub">suất sản xuất</div></div>
+    ${Object.entries(goiMap).map(([g,c]) => `<div class="kpi-card"><div class="kpi-label">Gói ${g}</div><div class="kpi-value">${c}</div><div class="kpi-sub">suất</div></div>`).join('')}`;
+
+  // Gói chi tiết
+  const goiInfo = {
+    '35K': [['Ức gà sốt tiêu đen','70g'], ['Cơm gạo lứt','67g'], ['Rau chung','30g×4']],
+    '56K': [['Ức gà sốt tiêu đen','100g'], ['Cơm gạo lứt','67g'], ['Rau chung','30g×4']],
+    '49K': [['Đùi gà sốt tiêu đen','80g'], ['Cơm gạo lứt','67g'], ['Ngô','30g']],
+    '68K': [['Đùi gà sốt tiêu đen','120g'], ['Cơm gạo lứt','67g'], ['Ngô','30g']],
+  };
+  document.getElementById('sx-goi').innerHTML = Object.entries(goiMap).map(([g,c]) => {
+    const rows = goiInfo[g.replace('+','')] || [];
+    return `<div class="prod-goi">
+      <div class="prod-goi-title">${g} — ${c} suất</div>
+      ${rows.map(([mon, dl]) => `<div class="prod-row">
+        <span>${mon}</span><span style="font-size:12px;color:var(--text3)">${dl}/suất</span>
+        <span><span class="prod-qty">${calcKL(dl, c)}</span><span class="prod-unit"> g</span></span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  // Bảng giao hàng
+  document.getElementById('sx-table-wrap').innerHTML = `<table><thead><tr>
+    <th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ghi chú</th>
+  </tr></thead><tbody>${allKH.map(k => `<tr>
+    <td>${k.khu_vuc||'—'}</td><td><strong>${k.ten}</strong></td>
+    <td class="muted">${k.sdt||'—'}</td>
+    <td class="muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
+    <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
+    <td class="muted">${k.ghi_chu_suat_an||''}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function calcKL(dl, count) {
+  const m = dl.match(/(\d+)/);
+  return m ? Number(m[1]) * count : 0;
+}
+
+// =============================================
+// THỰC ĐƠN
+// =============================================
+async function loadThucDon() {
+  const [{ data: kh }, { data: td }] = await Promise.all([
+    db.from('khach_hang').select('goi, suat_con').gt('suat_con', 0),
+    db.from('thuc_don').select('*')
+  ]);
+  allKH = kh || []; allTD = td || [];
+
+  const goiMap = {};
+  allKH.forEach(k => { if(k.goi) goiMap[k.goi] = (goiMap[k.goi]||0) + 1; });
+
+  document.getElementById('td-kpi').innerHTML = Object.entries(goiMap).map(([g,c]) =>
+    `<div class="kpi-card"><div class="kpi-label">Gói ${g}</div><div class="kpi-value">${c}</div><div class="kpi-sub">suất hôm nay</div></div>`
+  ).join('') || '<div style="padding:16px;color:var(--text3)">Chưa có dữ liệu</div>';
+
+  // Thực đơn
+  document.getElementById('td-thucdon').innerHTML = `<table>
+    <thead><tr><th>Gói ăn</th><th>Món ăn</th><th style="text-align:right">Định lượng</th><th style="text-align:right">Số suất</th><th style="text-align:right">Tổng KL</th></tr></thead>
+    <tbody>${allTD.map(t => {
+      const count = goiMap[t.goi] || (t.goi === 'Chung' ? Object.entries(goiMap).filter(([g]) => !g.includes('+')).reduce((s,[,v])=>s+v,0) : t.goi === 'Plus' ? (goiMap['49K']||0)+(goiMap['68K']||0) : t.goi === 'Tất cả' ? Object.values(goiMap).reduce((s,v)=>s+v,0) : 0);
+      const total = (t.dinh_luong||0) * count;
+      return `<tr><td><span class="badge ${goiColor(t.goi)}">${t.goi}</span></td><td>${t.mon_an}</td><td style="text-align:right;color:var(--text2)">${t.dinh_luong}${t.don_vi}</td><td style="text-align:right;color:var(--text2)">${count}</td><td style="text-align:right;font-weight:600;color:var(--accent)">${fmt(total)}g</td></tr>`;
+    }).join('')}</tbody></table>`;
+
+  // Nguyên liệu tổng hợp
+  const nlMap = {};
+  allTD.forEach(t => {
+    const count = goiMap[t.goi] || (t.goi === 'Chung' ? Object.entries(goiMap).filter(([g]) => !g.includes('+')).reduce((s,[,v])=>s+v,0) : t.goi === 'Plus' ? (goiMap['49K']||0)+(goiMap['68K']||0) : t.goi === 'Tất cả' ? Object.values(goiMap).reduce((s,v)=>s+v,0) : 0);
+    const total = (t.dinh_luong||0) * count;
+    if (total > 0) nlMap[t.mon_an] = (nlMap[t.mon_an]||0) + total;
+  });
+
+  document.getElementById('td-nguyenlieu').innerHTML = `<table>
+    <thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>Đơn vị</th></tr></thead>
+    <tbody>${Object.entries(nlMap).map(([mon, kl]) =>
+      `<tr><td><strong>${mon}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(kl)}</td><td class="muted">gram</td></tr>`
+    ).join('')}</tbody></table>`;
+}
+
+// =============================================
+// TÀI CHÍNH
+// =============================================
+async function loadTaiChinh() {
+  const { data } = await db.from('tai_chinh').select('*').order('ngay', { ascending: false });
+  allTC = data || [];
+
+  const doanhThu = allTC.reduce((s,r) => s+(r.doanh_thu||0), 0);
+  const chiTieu = allTC.reduce((s,r) => s+(r.chi_tieu||0), 0);
+  const marketing = allTC.reduce((s,r) => s+(r.marketing||0), 0);
+  const dauTu = allTC.reduce((s,r) => s+(r.dau_tu||0), 0);
+  const loiNhuan = doanhThu - chiTieu - marketing - dauTu;
+
+  document.getElementById('tc-kpi').innerHTML = `
+    <div class="fin-card"><div class="fin-label">Doanh thu</div><div class="fin-val" style="color:var(--accent)">${fmt(doanhThu)} đ</div></div>
+    <div class="fin-card"><div class="fin-label">Chi tiêu</div><div class="fin-val" style="color:var(--red)">${fmt(chiTieu)} đ</div></div>
+    <div class="fin-card"><div class="fin-label">Marketing</div><div class="fin-val" style="color:var(--red)">${fmt(marketing)} đ</div></div>
+    <div class="fin-card"><div class="fin-label">Lợi nhuận</div><div class="fin-val" style="color:var(--green)">${fmt(loiNhuan)} đ</div></div>`;
+
+  const pct = n => doanhThu ? Math.round(n/doanhThu*100) : 0;
+  document.getElementById('tc-tylele').innerHTML = `
+    <div class="fin-label" style="margin-bottom:10px">Tỷ lệ chi phí / doanh thu</div>
+    ${[['Chi tiêu', chiTieu, 'var(--red)'], ['Marketing', marketing, 'var(--purple)'], ['Lợi nhuận', loiNhuan, 'var(--green)']].map(([l,v,c]) =>
+      `<div class="bar-row"><div class="bar-label" style="width:80px;text-align:left;font-size:12px;color:var(--text2)">${l}</div><div class="bar-track" style="flex:1"><div class="bar-fill" style="width:${pct(v)}%;background:${c}"></div></div><div class="bar-val">${pct(v)}%</div></div>`
+    ).join('')}`;
+
+  document.getElementById('tc-sodu').innerHTML = `
+    <div class="fin-label" style="margin-bottom:10px">Tổng lợi nhuận tích lũy</div>
+    <div style="font-size:28px;font-weight:700;color:${loiNhuan>=0?'var(--accent)':'var(--red)'}">${fmt(loiNhuan)} đ</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:4px">Doanh thu: ${fmt(doanhThu)} đ · Chi phí: ${fmt(chiTieu+marketing+dauTu)} đ</div>`;
+
+  document.getElementById('tc-table-wrap').innerHTML = `<table>
+    <thead><tr><th>Ngày</th><th>Nội dung</th><th style="text-align:right">Doanh thu</th><th style="text-align:right">Chi tiêu</th><th style="text-align:right">Marketing</th></tr></thead>
+    <tbody>${allTC.map(r => `<tr>
+      <td class="muted">${fmtDate(r.ngay)}</td><td>${r.noi_dung}</td>
+      <td style="text-align:right;color:${r.doanh_thu>0?'var(--green)':'var(--text3)'}">${r.doanh_thu>0?fmt(r.doanh_thu):''}</td>
+      <td style="text-align:right;color:${r.chi_tieu>0?'var(--red)':'var(--text3)'}">${r.chi_tieu>0?fmt(r.chi_tieu):''}</td>
+      <td style="text-align:right;color:${r.marketing>0?'var(--red)':'var(--text3)'}">${r.marketing>0?fmt(r.marketing):''}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function addTaiChinh() {
+  const nd = document.getElementById('tc-nd').value.trim();
+  if (!nd) return showToast('Vui lòng nhập nội dung', 'error');
+  const { error } = await db.from('tai_chinh').insert({
+    ngay: document.getElementById('tc-ngay').value,
+    noi_dung: nd,
+    doanh_thu: parseInt(document.getElementById('tc-dt').value)||0,
+    chi_tieu: parseInt(document.getElementById('tc-ct').value)||0,
+    marketing: parseInt(document.getElementById('tc-mk').value)||0
+  });
+  if (error) return showToast('Lỗi: ' + error.message, 'error');
+  showToast('Đã thêm giao dịch!');
+  closeModal('modal-tc');
+  document.querySelectorAll('#modal-tc input').forEach(i => i.value = '');
+  loadTaiChinh();
+}
+
+// =============================================
+// INIT
+// =============================================
+loadDashboard();
+</script>
+</body>
+</html>
