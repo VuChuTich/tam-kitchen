@@ -619,7 +619,7 @@ async function deleteSP(id){if(!confirm('Xoá?'))return;await db.from('san_pham'
 // ── KHÁCH HÀNG ────────────────────────────────
 async function loadKhachHang(){
   if(!allSP.length){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];populateSPSelects();}
-  const{data}=await db.from('khach_hang').select('*').order('stt');allKH=data||[];renderKH();
+  const{data}=await db.from('khach_hang').select('*').eq('active',true).order('stt');allKH=data||[];renderKH();
 }
 const TL={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
 function renderKH(){
@@ -679,7 +679,7 @@ async function addKhachHang(){
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
   setSelectedDays('kh-day-picker','2,3,4,5,6');loadKhachHang();
 }
-async function deleteKH(id){if(!confirm('Xoá khách hàng này?'))return;await db.from('khach_hang').delete().eq('id',id);showToast('Đã xoá!');loadKhachHang();}
+async function deleteKH(id){if(!confirm('Xoá khách hàng này?'))return;await db.from('khach_hang').update({active:false}).eq('id',id);showToast('Đã xoá!');loadKhachHang();}
 
 // ── ĐƠN HÀNG ─────────────────────────────────
 async function loadDonHang(){
