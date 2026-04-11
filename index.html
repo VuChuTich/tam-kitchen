@@ -230,6 +230,30 @@ select.form-control option{background:var(--bg2);}
 .page.active>*{animation:fadeUp 0.3s ease both;}
 .page.active>*:nth-child(2){animation-delay:0.04s;}
 .page.active>*:nth-child(3){animation-delay:0.08s;}
+
+/* THƯ VIỆN MÓN ĂN */
+.mon-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+.mon-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg3);}
+.mon-card-name{font-size:15px;font-weight:700;}
+.mon-card-body{padding:0;}
+.mon-nhom{border-bottom:1px solid var(--border);}
+.mon-nhom:last-child{border-bottom:none;}
+.mon-nhom-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;padding:8px 16px;background:var(--bg3);}
+.mon-nl-row{display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:0;border-bottom:1px solid var(--border);}
+.mon-nl-row:last-child{border-bottom:none;}
+.mon-nl-row > div{padding:8px 14px;font-size:13px;display:flex;align-items:center;}
+.mon-nl-row > div:not(:first-child){justify-content:flex-end;color:var(--text2);}
+.mon-nl-row.header > div{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;background:var(--bg);padding:6px 14px;}
+.bien-row{display:flex;gap:12px;padding:10px 16px;background:var(--green-soft);border-top:1px solid var(--border);}
+.bien-item{font-size:12px;}
+.bien-item .label{color:var(--text3);}
+.bien-item .val{font-weight:700;color:var(--accent);}
+.bien-item .val.loss{color:var(--red);}
+/* TABS TD */
+.td-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;}
+.td-tab-btn{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:-2px;transition:all 0.15s;}
+.td-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
+.td-tab-btn:hover{color:var(--text);}
 </style>
 </head>
 <body>
@@ -343,43 +367,47 @@ select.form-control option{background:var(--bg2);}
   </div>
 
   <!-- THỰC ĐƠN -->
-<div class="page" id="page-thucdon">
-  <div class="page-header"><h1>Thực đơn & Nguyên liệu</h1><p>Thư viện món ăn · Lịch tuần A/B · Tính nguyên liệu tự động</p></div>
-  
-  <!-- TABS -->
-  <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0">
-    <button class="td-tab active" onclick="switchTDTab('lichthucdon',this)" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:-2px">Lịch thực đơn</button>
-    <button class="td-tab" onclick="switchTDTab('thumonang',this)" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:-2px">Thư viện món ăn</button>
-    <button class="td-tab" onclick="switchTDTab('nguyenlieu',this)" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:-2px">Order nguyên liệu</button>
-  </div>
-
-  <!-- TAB 1: LỊCH THỰC ĐƠN -->
-  <div id="td-tab-lichthucdon">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <span style="font-size:13px;color:var(--text2);font-weight:500">Tuần đang hiển thị:</span>
-      <button class="filter-btn active" id="btn-tuan-a" onclick="switchTuan('A')">Tuần A</button>
-      <button class="filter-btn" id="btn-tuan-b" onclick="switchTuan('B')">Tuần B</button>
+  <div class="page" id="page-thucdon">
+    <div class="page-header"><h1>Thực đơn & Nguyên liệu</h1><p>Lịch tuần · Thư viện món · Nguyên liệu tự động</p></div>
+    <div class="td-tabs">
+      <button class="td-tab-btn active" onclick="switchTDTab('lich',this)">📅 Lịch thực đơn</button>
+      <button class="td-tab-btn" onclick="switchTDTab('thuvien',this)">🍽️ Thư viện món ăn</button>
+      <button class="td-tab-btn" onclick="switchTDTab('nguyenlieu',this)">🛒 Order nguyên liệu</button>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px" id="lich-tuan-grid"></div>
-  </div>
-
-  <!-- TAB 2: THƯ VIỆN MÓN ĂN -->
-  <div id="td-tab-thumonang" style="display:none">
-    <div class="toolbar"><button class="btn-primary" onclick="openModal('modal-mon-moi')">+ Thêm món ăn</button></div>
-    <div id="thu-vien-mon-an"></div>
-  </div>
-
-  <!-- TAB 3: ORDER NGUYÊN LIỆU -->
-  <div id="td-tab-nguyenlieu" style="display:none">
-    <div class="full-card">
-      <div class="card-header">
-        <span class="card-title">Order nguyên liệu hôm nay</span>
-        <span style="font-size:11px;color:var(--text3)">Tính từ bảng sản xuất × định lượng món ăn hôm nay</span>
+    <!-- TAB LỊCH -->
+    <div id="td-tab-lich">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:13px;color:var(--text2);font-weight:500">Tuần:</span>
+        <button class="filter-btn active" id="btn-tuan-a" onclick="switchTuan('A')">Tuần A</button>
+        <button class="filter-btn" id="btn-tuan-b" onclick="switchTuan('B')">Tuần B</button>
       </div>
-      <div class="tbl-wrap" id="td-nguyenlieu-content"><div class="loading"><span class="spinner"></span></div></div>
+      <div class="tuan-grid" id="tuan-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+        <div class="full-card">
+          <div class="card-header"><span class="card-title">Định lượng theo gói</span></div>
+          <div class="tbl-wrap" id="td-thucdon"><div class="loading"><span class="spinner"></span></div></div>
+        </div>
+        <div class="full-card">
+          <div class="card-header"><span class="card-title">Order nguyên liệu hôm nay</span><span style="font-size:11px;color:var(--text3)">Từ bảng sản xuất</span></div>
+          <div class="tbl-wrap" id="td-nguyenlieu"><div class="loading"><span class="spinner"></span></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- TAB THƯ VIỆN -->
+    <div id="td-tab-thuvien" style="display:none">
+      <div class="toolbar">
+        <button class="btn-primary" onclick="openModal('modal-mon-new')">+ Thêm món ăn</button>
+      </div>
+      <div id="thu-vien-list"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+    <!-- TAB NGUYÊN LIỆU -->
+    <div id="td-tab-nguyenlieu" style="display:none">
+      <div class="full-card">
+        <div class="card-header"><span class="card-title">Order nguyên liệu hôm nay</span><span style="font-size:11px;color:var(--text3)">Tính tự động từ bảng sản xuất × định lượng</span></div>
+        <div class="tbl-wrap" id="td-nguyenlieu-full"><div class="loading"><span class="spinner"></span></div></div>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- CHẤM CÔNG -->
   <div class="page" id="page-chamcong">
@@ -510,59 +538,86 @@ select.form-control option{background:var(--bg2);}
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-dh')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addDonHang()">Lưu</button></div>
 </div></div>
 
-<!-- MODAL THÊM MÓN ĂN MỚI -->
-<div class="modal-overlay" id="modal-mon-moi"><div class="modal" style="width:580px">
+<!-- MODAL THÊM MÓN MỚI -->
+<div class="modal-overlay" id="modal-mon-new"><div class="modal" style="width:600px">
   <h3>Thêm món ăn mới</h3>
-  <div class="form-group"><label>Tên món *</label><input class="form-control" id="mm-ten" placeholder="VD: Ức gà sốt tiêu đen"></div>
-  <div class="form-group"><label>Mô tả</label><input class="form-control" id="mm-mota" placeholder="Mô tả ngắn"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-    <div class="fin-card" style="border-radius:var(--radius)">
-      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:10px">Size S</div>
-      <div class="form-group"><label>Định lượng chính (g)</label><input class="form-control" id="mm-s-dl" type="number" placeholder="70"></div>
-    </div>
-    <div class="fin-card" style="border-radius:var(--radius)">
-      <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:10px">Size M</div>
-      <div class="form-group"><label>Định lượng chính (g)</label><input class="form-control" id="mm-m-dl" type="number" placeholder="100"></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Tên món *</label><input class="form-control" id="mn-ten" placeholder="Đậu phụ xào nấm"></div>
+    <div class="form-group"><label>Loại</label>
+      <select class="form-control" id="mn-loai"><option value="Standard">Standard</option><option value="Plus">Plus</option><option value="Ca hai">Cả hai</option></select>
     </div>
   </div>
-  <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">Nguyên liệu</div>
-  <div id="mm-nl-list"></div>
-  <button onclick="addNLRow()" class="btn-ghost btn-sm" style="margin-bottom:14px">+ Thêm nguyên liệu</button>
-  <div class="modal-footer">
-    <button class="btn-cancel" onclick="closeModal('modal-mon-moi')">Huỷ</button>
-    <button class="btn-primary" style="margin-left:0" onclick="saveMonAn()">Lưu món ăn</button>
+  <!-- PROTEIN -->
+  <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Protein chính</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+    <div style="font-size:11px;color:var(--text3)">Nguyên liệu</div>
+    <div style="font-size:11px;color:var(--text3);text-align:right">Size S (g)</div>
+    <div style="font-size:11px;color:var(--text3);text-align:right">Size M (g)</div>
+    <div style="font-size:11px;color:var(--text3);text-align:right">Giá S (đ)</div>
+    <div style="font-size:11px;color:var(--text3);text-align:right">Giá M (đ)</div>
+  </div>
+  <div id="mn-protein-list">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 24px;gap:6px;margin-bottom:6px">
+      <input class="form-control" placeholder="VD: Đùi gà" id="mn-p-ten-0">
+      <input class="form-control" type="number" placeholder="70" id="mn-p-s-0" style="text-align:right">
+      <input class="form-control" type="number" placeholder="120" id="mn-p-m-0" style="text-align:right">
+      <input class="form-control" type="number" placeholder="5000" id="mn-p-gs-0" style="text-align:right">
+      <input class="form-control" type="number" placeholder="9000" id="mn-p-gm-0" style="text-align:right">
+      <span></span>
+    </div>
+  </div>
+  <!-- TINH BỘT -->
+  <div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Tinh bột</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+    <input class="form-control" value="Cơm gạo lứt" id="mn-tb-ten" readonly style="opacity:0.7">
+    <input class="form-control" type="number" value="67" id="mn-tb-s" style="text-align:right">
+    <input class="form-control" type="number" value="67" id="mn-tb-m" style="text-align:right">
+    <input class="form-control" type="number" value="1700" id="mn-tb-gs" style="text-align:right">
+    <input class="form-control" type="number" value="1700" id="mn-tb-gm" style="text-align:right">
+  </div>
+  <!-- CHẤT XƠ -->
+  <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Chất xơ — 5 loại rau</div>
+  <div id="mn-rau-list">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 24px;gap:6px;margin-bottom:6px">
+      <input class="form-control" placeholder="Su su" id="mn-r-ten-0" value="Su su">
+      <input class="form-control" type="number" value="30" id="mn-r-s-0" style="text-align:right">
+      <input class="form-control" type="number" value="30" id="mn-r-m-0" style="text-align:right">
+      <input class="form-control" type="number" value="300" id="mn-r-gs-0" style="text-align:right">
+      <input class="form-control" type="number" value="300" id="mn-r-gm-0" style="text-align:right">
+      <button onclick="removeRauRow(this)" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>
+    </div>
+  </div>
+  <button onclick="addRauRow()" class="btn-ghost btn-sm" style="margin-bottom:14px">+ Thêm rau</button>
+  <!-- BAO BÌ -->
+  <div style="font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Bao bì</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px">
+    <input class="form-control" value="Hộp + đũa thìa" id="mn-bb-ten" readonly style="opacity:0.7">
+    <input class="form-control" type="number" value="67" id="mn-bb-s" style="text-align:right">
+    <input class="form-control" type="number" value="67" id="mn-bb-m" style="text-align:right">
+    <input class="form-control" type="number" value="1350" id="mn-bb-gs" style="text-align:right">
+    <input class="form-control" type="number" value="2350" id="mn-bb-gm" style="text-align:right">
+  </div>
+  <div class="modal-footer" style="margin-top:20px">
+    <button class="btn-cancel" onclick="closeModal('modal-mon-new')">Huỷ</button>
+    <button class="btn-primary" style="margin-left:0" onclick="saveMonMoi()">Lưu món ăn</button>
   </div>
 </div></div>
 
-<!-- MODAL CHỌN MÓN VÀO LỊCH -->
-<div class="modal-overlay" id="modal-chon-mon"><div class="modal">
-  <h3 id="chon-mon-title">Chọn món ăn</h3>
-  <input type="hidden" id="chon-mon-tuan">
-  <input type="hidden" id="chon-mon-thu">
-  <input type="hidden" id="chon-mon-loai">
-  <div id="chon-mon-list"></div>
-  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-chon-mon')">Huỷ</button></div>
+<!-- MODAL CHI PHÍ MÓN (SỬA) -->
+<div class="modal-overlay" id="modal-mon-edit"><div class="modal" style="width:600px">
+  <h3 id="mon-edit-title">Chỉnh sửa món ăn</h3>
+  <input type="hidden" id="mon-edit-id">
+  <div id="mon-edit-content"></div>
+  <div class="modal-footer">
+    <button class="btn-cancel" onclick="closeModal('modal-mon-edit')">Huỷ</button>
+    <button class="btn-primary" style="margin-left:0" onclick="saveChiPhiMon()">Lưu</button>
+  </div>
 </div></div>
 
-<!-- MODAL SỬA NGUYÊN LIỆU MÓN -->
-<div class="modal-overlay" id="modal-sua-nl"><div class="modal" style="width:580px">
-  <h3 id="sua-nl-title">Chỉnh sửa nguyên liệu</h3>
-  <input type="hidden" id="sua-nl-mon-id">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-    <div class="fin-card" style="border-radius:var(--radius)">
-      <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">Size S — <span id="sua-nl-s-dl"></span>g</div>
-    </div>
-    <div class="fin-card" style="border-radius:var(--radius)">
-      <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:6px">Size M — <span id="sua-nl-m-dl"></span>g</div>
-    </div>
-  </div>
-  <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">Nguyên liệu</div>
-  <div id="sua-nl-list"></div>
-  <button onclick="addNLRowEdit()" class="btn-ghost btn-sm" style="margin-bottom:14px">+ Thêm nguyên liệu</button>
-  <div class="modal-footer">
-    <button class="btn-cancel" onclick="closeModal('modal-sua-nl')">Huỷ</button>
-    <button class="btn-primary" style="margin-left:0" onclick="saveNguyenLieu()">Lưu</button>
-  </div>
+<!-- MODAL THÊM MÓN (cũ giữ lại cho lịch thực đơn) -->
+<div class="modal-overlay" id="modal-mon"><div class="modal"><h3>Thêm vào lịch thực đơn</h3>
+  <div class="form-group"><label>Tên món</label><input class="form-control" id="mon-ten" placeholder="Đậu phụ xào nấm"></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-mon')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addMon()">Lưu</button></div>
 </div></div>
 
 <!-- MODAL NHÂN VIÊN -->
@@ -703,7 +758,7 @@ function renderKH(dangSXIds=new Set()){
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
-    return`<tr><td class="muted">${k.stt||i+1}</td><td>${k.khu_vuc||'—'}</td><td><strong>${k.ten}</strong></td><td class="muted">${k.sdt||'—'}</td><td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td><td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td><td><span class="badge ${ttC}">${tt}</span></td><td style="display:flex;gap:6px"><button onclick="openLichSuKH('${k.id}','${k.ten}')" class="btn-ghost btn-sm">Lịch sử</button><button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button><button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
+    return`<tr><td class="muted">${k.stt||i+1}</td><td>${k.khu_vuc||'—'}</td><td><strong>${k.ten}</strong></td><td class="muted">${k.sdt||'—'}</td><td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td><td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td><td><span class="badge ${ttC}">${tt}</span></td><td style="display:flex;gap:6px"><button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button><button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
 function searchKH(v){khSearch=v;loadKhachHang();}
@@ -757,7 +812,8 @@ async function addKhachHang(){
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
   setSelectedDays('kh-day-picker','2,3,4,5,6');loadKhachHang();
 }
-async function deleteKH(id){if(!confirm('Xoá khách hàng này?'))return;const{error}=await db.from('khach_hang').delete().eq('id',id);if(error){await db.from('khach_hang').update({active:false}).eq('id',id);}showToast('Đã xoá!');loadKhachHang();}  
+async function deleteKH(id){if(!confirm('Xoá khách hàng này?'))return;await db.from('khach_hang').delete().eq('id',id);showToast('Đã xoá!');loadKhachHang();}
+
 // ── ĐƠN HÀNG ─────────────────────────────────
 async function loadDonHang(){
   if(!allSP.length){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];populateSPSelects();}
@@ -923,247 +979,31 @@ async function resetSanXuatNgayMai(){
 }
 
 // ── THỰC ĐƠN ─────────────────────────────────
-let currentTuan='A', allMonAn=[];
-
-function switchTDTab(tab, btn){
-  ['lichthucdon','thumonang','nguyenlieu'].forEach(t=>document.getElementById('td-tab-'+t).style.display='none');
-  document.getElementById('td-tab-'+tab).style.display='block';
-  document.querySelectorAll('.td-tab').forEach(b=>{b.style.borderBottomColor='transparent';b.style.color='var(--text2)';});
-  btn.style.borderBottomColor='var(--accent)';btn.style.color='var(--accent)';
-  if(tab==='lichthucdon') loadLichTuan();
-  if(tab==='thumonang') loadThuVienMonAn();
-  if(tab==='nguyenlieu') loadNguyenLieuHomNay();
-}
-
-function switchTuan(tuan){
-  currentTuan=tuan;
-  document.getElementById('btn-tuan-a').classList.toggle('active',tuan==='A');
-  document.getElementById('btn-tuan-b').classList.toggle('active',tuan==='B');
-  loadLichTuan();
-}
-
 async function loadThucDon(){
-  await loadLichTuan();
+  const[{data:td},{data:sx},{data:tuanData}]=await Promise.all([db.from('thuc_don').select('*'),db.from('san_xuat_ngay').select('*').eq('ngay',today()).eq('da_huy',false),db.from('thuc_don_tuan').select('*').order('thu')]);
+  allTD=td||[];allSX=sx||[];
+  const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
+  document.getElementById('tuan-grid').innerHTML=[2,3,4,5,6,7,8].map(t=>{const item=tuanData?.find(x=>x.thu===t);return`<div class="thu-card"><div class="thu-label">${TN[t]}</div>${item?`<div class="thu-mon" onclick="editThuMon(${t},'${(item.mon_chinh||'').replace(/'/g,"\\'")}','${item.id}')">${item.mon_chinh||'Chưa có'}</div>`:`<div class="thu-empty" onclick="editThuMon(${t},'',null)">+ Thêm món</div>`}</div>`;}).join('');
+  document.getElementById('td-thucdon').innerHTML=`<table><thead><tr><th>Gói</th><th>Món ăn</th><th style="text-align:right">Định lượng</th><th></th></tr></thead><tbody>${allTD.map(t=>`<tr><td><span class="badge ${goiColor(t.goi)}">${t.goi}</span></td><td>${t.mon_an}</td><td style="text-align:right"><input class="inline-edit" value="${t.dinh_luong||0}" onchange="updateDinhLuong('${t.id}',this.value)">g</td><td><button onclick="deleteMon('${t.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px">Xoá</button></td></tr>`).join('')}</tbody></table>`;
+  const gm={};allSX.forEach(r=>{if(r.goi)gm[r.goi]=(gm[r.goi]||0)+(r.so_suat_nhan||1);});
+  const nl={};allTD.forEach(t=>{const c=gm[t.goi]||(t.goi==='Chung'||t.goi==='Tất cả'?Object.values(gm).reduce((s,v)=>s+v,0):0);const tot=(t.dinh_luong||0)*c;if(tot>0)nl[t.mon_an]=(nl[t.mon_an]||0)+tot;});
+  document.getElementById('td-nguyenlieu').innerHTML=Object.keys(nl).length?`<table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>ĐV</th></tr></thead><tbody>${Object.entries(nl).map(([m,k])=>`<tr><td><strong>${m}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(k)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`:'<div style="padding:20px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';
 }
-
-async function loadLichTuan(){
-  const{data:lichData}=await db.from('lich_thuc_don').select('*,mon_an(id,ten)').eq('tuan',currentTuan);
-  const{data:monList}=await db.from('mon_an').select('*').eq('active',true);
-  allMonAn=monList||[];
-  const lich=lichData||[];
-  const thuNames={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
-  document.getElementById('lich-tuan-grid').innerHTML=[2,3,4,5,6,7,8].map(thu=>{
-    const std=lich.find(l=>l.thu===thu&&l.loai==='Standard');
-    const plus=lich.find(l=>l.thu===thu&&l.loai==='Plus');
-    return`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;min-height:140px">
-      <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">${thuNames[thu]}</div>
-      <div style="margin-bottom:8px">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Standard</div>
-        ${std?`<div style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer" onclick="openChonMon(${thu},'Standard','${std.id}')">${std.mon_an?.ten||'—'}</div>`
-        :`<div style="font-size:11px;color:var(--text3);cursor:pointer;font-style:italic" onclick="openChonMon(${thu},'Standard',null)">+ Chọn món</div>`}
-      </div>
-      <div style="border-top:1px solid var(--border);padding-top:8px">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Plus</div>
-        ${plus?`<div style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer" onclick="openChonMon(${thu},'Plus','${plus.id}')">${plus.mon_an?.ten||'—'}</div>`
-        :`<div style="font-size:11px;color:var(--text3);cursor:pointer;font-style:italic" onclick="openChonMon(${thu},'Plus',null)">+ Chọn món</div>`}
-      </div>
-    </div>`;
-  }).join('');
+async function editThuMon(thu,current,id){
+  const mon=prompt(`Món ăn ngày ${thu===8?'CN':'T'+thu}:`,current||'');if(mon===null)return;
+  const tm=new Date();tm.setDate(tm.getDate()-tm.getDay()+1);const tb=tm.toISOString().split('T')[0];
+  if(id)await db.from('thuc_don_tuan').update({mon_chinh:mon}).eq('id',id);
+  else await db.from('thuc_don_tuan').insert({thu,ten_thu:'T'+thu,mon_chinh:mon,tuan_bat_dau:tb});
+  loadThucDon();
 }
-
-function openChonMon(thu, loai, existId){
-  const thuNames={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
-  document.getElementById('chon-mon-title').textContent=`Chọn món ${loai} — ${thuNames[thu]} Tuần ${currentTuan}`;
-  document.getElementById('chon-mon-tuan').value=currentTuan;
-  document.getElementById('chon-mon-thu').value=thu;
-  document.getElementById('chon-mon-loai').value=loai;
-  document.getElementById('chon-mon-list').innerHTML=allMonAn.map(m=>`
-    <div onclick="chonMonVaoLich('${m.id}','${existId||''}')" style="padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="font-size:13px;font-weight:600">${m.ten}</div>
-      <div style="font-size:11px;color:var(--text3)">${m.mo_ta||''}</div>
-    </div>`).join('');
-  openModal('modal-chon-mon');
-}
-
-async function chonMonVaoLich(monId, existId){
-  const tuan=document.getElementById('chon-mon-tuan').value;
-  const thu=parseInt(document.getElementById('chon-mon-thu').value);
-  const loai=document.getElementById('chon-mon-loai').value;
-  if(existId){
-    await db.from('lich_thuc_don').update({mon_an_id:monId}).eq('id',existId);
-  } else {
-    await db.from('lich_thuc_don').upsert({tuan,thu,loai,mon_an_id:monId},{onConflict:'tuan,thu,loai'});
-  }
-  closeModal('modal-chon-mon');
-  showToast('Đã cập nhật lịch thực đơn!');
-  loadLichTuan();
-}
-
-async function loadThuVienMonAn(){
-  const[{data:monList},{data:sizeList},{data:nlList}]=await Promise.all([
-    db.from('mon_an').select('*').eq('active',true).order('ten'),
-    db.from('mon_an_size').select('*'),
-    db.from('mon_an_nguyen_lieu').select('*')
-  ]);
-  allMonAn=monList||[];
-  document.getElementById('thu-vien-mon-an').innerHTML=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">${allMonAn.map(m=>{
-    const sizes=(sizeList||[]).filter(s=>s.mon_an_id===m.id);
-    const nls=(nlList||[]).filter(n=>n.mon_an_id===m.id);
-    const sS=sizes.find(s=>s.size==='S');
-    const sM=sizes.find(s=>s.size==='M');
-    return`<div class="sp-card">
-      <div class="sp-card-header">
-        <div><div class="sp-ten">${m.ten}</div><div class="sp-desc">${m.mo_ta||''}</div></div>
-        <div style="display:flex;gap:6px">
-          <button onclick="openSuaNL('${m.id}','${m.ten}')" class="btn-edit btn-sm">Sửa NL</button>
-          <button onclick="deleteMonAn('${m.id}')" class="btn-danger btn-sm">Xoá</button>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin:8px 0">
-        <span class="badge green">S: ${sS?.dinh_luong||0}g</span>
-        <span class="badge blue">M: ${sM?.dinh_luong||0}g</span>
-      </div>
-      <div style="font-size:11px;color:var(--text3)">${nls.length} nguyên liệu: ${nls.map(n=>n.ten_nguyen_lieu).join(', ')||'Chưa có'}</div>
-    </div>`;
-  }).join('')}</div>`||'<div class="loading">Chưa có món ăn nào</div>';
-}
-
-async function openSuaNL(monId, tenMon){
-  document.getElementById('sua-nl-title').textContent='Nguyên liệu — '+tenMon;
-  document.getElementById('sua-nl-mon-id').value=monId;
-  const[{data:sizes},{data:nls}]=await Promise.all([
-    db.from('mon_an_size').select('*').eq('mon_an_id',monId),
-    db.from('mon_an_nguyen_lieu').select('*').eq('mon_an_id',monId)
-  ]);
-  const sS=sizes?.find(s=>s.size==='S');
-  const sM=sizes?.find(s=>s.size==='M');
-  document.getElementById('sua-nl-s-dl').textContent=sS?.dinh_luong||0;
-  document.getElementById('sua-nl-m-dl').textContent=sM?.dinh_luong||0;
-  document.getElementById('sua-nl-list').innerHTML=(nls||[]).map((n,i)=>`
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 30px;gap:8px;margin-bottom:8px;align-items:center">
-      <input class="form-control" value="${n.ten_nguyen_lieu}" id="nl-edit-ten-${i}" placeholder="Tên nguyên liệu">
-      <input class="form-control" value="${n.dinh_luong_s||0}" id="nl-edit-s-${i}" type="number" placeholder="Size S">
-      <input class="form-control" value="${n.dinh_luong_m||0}" id="nl-edit-m-${i}" type="number" placeholder="Size M">
-      <input class="form-control" value="${n.don_vi||'gram'}" id="nl-edit-dv-${i}" placeholder="Đơn vị">
-      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>
-    </div>`).join('');
-  openModal('modal-sua-nl');
-}
-
-function addNLRowEdit(){
-  const list=document.getElementById('sua-nl-list');
-  const i=list.children.length;
-  const div=document.createElement('div');
-  div.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 1fr 30px;gap:8px;margin-bottom:8px;align-items:center';
-  div.innerHTML=`<input class="form-control" id="nl-edit-ten-${i}" placeholder="Tên nguyên liệu"><input class="form-control" id="nl-edit-s-${i}" type="number" placeholder="Size S (g)"><input class="form-control" id="nl-edit-m-${i}" type="number" placeholder="Size M (g)"><input class="form-control" id="nl-edit-dv-${i}" placeholder="gram" value="gram"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>`;
-  list.appendChild(div);
-}
-
-async function saveNguyenLieu(){
-  const monId=document.getElementById('sua-nl-mon-id').value;
-  const rows=document.getElementById('sua-nl-list').children;
-  await db.from('mon_an_nguyen_lieu').delete().eq('mon_an_id',monId);
-  const inserts=[];
-  for(let i=0;i<rows.length;i++){
-    const ten=document.getElementById(`nl-edit-ten-${i}`)?.value?.trim();
-    if(!ten)continue;
-    inserts.push({mon_an_id:monId,ten_nguyen_lieu:ten,dinh_luong_s:parseInt(document.getElementById(`nl-edit-s-${i}`)?.value)||0,dinh_luong_m:parseInt(document.getElementById(`nl-edit-m-${i}`)?.value)||0,don_vi:document.getElementById(`nl-edit-dv-${i}`)?.value||'gram'});
-  }
-  if(inserts.length) await db.from('mon_an_nguyen_lieu').insert(inserts);
-  showToast('Đã lưu nguyên liệu!');closeModal('modal-sua-nl');loadThuVienMonAn();
-}
-
-let nlRows=0;
-function addNLRow(){
-  const list=document.getElementById('mm-nl-list');
-  const div=document.createElement('div');
-  div.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 1fr 30px;gap:8px;margin-bottom:8px;align-items:center';
-  div.innerHTML=`<input class="form-control" id="nl-ten-${nlRows}" placeholder="Tên nguyên liệu"><input class="form-control" id="nl-s-${nlRows}" type="number" placeholder="Size S (g)"><input class="form-control" id="nl-m-${nlRows}" type="number" placeholder="Size M (g)"><input class="form-control" id="nl-dv-${nlRows}" placeholder="gram" value="gram"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>`;
-  list.appendChild(div);nlRows++;
-}
-
-async function saveMonAn(){
-  const ten=document.getElementById('mm-ten').value.trim();
-  if(!ten)return showToast('Vui lòng nhập tên món','error');
-  const{data:mon,error}=await db.from('mon_an').insert({ten,mo_ta:document.getElementById('mm-mota').value,active:true}).select().single();
+async function addMon(){
+  const ten=document.getElementById('mon-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const{error}=await db.from('thuc_don').insert({goi:document.getElementById('mon-goi').value,mon_an:ten,dinh_luong:parseInt(document.getElementById('mon-dl').value)||0,don_vi:document.getElementById('mon-dv').value||'gram'});
   if(error)return showToast('Lỗi: '+error.message,'error');
-  await db.from('mon_an_size').insert([
-    {mon_an_id:mon.id,size:'S',dinh_luong:parseInt(document.getElementById('mm-s-dl').value)||0},
-    {mon_an_id:mon.id,size:'M',dinh_luong:parseInt(document.getElementById('mm-m-dl').value)||0}
-  ]);
-  const rows=document.getElementById('mm-nl-list').children;
-  const nls=[];
-  for(let i=0;i<nlRows;i++){
-    const el=document.getElementById(`nl-ten-${i}`);if(!el)continue;
-    const t=el.value.trim();if(!t)continue;
-    nls.push({mon_an_id:mon.id,ten_nguyen_lieu:t,dinh_luong_s:parseInt(document.getElementById(`nl-s-${i}`)?.value)||0,dinh_luong_m:parseInt(document.getElementById(`nl-m-${i}`)?.value)||0,don_vi:document.getElementById(`nl-dv-${i}`)?.value||'gram'});
-  }
-  if(nls.length) await db.from('mon_an_nguyen_lieu').insert(nls);
-  showToast('Đã thêm món ăn!');closeModal('modal-mon-moi');
-  document.getElementById('mm-ten').value='';document.getElementById('mm-mota').value='';
-  document.getElementById('mm-s-dl').value='';document.getElementById('mm-m-dl').value='';
-  document.getElementById('mm-nl-list').innerHTML='';nlRows=0;
-  loadThuVienMonAn();
+  showToast('Đã thêm món!');closeModal('modal-mon');loadThucDon();
 }
-
-async function deleteMonAn(id){
-  if(!confirm('Xoá món ăn này?'))return;
-  await db.from('mon_an').update({active:false}).eq('id',id);
-  showToast('Đã xoá!');loadThuVienMonAn();
-}
-
-async function loadNguyenLieuHomNay(){
-  const todayStr=today();
-  const dow=new Date(todayStr+'T00:00:00').getDay(),dayNum=dow===0?8:dow+1;
-  const[{data:sx},{data:lich},{data:sizes},{data:nls}]=await Promise.all([
-    db.from('san_xuat_ngay').select('goi,so_suat_nhan').eq('ngay',todayStr).eq('da_huy',false),
-    db.from('lich_thuc_don').select('*,mon_an(id,ten)').eq('thu',dayNum),
-    db.from('mon_an_size').select('*'),
-    db.from('mon_an_nguyen_lieu').select('*')
-  ]);
-  if(!sx||!sx.length){document.getElementById('td-nguyenlieu-content').innerHTML='<div style="padding:24px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';return;}
-
-  // Tính số suất S và M theo Standard và Plus
-  const suatMap={StandardS:0,StandardM:0,PlusS:0,PlusM:0};
-  (sx||[]).forEach(r=>{
-    const g=r.goi||'';const n=r.so_suat_nhan||1;
-    if(g.includes('Standard')&&g.includes('S')) suatMap.StandardS+=n;
-    else if(g.includes('Standard')&&g.includes('M')) suatMap.StandardM+=n;
-    else if(g.includes('Plus')&&g.includes('S')) suatMap.PlusS+=n;
-    else if(g.includes('Plus')&&g.includes('M')) suatMap.PlusM+=n;
-    else if(g.includes('Standard')) suatMap.StandardM+=n;
-    else if(g.includes('Plus')) suatMap.PlusM+=n;
-  });
-
-  // Tìm món của hôm nay
-  const monStd=lich?.find(l=>l.loai==='Standard');
-  const monPlus=lich?.find(l=>l.loai==='Plus');
-
-  const nlTong={};
-  const tinhNL=(monId, sS, sM)=>{
-    const nlMon=(nls||[]).filter(n=>n.mon_an_id===monId);
-    nlMon.forEach(n=>{
-      const total=(n.dinh_luong_s||0)*sS+(n.dinh_luong_m||0)*sM;
-      if(total>0) nlTong[n.ten_nguyen_lieu]=(nlTong[n.ten_nguyen_lieu]||0)+total;
-    });
-    // Thêm nguyên liệu chính từ size
-    const sz=(sizes||[]).filter(s=>s.mon_an_id===monId);
-    const szS=sz.find(s=>s.size==='S'),szM=sz.find(s=>s.size==='M');
-    const monTen=(monStd?.mon_an?.id===monId?monStd:monPlus)?.mon_an?.ten||'Món chính';
-    const total2=(szS?.dinh_luong||0)*sS+(szM?.dinh_luong||0)*sM;
-    if(total2>0) nlTong[monTen]=(nlTong[monTen]||0)+total2;
-  };
-  if(monStd?.mon_an_id) tinhNL(monStd.mon_an_id,suatMap.StandardS,suatMap.StandardM);
-  if(monPlus?.mon_an_id) tinhNL(monPlus.mon_an_id,suatMap.PlusS,suatMap.PlusM);
-
-  document.getElementById('td-nguyenlieu-content').innerHTML=`
-    <div style="padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:16px;font-size:12px;color:var(--text2)">
-      <span>Standard hôm nay: <strong style="color:var(--accent)">${monStd?.mon_an?.ten||'Chưa chọn'}</strong></span>
-      <span>Plus hôm nay: <strong style="color:var(--accent)">${monPlus?.mon_an?.ten||'Chưa chọn'}</strong></span>
-    </div>
-    <table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>Đơn vị</th></tr></thead>
-    <tbody>${Object.entries(nlTong).map(([ten,kl])=>`<tr><td><strong>${ten}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(kl)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`;
-}
+async function updateDinhLuong(id,val){await db.from('thuc_don').update({dinh_luong:parseInt(val)||0}).eq('id',id);showToast('Đã cập nhật!','info');}
+async function deleteMon(id){if(!confirm('Xoá?'))return;await db.from('thuc_don').delete().eq('id',id);loadThucDon();}
 
 // ── CHẤM CÔNG ─────────────────────────────────
 function changeMonth(delta){
@@ -1275,56 +1115,6 @@ async function deleteTC(id){if(!confirm('Xoá?'))return;await db.from('tai_chinh
   allSP=data||[];populateSPSelects();
   loadDashboard();
 })();
-</script>
-  <div class="modal-overlay" id="modal-lichsu"><div class="modal" style="width:640px">
-  <h3 id="lichsu-title">Lịch sử sử dụng</h3>
-  <div id="lichsu-content"><div class="loading"><span class="spinner"></span></div></div>
-  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-lichsu')">Đóng</button></div>
-</div></div>
-
-<script>
-async function openLichSuKH(id, ten) {
-  document.getElementById('lichsu-title').textContent = 'Lịch sử — ' + ten;
-  document.getElementById('lichsu-content').innerHTML = '<div class="loading"><span class="spinner"></span> Đang tải...</div>';
-  openModal('modal-lichsu');
-
-  const {data} = await db.from('san_xuat_ngay')
-    .select('*')
-    .eq('khach_hang_id', id)
-    .eq('da_huy', false)
-    .eq('da_chot', true)
-    .order('ngay', {ascending: false});
-
-  const rows = data || [];
-
-  if (!rows.length) {
-    document.getElementById('lichsu-content').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">Chưa có lịch sử sử dụng</div>';
-    return;
-  }
-
-  const tongSuat = rows.reduce((s, r) => s + (r.so_suat_nhan || 1), 0);
-
-  document.getElementById('lichsu-content').innerHTML = `
-    <div style="display:flex;gap:16px;margin-bottom:16px">
-      <div class="kpi-card" style="flex:1"><div class="kpi-label">Tổng ngày đã ăn</div><div class="kpi-value gold">${rows.length}</div></div>
-      <div class="kpi-card" style="flex:1"><div class="kpi-label">Tổng suất đã dùng</div><div class="kpi-value green">${tongSuat}</div></div>
-      <div class="kpi-card" style="flex:1"><div class="kpi-label">Gần nhất</div><div class="kpi-value" style="font-size:16px">${new Date(rows[0].ngay).toLocaleDateString('vi-VN')}</div></div>
-    </div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Ngày</th><th>Thứ</th><th>Gói</th><th style="text-align:center">Số suất</th><th>Ghi chú</th></tr></thead>
-      <tbody>${rows.map(r => {
-        const dt = new Date(r.ngay + 'T00:00:00');
-        const thu = ['CN','T2','T3','T4','T5','T6','T7'][dt.getDay()];
-        return `<tr>
-          <td>${dt.toLocaleDateString('vi-VN')}</td>
-          <td><span class="badge gray">${thu}</span></td>
-          <td><span class="badge ${r.goi?.includes('Plus')?'gold':'blue'}">${r.goi||'—'}</span></td>
-          <td style="text-align:center"><strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong></td>
-          <td class="muted">${r.ghi_chu||''}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
-}
 </script>
 </body>
 </html>
