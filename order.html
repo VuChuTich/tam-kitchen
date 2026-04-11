@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đặt hàng — TÁM Kitchen</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#3d7a5c;--accent2:#2d5e45;--accent-soft:rgba(61,122,92,0.1);--bg:#f5f2ec;--bg2:#fff;--border:rgba(0,0,0,0.08);--text:#2c2a25;--text2:#6b6760;--text3:#a09c95;--red:#c0392b;--red-soft:rgba(192,57,43,0.1);--radius:10px;--radius-lg:16px;--shadow:0 2px 12px rgba(0,0,0,0.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'Be Vietnam Pro',sans-serif;font-size:14px;color:var(--text);min-height:100vh;}
+.header{background:var(--accent2);padding:20px 0;text-align:center;}
+.header .brand{font-family:'Playfair Display',serif;font-size:28px;color:#fff;letter-spacing:1px;}
+.header .sub{font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.container{max-width:680px;margin:0 auto;padding:32px 16px;}
+
+/* BẢNG GIÁ */
+.bang-gia{margin-bottom:32px;}
+.bang-gia h2{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text);}
+.goi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.goi-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all 0.2s;position:relative;}
+.goi-card:hover{border-color:var(--accent);box-shadow:var(--shadow);}
+.goi-card.selected{border-color:var(--accent);background:var(--accent-soft);}
+.goi-card .goi-name{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.goi-card .goi-kcal{font-size:11px;color:var(--text3);margin-bottom:10px;}
+.goi-card .goi-price{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.goi-card .goi-desc{font-size:11px;color:var(--text3);}
+.goi-card .selected-badge{display:none;position:absolute;top:10px;right:10px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.goi-card.selected .selected-badge{display:block;}
+.size-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.size-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:none;transition:all 0.15s;}
+.size-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* FORM */
+.form-card{background:var(--bg2);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:20px;}
+.form-card h2{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--text);}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:5px;}
+.form-group label span{color:var(--red);}
+.form-control{width:100%;background:#f8f6f2;border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color 0.2s;}
+.form-control:focus{border-color:var(--accent);background:#fff;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.day-picker{display:flex;gap:6px;flex-wrap:wrap;}
+.day-chip{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:none;transition:all 0.15s;}
+.day-chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* TỔNG KẾT */
+.tong-ket{background:var(--bg2);border-radius:var(--radius-lg);padding:20px 24px;box-shadow:var(--shadow);margin-bottom:20px;border-left:4px solid var(--accent);}
+.tong-ket-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;}
+.tong-ket-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:12px;font-weight:700;font-size:16px;}
+.tong-ket-row.total .val{color:var(--accent);}
+
+/* SUBMIT */
+.btn-submit{width:100%;background:var(--accent);border:none;border-radius:var(--radius-lg);padding:16px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.5px;}
+.btn-submit:hover{opacity:0.88;}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:40px 20px;}
+.success-icon{width:72px;height:72px;background:var(--accent-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;}
+.success-title{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:8px;}
+.success-sub{font-size:14px;color:var(--text2);line-height:1.6;}
+.btn-back{display:inline-block;margin-top:20px;padding:10px 24px;background:var(--accent);color:#fff;border-radius:var(--radius);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;}
+
+/* LOADING */
+.overlay-loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,0.85);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.overlay-loading.show{display:flex;}
+.spinner{width:36px;height:36px;border:3px solid rgba(61,122,92,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.note{font-size:12px;color:var(--text3);text-align:center;margin-bottom:24px;line-height:1.6;}
+.error-msg{color:var(--red);font-size:12px;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">TÁM Kitchen</div>
+  <div class="sub">Cơm healthy · Đặt gói ăn</div>
+</div>
+
+<div class="container">
+  <!-- FORM ĐẶT HÀNG -->
+  <div id="order-form">
+
+    <!-- BẢNG GIÁ -->
+    <div class="bang-gia">
+      <h2>Chọn gói ăn</h2>
+      <div class="size-tabs">
+        <button class="size-tab active" onclick="switchSize('S',this)">Size S — 250-300 kcal</button>
+        <button class="size-tab" onclick="switchSize('M',this)">Size M — 350-400 kcal</button>
+      </div>
+      <div class="goi-grid" id="goi-grid"></div>
+    </div>
+
+    <!-- THÔNG TIN -->
+    <div class="form-card">
+      <h2>Thông tin đặt hàng</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Họ tên <span>*</span></label>
+          <input class="form-control" id="f-ten" placeholder="Nguyễn Thị A">
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại <span>*</span></label>
+          <input class="form-control" id="f-sdt" placeholder="0912 345 678" type="tel">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Địa chỉ giao hàng <span>*</span></label>
+        <input class="form-control" id="f-diachi" placeholder="Số nhà, tên đường, toà nhà...">
+      </div>
+      <div class="form-group">
+        <label>Ngày giao trong tuần <span>*</span></label>
+        <div class="day-picker" id="day-picker">
+          <button type="button" class="day-chip selected" data-day="2">T2</button>
+          <button type="button" class="day-chip selected" data-day="3">T3</button>
+          <button type="button" class="day-chip selected" data-day="4">T4</button>
+          <button type="button" class="day-chip selected" data-day="5">T5</button>
+          <button type="button" class="day-chip selected" data-day="6">T6</button>
+          <button type="button" class="day-chip" data-day="7">T7</button>
+          <button type="button" class="day-chip" data-day="8">CN</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ghi chú</label>
+        <input class="form-control" id="f-ghichu" placeholder="Dị ứng thực phẩm, yêu cầu đặc biệt...">
+      </div>
+    </div>
+
+    <!-- TỔNG KẾT -->
+    <div class="tong-ket" id="tong-ket" style="display:none">
+      <div class="tong-ket-row"><span>Gói đã chọn</span><span id="tk-goi">—</span></div>
+      <div class="tong-ket-row"><span>Size</span><span id="tk-size">—</span></div>
+      <div class="tong-ket-row"><span>Số suất</span><span id="tk-suat">—</span></div>
+      <div class="tong-ket-row"><span>Thời hạn sử dụng</span><span id="tk-thoihan">—</span></div>
+      <div class="tong-ket-row total"><span>Tổng tiền</span><span class="val" id="tk-tong">—</span></div>
+    </div>
+
+    <p class="note">Sau khi đặt hàng, nhân viên TÁM Kitchen sẽ liên hệ xác nhận và hướng dẫn thanh toán trong vòng 2 giờ.</p>
+
+    <button class="btn-submit" onclick="submitOrder()">Đặt hàng ngay</button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">🌿</div>
+    <div class="success-title">Đặt hàng thành công!</div>
+    <div class="success-sub">Cảm ơn <strong id="success-ten"></strong> đã tin tưởng TÁM Kitchen!<br>Chúng mình sẽ liên hệ qua số <strong id="success-sdt"></strong> để xác nhận đơn hàng trong vòng 2 giờ.</div>
+    <button class="btn-back" onclick="location.reload()">Đặt thêm đơn</button>
+  </div>
+</div>
+
+<div class="overlay-loading" id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:13px;color:var(--text2)">Đang gửi đơn hàng...</div>
+</div>
+
+<script>
+const SUPABASE_URL='https://qwehlngnasxstizulhre.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZWhsbmduYXN4c3RpenVsaHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDI1MTUsImV4cCI6MjA5MTM3ODUxNX0.ZViu2wnK4MssHFuzaZz8Fg7ftCCOXRXpE4L2H-yX3k0';
+const{createClient}=supabase;
+const db=createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const fmt=n=>Number(n).toLocaleString('vi-VN');
+let allSP=[],selectedSP=null,currentSize='S';
+
+const goiData=[
+  {goi:'Standard',size:'S',gia:48000,label:'Standard S',kcal:'250-300 kcal',mau:'#3d7a5c'},
+  {goi:'Standard',size:'M',gia:56000,label:'Standard M',kcal:'350-400 kcal',mau:'#3d7a5c'},
+  {goi:'Plus',size:'S',gia:58000,label:'Plus S',kcal:'250-300 kcal',mau:'#d47c3a'},
+  {goi:'Plus',size:'M',gia:68000,label:'Plus M',kcal:'350-400 kcal',mau:'#d47c3a'},
+];
+
+const suatOptions=[
+  {suat:5,thoihan:'15 ngày',suffix:''},
+  {suat:14,thoihan:'30 ngày',suffix:' · FREESHIP'},
+  {suat:30,thoihan:'45 ngày',suffix:' · FREESHIP + Tặng 3'},
+  {suat:60,thoihan:'90 ngày',suffix:' · FREESHIP + Tặng 5'},
+];
+
+async function init(){
+  const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('size').order('so_suat');
+  allSP=data||[];
+  renderGoiGrid();
+  document.querySelectorAll('.day-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('selected')));
+}
+
+function switchSize(size,btn){
+  currentSize=size;
+  selectedSP=null;
+  document.querySelectorAll('.size-tab').forEach(b=>{b.classList.remove('active');});
+  btn.classList.add('active');
+  renderGoiGrid();
+  updateTongKet();
+}
+
+function renderGoiGrid(){
+  const filtered=allSP.filter(sp=>sp.size===currentSize);
+  if(!filtered.length){
+    // Dùng data tĩnh nếu chưa có SP trong DB
+    const staticSP=goiData.filter(g=>g.size===currentSize);
+    document.getElementById('goi-grid').innerHTML=staticSP.map(g=>`
+      <div class="goi-card" onclick="selectGoi(this,'${g.goi}','${g.size}',${g.gia},'${g.label}')">
+        <span class="selected-badge">✓ Đã chọn</span>
+        <div class="goi-name" style="color:${g.mau}">${g.label}</div>
+        <div class="goi-kcal">${g.kcal}</div>
+        <div style="margin-top:8px">
+          ${suatOptions.map(s=>`<div class="goi-price">${s.suat} suất — ${fmt(g.gia*s.suat)}đ</div><div class="goi-desc">${s.thoihan}${s.suffix}</div>`).join('<hr style="border:none;border-top:1px solid var(--border);margin:6px 0">')}
+        </div>
+      </div>`).join('');
+    return;
+  }
+
+  // Group theo goi
+  const groups={};
+  filtered.forEach(sp=>{if(!groups[sp.goi])groups[sp.goi]=[];groups[sp.goi].push(sp);});
+  document.getElementById('goi-grid').innerHTML=Object.entries(groups).map(([goi,items])=>`
+    <div class="goi-card" id="goi-card-${goi}-${currentSize}">
+      <span class="selected-badge">✓ Đã chọn</span>
+      <div class="goi-name" style="color:${goi==='Plus'?'#d47c3a':'#3d7a5c'}">${goi} — Size ${currentSize}</div>
+      <div class="goi-kcal">${currentSize==='S'?'250-300 kcal':'350-400 kcal'}</div>
+      <div style="margin-top:10px">
+        ${items.map(sp=>`
+          <div onclick="selectGoiSP(event,'${goi}','${currentSize}',${sp.gia},${sp.so_suat},${sp.tong_tien},'${sp.ten}')" style="padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background 0.15s" onmouseover="this.style.background='var(--accent-soft)'" onmouseout="this.style.background='transparent'">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;font-weight:600">${sp.so_suat} suất</div>
+                <div style="font-size:11px;color:var(--text3)">${sp.mo_ta||''}</div>
+              </div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent)">${fmt(sp.tong_tien)}đ</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function selectGoiSP(e,goi,size,gia,soSuat,tongTien,ten){
+  e.stopPropagation();
+  selectedSP={goi,size,gia,soSuat,tongTien,ten};
+  document.querySelectorAll('.goi-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById(`goi-card-${goi}-${size}`)?.classList.add('selected');
+  updateTongKet();
+}
+
+function selectGoi(el,goi,size,gia,label){
+  selectedSP={goi,size,gia,soSuat:14,tongTien:gia*14,ten:`${label} - 14 suất`};
+  document.querySelectorAll('.goi-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  updateTongKet();
+}
+
+function updateTongKet(){
+  const tk=document.getElementById('tong-ket');
+  if(!selectedSP){tk.style.display='none';return;}
+  tk.style.display='block';
+  document.getElementById('tk-goi').textContent=selectedSP.goi;
+  document.getElementById('tk-size').textContent='Size '+selectedSP.size+` (${selectedSP.size==='S'?'250-300':'350-400'} kcal)`;
+  document.getElementById('tk-suat').textContent=selectedSP.soSuat+' suất';
+  const opt=suatOptions.find(o=>o.suat===selectedSP.soSuat)||suatOptions[1];
+  document.getElementById('tk-thoihan').textContent=opt.thoihan+(opt.suffix||'');
+  document.getElementById('tk-tong').textContent=fmt(selectedSP.tongTien)+' đ';
+}
+
+function getSelectedDays(){
+  return[...document.querySelectorAll('#day-picker .day-chip.selected')].map(c=>c.dataset.day).join(',');
+}
+
+async function submitOrder(){
+  const ten=document.getElementById('f-ten').value.trim();
+  const sdt=document.getElementById('f-sdt').value.trim();
+  const diachi=document.getElementById('f-diachi').value.trim();
+  const ngayGiao=getSelectedDays();
+
+  if(!ten)return alert('Vui lòng nhập họ tên!');
+  if(!sdt)return alert('Vui lòng nhập số điện thoại!');
+  if(!diachi)return alert('Vui lòng nhập địa chỉ giao hàng!');
+  if(!selectedSP)return alert('Vui lòng chọn gói ăn!');
+  if(!ngayGiao)return alert('Vui lòng chọn ít nhất 1 ngày giao!');
+
+  document.getElementById('loading').classList.add('show');
+
+  try {
+    // Lưu đơn hàng
+    await db.from('don_hang').insert({
+      ten_kh:ten, sdt, dia_chi:diachi,
+      ngay_dat:new Date().toISOString().split('T')[0],
+      san_pham:selectedSP.ten,
+      tong_don:selectedSP.tongTien,
+      so_suat_ban_dau:selectedSP.soSuat,
+      ngay_giao_tuan:ngayGiao,
+      thanh_toan:'Chưa TT',
+      trang_thai:'Mới',
+      ghi_chu:document.getElementById('f-ghichu').value,
+    });
+
+    // Tạo/cập nhật khách hàng
+    let existKH=null;
+    if(sdt){
+      const{data:bySDT}=await db.from('khach_hang').select('*').eq('sdt',sdt).eq('active',true).limit(1);
+      if(bySDT&&bySDT.length)existKH=bySDT[0];
+    }
+    if(existKH){
+      const ns=(existKH.suat_con||0)+selectedSP.soSuat;
+      await db.from('khach_hang').update({
+        suat_con:ns,tong_suat:(existKH.tong_suat||0)+selectedSP.soSuat,
+        trang_thai:ns<=5?'Sắp hết':'Đang chạy',
+        goi:`${selectedSP.goi} ${selectedSP.size}`,
+        dia_chi:diachi, ngay_giao_tuan:ngayGiao,
+      }).eq('id',existKH.id);
+    } else {
+      const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
+      const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
+      await db.from('khach_hang').insert({
+        stt:nextStt,ten,sdt,dia_chi:diachi,
+        goi:`${selectedSP.goi} ${selectedSP.size}`,
+        tong_suat:selectedSP.soSuat,
+        suat_con:selectedSP.soSuat,
+        ngay_giao_tuan:ngayGiao,
+        trang_thai:selectedSP.soSuat<=5?'Sắp hết':'Đang chạy',
+        ghi_chu_suat_an:document.getElementById('f-ghichu').value,
+        active:true,
+      });
+    }
+
+    // Hiện success
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('order-form').style.display='none';
+    document.getElementById('success-screen').style.display='block';
+    document.getElementById('success-ten').textContent=ten;
+    document.getElementById('success-sdt').textContent=sdt;
+
+  } catch(err) {
+    document.getElementById('loading').classList.remove('show');
+    alert('Có lỗi xảy ra, vui lòng thử lại!');
+    console.error(err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
