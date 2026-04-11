@@ -639,7 +639,7 @@ function renderKH(dangSXIds=new Set()){
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
-    return`<tr><td class="muted">${k.stt||i+1}</td><td>${k.khu_vuc||'—'}</td><td><strong>${k.ten}</strong></td><td class="muted">${k.sdt||'—'}</td><td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td><td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td><td><span class="badge ${ttC}">${tt}</span></td><td style="display:flex;gap:6px"><button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button><button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
+    return`<tr><td class="muted">${k.stt||i+1}</td><td>${k.khu_vuc||'—'}</td><td><strong>${k.ten}</strong></td><td class="muted">${k.sdt||'—'}</td><td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td><td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td><td><span class="badge ${ttC}">${tt}</span></td><td style="display:flex;gap:6px"><button onclick="openLichSuKH('${k.id}','${k.ten}')" class="btn-ghost btn-sm">Lịch sử</button><button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button><button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
 function searchKH(v){khSearch=v;loadKhachHang();}
@@ -995,6 +995,56 @@ async function deleteTC(id){if(!confirm('Xoá?'))return;await db.from('tai_chinh
   allSP=data||[];populateSPSelects();
   loadDashboard();
 })();
+</script>
+  <div class="modal-overlay" id="modal-lichsu"><div class="modal" style="width:640px">
+  <h3 id="lichsu-title">Lịch sử sử dụng</h3>
+  <div id="lichsu-content"><div class="loading"><span class="spinner"></span></div></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-lichsu')">Đóng</button></div>
+</div></div>
+
+<script>
+async function openLichSuKH(id, ten) {
+  document.getElementById('lichsu-title').textContent = 'Lịch sử — ' + ten;
+  document.getElementById('lichsu-content').innerHTML = '<div class="loading"><span class="spinner"></span> Đang tải...</div>';
+  openModal('modal-lichsu');
+
+  const {data} = await db.from('san_xuat_ngay')
+    .select('*')
+    .eq('khach_hang_id', id)
+    .eq('da_huy', false)
+    .eq('da_chot', true)
+    .order('ngay', {ascending: false});
+
+  const rows = data || [];
+
+  if (!rows.length) {
+    document.getElementById('lichsu-content').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">Chưa có lịch sử sử dụng</div>';
+    return;
+  }
+
+  const tongSuat = rows.reduce((s, r) => s + (r.so_suat_nhan || 1), 0);
+
+  document.getElementById('lichsu-content').innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:16px">
+      <div class="kpi-card" style="flex:1"><div class="kpi-label">Tổng ngày đã ăn</div><div class="kpi-value gold">${rows.length}</div></div>
+      <div class="kpi-card" style="flex:1"><div class="kpi-label">Tổng suất đã dùng</div><div class="kpi-value green">${tongSuat}</div></div>
+      <div class="kpi-card" style="flex:1"><div class="kpi-label">Gần nhất</div><div class="kpi-value" style="font-size:16px">${new Date(rows[0].ngay).toLocaleDateString('vi-VN')}</div></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ngày</th><th>Thứ</th><th>Gói</th><th style="text-align:center">Số suất</th><th>Ghi chú</th></tr></thead>
+      <tbody>${rows.map(r => {
+        const dt = new Date(r.ngay + 'T00:00:00');
+        const thu = ['CN','T2','T3','T4','T5','T6','T7'][dt.getDay()];
+        return `<tr>
+          <td>${dt.toLocaleDateString('vi-VN')}</td>
+          <td><span class="badge gray">${thu}</span></td>
+          <td><span class="badge ${r.goi?.includes('Plus')?'gold':'blue'}">${r.goi||'—'}</span></td>
+          <td style="text-align:center"><strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong></td>
+          <td class="muted">${r.ghi_chu||''}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+}
 </script>
 </body>
 </html>
