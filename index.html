@@ -619,7 +619,14 @@ select.form-control option{background:var(--bg2);}
   <div class="form-group"><label>Tên món</label><input class="form-control" id="mon-ten" placeholder="Đậu phụ xào nấm"></div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-mon')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addMon()">Lưu</button></div>
 </div></div>
-
+<!-- MODAL CHỌN MÓN VÀO LỊCH -->
+<div class="modal-overlay" id="modal-chon-mon"><div class="modal">
+  <h3 id="chon-mon-title">Chọn món ăn</h3>
+  <input type="hidden" id="chon-mon-thu">
+  <input type="hidden" id="chon-mon-id">
+  <div id="chon-mon-list" style="max-height:400px;overflow-y:auto"></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-chon-mon')">Huỷ</button></div>
+</div></div>
 <!-- MODAL NHÂN VIÊN -->
 <div class="modal-overlay" id="modal-nv"><div class="modal"><h3>Thêm nhân viên</h3>
   <div class="form-grid">
@@ -990,11 +997,36 @@ async function loadThucDon(){
   document.getElementById('td-nguyenlieu').innerHTML=Object.keys(nl).length?`<table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>ĐV</th></tr></thead><tbody>${Object.entries(nl).map(([m,k])=>`<tr><td><strong>${m}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(k)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`:'<div style="padding:20px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';
 }
 async function editThuMon(thu,current,id){
-  const mon=prompt(`Món ăn ngày ${thu===8?'CN':'T'+thu}:`,current||'');if(mon===null)return;
+  const{data:mons}=await db.from('mon_an').select('*').eq('active',true).order('loai').order('ten');
+  if(!mons||!mons.length){showToast('Chưa có món nào trong thư viện. Vui lòng thêm món trước!','error');return;}
+  document.getElementById('chon-mon-thu').value=thu;
+  document.getElementById('chon-mon-id').value=id||'';
+  const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
+  document.getElementById('chon-mon-title').textContent=`Chọn món — ${TN[thu]} Tuần ${currentTuan}`;
+  document.getElementById('chon-mon-list').innerHTML=mons.map(m=>`
+    <div onclick="chonMonVaoLich('${m.id}','${m.ten.replace(/'/g,"\\'")}',${thu},'${id||''}')"
+      style="padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all 0.15s"
+      onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--accent-soft)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.background='none'">
+      <div>
+        <div style="font-size:14px;font-weight:600">${m.ten}</div>
+        <div style="font-size:11px;color:var(--text3)">${m.loai||'Standard'}</div>
+      </div>
+      <span class="badge ${m.loai==='Plus'?'gold':'blue'}">${m.loai||'Standard'}</span>
+    </div>`).join('');
+  openModal('modal-chon-mon');
+}
+
+async function chonMonVaoLich(monId,tenMon,thu,existId){
   const tm=new Date();tm.setDate(tm.getDate()-tm.getDay()+1);const tb=tm.toISOString().split('T')[0];
-  if(id)await db.from('thuc_don_tuan').update({mon_chinh:mon}).eq('id',id);
-  else await db.from('thuc_don_tuan').insert({thu,ten_thu:'T'+thu,mon_chinh:mon,tuan_bat_dau:tb});
-  loadThucDon();
+  if(existId){
+    await db.from('thuc_don_tuan').update({mon_chinh:tenMon,mon_an_id:monId}).eq('id',existId);
+  } else {
+    await db.from('thuc_don_tuan').upsert({tuan:currentTuan,thu,ten_thu:'T'+thu,mon_chinh:tenMon,mon_an_id:monId,tuan_bat_dau:tb},{onConflict:'tuan,thu'});
+  }
+  closeModal('modal-chon-mon');
+  showToast('Đã cập nhật lịch thực đơn!');
+  loadLichTuan();
 }
 async function addMon(){
   const ten=document.getElementById('mon-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
