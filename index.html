@@ -927,7 +927,7 @@ function renderKH(dangSXIds=new Set()){
   else if(sortKH==='suat_asc')data.sort((a,b)=>(a.suat_con||0)-(b.suat_con||0));
   else if(sortKH==='suat_desc')data.sort((a,b)=>(b.suat_con||0)-(a.suat_con||0));
   else if(sortKH==='kv')data.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
-  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
+  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
@@ -936,6 +936,7 @@ function renderKH(dangSXIds=new Set()){
       <td>${k.khu_vuc||'—'}</td>
       <td><strong>${k.ten}</strong></td>
       <td class="muted">${k.sdt||'—'}</td>
+      <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
       <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
       <td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td>
       <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td>
