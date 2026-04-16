@@ -1167,9 +1167,10 @@ window.renderSXTable=function renderSXTable(){
   else if(sortSX==='za')sxDisplay.sort((a,b)=>b.ten_kh.localeCompare(a.ten_kh,'vi'));
   else if(sortSX==='kv')sxDisplay.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
   document.getElementById('sx-table-wrap').innerHTML=`<table><thead><tr>
-    <th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}
-  </tr></thead><tbody>${sxDisplay.map(r=>`
+    <th>STT</th><th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}
+  </tr></thead><tbody>${sxDisplay.map((r,idx)=>`
     <tr style="${r.da_huy?'opacity:0.45;':''}">
+      <td class="muted">${idx+1}</td>
       <td>${r.khu_vuc||'—'}</td>
       <td><strong>${r.ten_kh}</strong></td>
       <td class="muted">${r.sdt||'—'}</td>
