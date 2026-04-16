@@ -488,30 +488,32 @@ select.form-control option{background:var(--bg2);}
       <span style="font-size:13px;color:var(--text2);font-weight:500">Xem ngày:</span>
       <input type="date" id="sx-pick-date" onchange="loadSanXuat()">
       <button class="btn-ghost btn-sm" onclick="document.getElementById('sx-pick-date').value=today();loadSanXuat()">Hôm nay</button>
-      <select class="filter-btn" id="sx-shipper-filter" onchange="renderSXTable()" style="cursor:pointer">
-        <option value="">Tất cả shipper</option>
-        <option>Shipper 1</option>
-        <option>Shipper 2</option>
-        <option>Shipper 3</option>
-        <option>Shipper 4</option>
-        <option>Shipper 5</option>
-      </select>
-      <select class="filter-btn" id="sx-kv-filter" onchange="renderSXTable()" style="cursor:pointer">
-        <option value="">Tất cả khu vực</option>
-      </select>
-      <select class="filter-btn" id="sx-sort" onchange="renderSXTable()" style="cursor:pointer">
-        <option value="">Sắp xếp</option>
-        <option value="az">Tên A→Z</option>
-        <option value="za">Tên Z→A</option>
-        <option value="kv">Theo khu vực</option>
-      </select>
       <span id="sx-history-badge"></span>
     </div>
     <div class="kpi-grid" id="sx-kpi"><div class="loading"><span class="spinner"></span></div></div>
     <div class="prod-grid" id="sx-goi"></div>
     <div class="full-card">
-      <div class="card-header">
+      <div class="card-header" style="flex-wrap:wrap;gap:10px">
         <span class="card-title">Danh sách giao hàng</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex:1">
+          <select id="sx-shipper-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+            <option value="">Tất cả shipper</option>
+            <option>Shipper 1</option>
+            <option>Shipper 2</option>
+            <option>Shipper 3</option>
+            <option>Shipper 4</option>
+            <option>Shipper 5</option>
+          </select>
+          <select id="sx-kv-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:130px">
+            <option value="">Tất cả khu vực</option>
+          </select>
+          <select id="sx-sort" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+            <option value="">Sắp xếp</option>
+            <option value="az">Tên A→Z</option>
+            <option value="za">Tên Z→A</option>
+            <option value="kv">Theo khu vực</option>
+          </select>
+        </div>
         <div style="display:flex;gap:8px;">
           <button class="btn-ghost btn-sm" onclick="resetSanXuatNgayMai()">Reset ngày mai</button>
           <button class="btn-primary btn-sm" onclick="chotSanXuat()">Chốt 1h chiều</button>
