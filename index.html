@@ -807,9 +807,9 @@ select.form-control option{background:var(--bg2);}
 const SUPABASE_URL='https://qwehlngnasxstizulhre.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZWhsbmduYXN4c3RpenVsaHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDI1MTUsImV4cCI6MjA5MTM3ODUxNX0.ZViu2wnK4MssHFuzaZz8Fg7ftCCOXRXpE4L2H-yX3k0';
 const{createClient}=supabase;const db=createClient(SUPABASE_URL,SUPABASE_KEY);
-let allKH=[],allDH=[],allTC=[],allTD=[],allSP=[],allSX=[];
-let khFilter='all',khSearch='',dhFilter='all',dhSearch='';
-let ccYear=new Date().getFullYear(),ccMonth=new Date().getMonth()+1;
+var allKH=[],allDH=[],allTC=[],allTD=[],allSP=[],allSX=[];
+var khFilter='all',khSearch='',dhFilter='all',dhSearch='';
+var ccYear=new Date().getFullYear(),ccMonth=new Date().getMonth()+1;
 
 const fmt=n=>n?Number(n).toLocaleString('vi-VN'):'0';
 const fmtDate=s=>s?new Date(s).toLocaleDateString('vi-VN'):'—';
@@ -1218,7 +1218,7 @@ async function resetSanXuatNgayMai(){
 }
 
 // ── THỰC ĐƠN ─────────────────────────────────
-let currentTuan='A';
+var currentTuan='A';
 
 function switchTDTab(tab,btn){
   ['lich','thuvien','nguyenlieu'].forEach(t=>{const el=document.getElementById('td-tab-'+t);if(el)el.style.display='none';});
