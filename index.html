@@ -4,7 +4,108 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TÁM Kitchen — Quản lý nội bộ</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ── IMPORT TXT ────────────────────────────────
+const GIA_SUAT={StandardS:48000,StandardM:56000,PlusS:58000,PlusM:68000};
+let importData=[];
+
+function parseTxtLine(line){
+  const parts=line.split('|').map(s=>s.trim());
+  if(parts.length<7)return null;
+  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao]=parts;
+  if(!ten||!sdt)return null;
+  const soSuat=parseInt(soSuatStr)||0;
+  const goiNorm=goi.toLowerCase().includes('plus')?'Plus':'Standard';
+  const sizeNorm=size.toUpperCase()==='S'?'S':'M';
+  const key=`${goiNorm}${sizeNorm}`;
+  const giaSuat=GIA_SUAT[key]||48000;
+  const tongTien=giaSuat*soSuat;
+  const freeship=soSuat>=14;
+  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
+}
+
+function previewImport(){
+  const txt=document.getElementById('import-txt').value.trim();
+  if(!txt)return showToast('Vui lòng nhập nội dung','error');
+  const lines=txt.split('\n').filter(l=>l.trim());
+  importData=[];const errors=[];
+  lines.forEach((line,i)=>{
+    const parsed=parseTxtLine(line);
+    if(parsed)importData.push(parsed);
+    else if(line.trim())errors.push(`Dòng ${i+1}: "${line.substring(0,50)}..." — sai định dạng`);
+  });
+  document.getElementById('import-count').textContent=importData.length;
+  document.getElementById('import-preview-body').innerHTML=importData.map(d=>`
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 12px;font-size:13px;font-weight:600">${d.ten}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.sdt}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.quan}</td>
+      <td style="padding:8px 12px"><span class="badge ${d.goi==='Plus'?'gold':'blue'}">${d.goiLabel}</span></td>
+      <td style="padding:8px 12px;text-align:center;font-size:12px">${d.size}</td>
+      <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent)">${d.soSuat}</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--green)">${fmt(d.tongTien)}đ${d.freeship?' <span style="font-size:10px;color:var(--accent)">FREESHIP</span>':''}</td>
+      <td style="padding:8px 12px;text-align:center"><span class="badge green">Sẵn sàng</span></td>
+    </tr>`).join('');
+  if(errors.length){
+    document.getElementById('import-errors').style.display='block';
+    document.getElementById('import-errors').innerHTML='<strong>Lỗi định dạng:</strong><br>'+errors.join('<br>');
+  } else {
+    document.getElementById('import-errors').style.display='none';
+  }
+  document.getElementById('import-preview').style.display='block';
+  document.getElementById('btn-confirm-import').style.display=importData.length?'block':'none';
+}
+
+async function confirmImport(){
+  if(!importData.length)return;
+  const btn=document.getElementById('btn-confirm-import');
+  btn.textContent='Đang import...';btn.disabled=true;
+  const today_str=today();
+  let success=0,fail=0;
+  for(const d of importData){
+    try{
+      // Lưu đơn hàng
+      await db.from('don_hang').insert({
+        ten_kh:d.ten,sdt:d.sdt,
+        dia_chi:`${d.diachi}, Quận ${d.quan}`,
+        ngay_dat:today_str,
+        san_pham:`${d.goi} ${d.size}`,
+        tong_don:d.tongTien,
+        so_suat_ban_dau:d.soSuat,
+        ngay_giao_tuan:d.ngayGiao,
+        thanh_toan:'Chưa TT',
+        trang_thai:'Đang chạy',
+        goi:`${d.goi} ${d.size}`,
+      });
+      // Tạo/cập nhật khách hàng
+      let existKH=null;
+      if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).limit(1);if(data&&data.length)existKH=data[0];}
+      if(existKH){
+        const ns=(existKH.suat_con||0)+d.soSuat;
+        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan}).eq('id',existKH.id);
+      } else {
+        const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
+        const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
+        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',active:true});
+      }
+      success++;
+    } catch(e){fail++;console.error(e);}
+  }
+  btn.textContent='✓ Xác nhận import';btn.disabled=false;
+  closeModal('modal-import');
+  resetImport();
+  showToast(`Import xong! ${success} đơn thành công${fail?`, ${fail} lỗi`:''}!`);
+  loadDonHang();
+}
+
+function resetImport(){
+  document.getElementById('import-txt').value='';
+  document.getElementById('import-preview').style.display='none';
+  document.getElementById('btn-confirm-import').style.display='none';
+  importData=[];
+}
+
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -336,6 +437,7 @@ select.form-control option{background:var(--bg2);}
       <button class="filter-btn active" onclick="filterDH(this,'all')">Tất cả</button>
       <button class="filter-btn" onclick="filterDH(this,'chuatt')">Chưa thanh toán</button>
       <button class="filter-btn" onclick="filterDH(this,'dangchay')">Đang chạy</button>
+      <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -548,54 +650,45 @@ select.form-control option{background:var(--bg2);}
     </div>
   </div>
   <!-- PROTEIN -->
-  <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Protein chính</div>
-  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px">
-    <div style="font-size:11px;color:var(--text3)">Nguyên liệu</div>
-    <div style="font-size:11px;color:var(--text3);text-align:right">Size S (g)</div>
-    <div style="font-size:11px;color:var(--text3);text-align:right">Size M (g)</div>
-    <div style="font-size:11px;color:var(--text3);text-align:right">Giá S (đ)</div>
-    <div style="font-size:11px;color:var(--text3);text-align:right">Giá M (đ)</div>
+  <!-- HEADER CỘT -->
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:14px 0 6px;padding:0 2px">
+    <div style="font-size:11px;font-weight:600;color:var(--text3)">Nguyên liệu</div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Size S (g)</div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Size M (g)</div>
   </div>
+  <!-- PROTEIN -->
+  <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Protein chính</div>
   <div id="mn-protein-list">
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 24px;gap:6px;margin-bottom:6px">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
       <input class="form-control" placeholder="VD: Đùi gà" id="mn-p-ten-0">
-      <input class="form-control" type="number" placeholder="70" id="mn-p-s-0" style="text-align:right">
-      <input class="form-control" type="number" placeholder="120" id="mn-p-m-0" style="text-align:right">
-      <input class="form-control" type="number" placeholder="5000" id="mn-p-gs-0" style="text-align:right">
-      <input class="form-control" type="number" placeholder="9000" id="mn-p-gm-0" style="text-align:right">
-      <span></span>
+      <input class="form-control" type="number" placeholder="70" id="mn-p-s-0" style="text-align:center">
+      <input class="form-control" type="number" placeholder="120" id="mn-p-m-0" style="text-align:center">
     </div>
   </div>
   <!-- TINH BỘT -->
-  <div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Tinh bột</div>
-  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+  <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Tinh bột</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
     <input class="form-control" value="Cơm gạo lứt" id="mn-tb-ten" readonly style="opacity:0.7">
-    <input class="form-control" type="number" value="67" id="mn-tb-s" style="text-align:right">
-    <input class="form-control" type="number" value="67" id="mn-tb-m" style="text-align:right">
-    <input class="form-control" type="number" value="1700" id="mn-tb-gs" style="text-align:right">
-    <input class="form-control" type="number" value="1700" id="mn-tb-gm" style="text-align:right">
+    <input class="form-control" type="number" value="67" id="mn-tb-s" style="text-align:center">
+    <input class="form-control" type="number" value="67" id="mn-tb-m" style="text-align:center">
   </div>
   <!-- CHẤT XƠ -->
-  <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Chất xơ — 5 loại rau</div>
+  <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Chất xơ — 5 loại rau</div>
   <div id="mn-rau-list">
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 24px;gap:6px;margin-bottom:6px">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 24px;gap:8px;margin-bottom:8px">
       <input class="form-control" placeholder="Su su" id="mn-r-ten-0" value="Su su">
-      <input class="form-control" type="number" value="30" id="mn-r-s-0" style="text-align:right">
-      <input class="form-control" type="number" value="30" id="mn-r-m-0" style="text-align:right">
-      <input class="form-control" type="number" value="300" id="mn-r-gs-0" style="text-align:right">
-      <input class="form-control" type="number" value="300" id="mn-r-gm-0" style="text-align:right">
-      <button onclick="removeRauRow(this)" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>
+      <input class="form-control" type="number" value="30" id="mn-r-s-0" style="text-align:center">
+      <input class="form-control" type="number" value="30" id="mn-r-m-0" style="text-align:center">
+      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:0">×</button>
     </div>
   </div>
   <button onclick="addRauRow()" class="btn-ghost btn-sm" style="margin-bottom:14px">+ Thêm rau</button>
   <!-- BAO BÌ -->
-  <div style="font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px">Bao bì</div>
-  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px">
+  <div style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Bao bì</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
     <input class="form-control" value="Hộp + đũa thìa" id="mn-bb-ten" readonly style="opacity:0.7">
-    <input class="form-control" type="number" value="67" id="mn-bb-s" style="text-align:right">
-    <input class="form-control" type="number" value="67" id="mn-bb-m" style="text-align:right">
-    <input class="form-control" type="number" value="1350" id="mn-bb-gs" style="text-align:right">
-    <input class="form-control" type="number" value="2350" id="mn-bb-gm" style="text-align:right">
+    <input class="form-control" type="number" value="67" id="mn-bb-s" style="text-align:center">
+    <input class="form-control" type="number" value="67" id="mn-bb-m" style="text-align:center">
   </div>
   <div class="modal-footer" style="margin-top:20px">
     <button class="btn-cancel" onclick="closeModal('modal-mon-new')">Huỷ</button>
@@ -619,14 +712,7 @@ select.form-control option{background:var(--bg2);}
   <div class="form-group"><label>Tên món</label><input class="form-control" id="mon-ten" placeholder="Đậu phụ xào nấm"></div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-mon')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addMon()">Lưu</button></div>
 </div></div>
-<!-- MODAL CHỌN MÓN VÀO LỊCH -->
-<div class="modal-overlay" id="modal-chon-mon"><div class="modal">
-  <h3 id="chon-mon-title">Chọn món ăn</h3>
-  <input type="hidden" id="chon-mon-thu">
-  <input type="hidden" id="chon-mon-id">
-  <div id="chon-mon-list" style="max-height:400px;overflow-y:auto"></div>
-  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-chon-mon')">Huỷ</button></div>
-</div></div>
+
 <!-- MODAL NHÂN VIÊN -->
 <div class="modal-overlay" id="modal-nv"><div class="modal"><h3>Thêm nhân viên</h3>
   <div class="form-grid">
@@ -984,7 +1070,10 @@ async function resetSanXuatNgayMai(){
   await db.from('san_xuat_ngay').delete().eq('ngay',ts);
   await generateSanXuatNgay(ts);showToast('Đã tạo danh sách ngày mai!');
 }
+
+// ── THỰC ĐƠN ─────────────────────────────────
 let currentTuan='A';
+
 function switchTDTab(tab,btn){
   ['lich','thuvien','nguyenlieu'].forEach(t=>{const el=document.getElementById('td-tab-'+t);if(el)el.style.display='none';});
   const target=document.getElementById('td-tab-'+tab);if(target)target.style.display='block';
@@ -994,6 +1083,7 @@ function switchTDTab(tab,btn){
   if(tab==='thuvien')loadThuVienMon();
   if(tab==='nguyenlieu')loadNguyenLieuTab();
 }
+
 function switchTuan(t){
   currentTuan=t;
   const a=document.getElementById('btn-tuan-a'),b=document.getElementById('btn-tuan-b');
@@ -1001,16 +1091,26 @@ function switchTuan(t){
   if(b)b.classList.toggle('active',t==='B');
   loadLichTuan();
 }
+
 async function loadLichTuan(){
   const{data:tuanData}=await db.from('thuc_don_tuan').select('*').eq('tuan',currentTuan);
   const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
-  const grid=document.getElementById('tuan-grid');if(!grid)return;
-  grid.innerHTML=[2,3,4,5,6,7,8].map(t=>{const item=tuanData?.find(x=>x.thu===t);return`<div class="thu-card"><div class="thu-label">${TN[t]}</div>${item?`<div class="thu-mon" onclick="editThuMon(${t},'${(item.mon_chinh||'').replace(/'/g,"\\'")}','${item.id}')">${item.mon_chinh||'Chưa có'}</div>`:`<div class="thu-empty" onclick="editThuMon(${t},'',null)">+ Thêm món</div>`}</div>`;}).join('');
+  const grid=document.getElementById('tuan-grid');
+  if(!grid)return;
+  grid.innerHTML=[2,3,4,5,6,7,8].map(t=>{
+    const item=tuanData?.find(x=>x.thu===t);
+    return`<div class="thu-card"><div class="thu-label">${TN[t]}</div>${item?`<div class="thu-mon" onclick="editThuMon(${t},'${(item.mon_chinh||'').replace(/'/g,"\\'")}','${item.id}')">${item.mon_chinh||'Chưa có'}</div>`:`<div class="thu-empty" onclick="editThuMon(${t},'',null)">+ Thêm món</div>`}</div>`;
+  }).join('');
 }
+
 async function loadThuVienMon(){
-  const el=document.getElementById('thu-vien-list');if(!el)return;
+  const el=document.getElementById('thu-vien-list');
+  if(!el)return;
   el.innerHTML='<div class="loading"><span class="spinner"></span> Đang tải...</div>';
-  const[{data:monList},{data:cpList}]=await Promise.all([db.from('mon_an').select('*').eq('active',true).order('loai').order('ten'),db.from('mon_an_chi_phi').select('*')]);
+  const[{data:monList},{data:cpList}]=await Promise.all([
+    db.from('mon_an').select('*').eq('active',true).order('loai').order('ten'),
+    db.from('mon_an_chi_phi').select('*')
+  ]);
   const mons=monList||[];const cps=cpList||[];
   if(!mons.length){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">Chưa có món ăn nào. Nhấn "+ Thêm món ăn" để bắt đầu.</div>';return;}
   const nhomLabel={protein:'PROTEIN',tinh_bot:'TINH BỘT',chat_xo:'CHẤT XƠ — 5 LOẠI · 150G',bao_bi:'BAO BÌ'};
@@ -1023,45 +1123,110 @@ async function loadThuVienMon(){
     const chiPhiM=mcp.reduce((s,c)=>s+(c.gia_m||0),0);
     const bienS=giaBanS>0?Math.round((giaBanS-chiPhiS)/giaBanS*100):0;
     const bienM=giaBanM>0?Math.round((giaBanM-chiPhiM)/giaBanM*100):0;
-    return`<div class="mon-card"><div class="mon-card-header"><div style="display:flex;align-items:center;gap:10px"><div class="mon-card-name">${m.ten}</div><span class="badge ${isPlus?'gold':'blue'}">${m.loai||'Standard'}</span></div><div style="display:flex;gap:6px"><button onclick="openEditMon('${m.id}','${m.ten.replace(/'/g,"\\'")}')" class="btn-edit btn-sm">Sửa</button><button onclick="deleteMonMoi('${m.id}')" class="btn-danger btn-sm">Xoá</button></div></div><div class="mon-nl-row header"><div>Nguyên liệu</div><div>Size S</div><div>Size M</div><div>Giá S</div><div>Giá M</div></div>${nhomOrder.map(nhom=>{const rows=mcp.filter(c=>c.nhom===nhom);if(!rows.length)return'';return`<div class="mon-nhom"><div class="mon-nhom-title">${nhomLabel[nhom]}</div>${rows.map(r=>`<div class="mon-nl-row"><div>${r.ten}</div><div>${r.dinh_luong_s||0}g</div><div>${r.dinh_luong_m||0}g</div><div>${fmt(r.gia_s||0)}đ</div><div>${fmt(r.gia_m||0)}đ</div></div>`).join('')}</div>`;}).join('')}<div class="bien-row"><div class="bien-item"><span class="label">Chi phí S: </span><span class="val">${fmt(chiPhiS)}đ</span></div><div class="bien-item"><span class="label">Biên S: </span><span class="val ${bienS<0?'loss':''}">${bienS}%</span></div><div class="bien-item" style="margin-left:16px"><span class="label">Chi phí M: </span><span class="val">${fmt(chiPhiM)}đ</span></div><div class="bien-item"><span class="label">Biên M: </span><span class="val ${bienM<0?'loss':''}">${bienM}%</span></div></div></div>`;
+    return`<div class="mon-card">
+      <div class="mon-card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="mon-card-name">${m.ten}</div>
+          <span class="badge ${isPlus?'gold':'blue'}">${m.loai||'Standard'}</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="openEditMon('${m.id}','${m.ten.replace(/'/g,"\\'")}')" class="btn-edit btn-sm">Sửa</button>
+          <button onclick="deleteMonMoi('${m.id}')" class="btn-danger btn-sm">Xoá</button>
+        </div>
+      </div>
+      <div class="mon-nl-row header"><div>Nguyên liệu</div><div>Size S</div><div>Size M</div><div>Giá S</div><div>Giá M</div></div>
+      ${nhomOrder.map(nhom=>{
+        const rows=mcp.filter(c=>c.nhom===nhom);if(!rows.length)return'';
+        return`<div class="mon-nhom"><div class="mon-nhom-title">${nhomLabel[nhom]}</div>${rows.map(r=>`<div class="mon-nl-row"><div>${r.ten}</div><div>${r.dinh_luong_s||0}g</div><div>${r.dinh_luong_m||0}g</div><div>${fmt(r.gia_s||0)}đ</div><div>${fmt(r.gia_m||0)}đ</div></div>`).join('')}</div>`;
+      }).join('')}
+      <div class="bien-row">
+        <div class="bien-item"><span class="label">Chi phí S: </span><span class="val">${fmt(chiPhiS)}đ</span></div>
+        <div class="bien-item"><span class="label">Giá bán S: </span><span class="val">${fmt(giaBanS)}đ</span></div>
+        <div class="bien-item"><span class="label">Biên S: </span><span class="val ${bienS<0?'loss':''}">${bienS}%</span></div>
+        <div class="bien-item" style="margin-left:16px"><span class="label">Chi phí M: </span><span class="val">${fmt(chiPhiM)}đ</span></div>
+        <div class="bien-item"><span class="label">Giá bán M: </span><span class="val">${fmt(giaBanM)}đ</span></div>
+        <div class="bien-item"><span class="label">Biên M: </span><span class="val ${bienM<0?'loss':''}">${bienM}%</span></div>
+      </div>
+    </div>`;
   }).join('');
 }
+
 async function openEditMon(id,ten){
   document.getElementById('mon-edit-title').textContent='Chỉnh sửa — '+ten;
   document.getElementById('mon-edit-id').value=id;
   const{data:cps}=await db.from('mon_an_chi_phi').select('*').eq('mon_an_id',id);
   const nhomLabel={protein:'PROTEIN',tinh_bot:'TINH BỘT',chat_xo:'CHẤT XƠ',bao_bi:'BAO BÌ'};
-  document.getElementById('mon-edit-content').innerHTML=(cps||[]).map((c,i)=>`<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${nhomLabel[c.nhom]||c.nhom} — ${c.ten}</div><div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px"><input class="form-control" value="${c.ten}" id="me-ten-${i}"><input class="form-control" type="number" value="${c.dinh_luong_s||0}" id="me-s-${i}" style="text-align:right"><input class="form-control" type="number" value="${c.dinh_luong_m||0}" id="me-m-${i}" style="text-align:right"><input class="form-control" type="number" value="${c.gia_s||0}" id="me-gs-${i}" style="text-align:right"><input class="form-control" type="number" value="${c.gia_m||0}" id="me-gm-${i}" style="text-align:right"></div></div>`).join('');
+  document.getElementById('mon-edit-content').innerHTML=(cps||[]).map((c,i)=>`
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${nhomLabel[c.nhom]||c.nhom} — ${c.ten}</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px">
+        <input class="form-control" value="${c.ten}" id="me-ten-${i}">
+        <input class="form-control" type="number" value="${c.dinh_luong_s||0}" id="me-s-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.dinh_luong_m||0}" id="me-m-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.gia_s||0}" id="me-gs-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.gia_m||0}" id="me-gm-${i}" style="text-align:right">
+      </div>
+    </div>`).join('');
   document.getElementById('mon-edit-content').dataset.cps=JSON.stringify(cps||[]);
   openModal('modal-mon-edit');
 }
+
 async function saveChiPhiMon(){
   const id=document.getElementById('mon-edit-id').value;
   const cps=JSON.parse(document.getElementById('mon-edit-content').dataset.cps||'[]');
-  for(let i=0;i<cps.length;i++){await db.from('mon_an_chi_phi').update({ten:document.getElementById(`me-ten-${i}`)?.value||cps[i].ten,dinh_luong_s:parseInt(document.getElementById(`me-s-${i}`)?.value)||0,dinh_luong_m:parseInt(document.getElementById(`me-m-${i}`)?.value)||0,gia_s:parseInt(document.getElementById(`me-gs-${i}`)?.value)||0,gia_m:parseInt(document.getElementById(`me-gm-${i}`)?.value)||0}).eq('id',cps[i].id);}
+  for(let i=0;i<cps.length;i++){
+    await db.from('mon_an_chi_phi').update({
+      ten:document.getElementById(`me-ten-${i}`)?.value||cps[i].ten,
+      dinh_luong_s:parseInt(document.getElementById(`me-s-${i}`)?.value)||0,
+      dinh_luong_m:parseInt(document.getElementById(`me-m-${i}`)?.value)||0,
+      gia_s:parseInt(document.getElementById(`me-gs-${i}`)?.value)||0,
+      gia_m:parseInt(document.getElementById(`me-gm-${i}`)?.value)||0,
+    }).eq('id',cps[i].id);
+  }
   showToast('Đã cập nhật!');closeModal('modal-mon-edit');loadThuVienMon();
 }
-async function deleteMonMoi(id){if(!confirm('Xoá món ăn này?'))return;await db.from('mon_an').update({active:false}).eq('id',id);showToast('Đã xoá!');loadThuVienMon();}
+
+async function deleteMonMoi(id){
+  if(!confirm('Xoá món ăn này?'))return;
+  await db.from('mon_an').update({active:false}).eq('id',id);
+  showToast('Đã xoá!');loadThuVienMon();
+}
+
 async function loadNguyenLieuTab(){
   const el=document.getElementById('td-nguyenlieu-full');if(!el)return;
-  const[{data:sx},{data:cps}]=await Promise.all([db.from('san_xuat_ngay').select('goi,so_suat_nhan').eq('ngay',today()).eq('da_huy',false),db.from('mon_an_chi_phi').select('*')]);
+  const[{data:sx},{data:cps}]=await Promise.all([
+    db.from('san_xuat_ngay').select('goi,so_suat_nhan').eq('ngay',today()).eq('da_huy',false),
+    db.from('mon_an_chi_phi').select('*')
+  ]);
   if(!sx||!sx.length){el.innerHTML='<div style="padding:24px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';return;}
   const suatS=(sx||[]).filter(r=>(r.goi||'').includes('S')).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
   const suatM=(sx||[]).filter(r=>(r.goi||'').includes('M')).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
   const suatTong=(sx||[]).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
-  const nlMap={};(cps||[]).forEach(c=>{const total=(c.dinh_luong_s||0)*suatS+(c.dinh_luong_m||0)*suatM;if(total>0)nlMap[c.ten]=(nlMap[c.ten]||0)+total;});
-  el.innerHTML=`<div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);display:flex;gap:20px"><span>Tổng suất: <strong>${suatTong}</strong></span><span>Size S: <strong>${suatS}</strong></span><span>Size M: <strong>${suatM}</strong></span></div><table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>Đơn vị</th></tr></thead><tbody>${Object.entries(nlMap).map(([ten,kl])=>`<tr><td><strong>${ten}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(kl)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`;
+  const nlMap={};
+  (cps||[]).forEach(c=>{
+    const total=(c.dinh_luong_s||0)*suatS+(c.dinh_luong_m||0)*suatM;
+    if(total>0)nlMap[c.ten]=(nlMap[c.ten]||0)+total;
+  });
+  el.innerHTML=`<div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);display:flex;gap:20px">
+    <span>Tổng suất: <strong>${suatTong}</strong></span><span>Size S: <strong>${suatS}</strong></span><span>Size M: <strong>${suatM}</strong></span>
+  </div>
+  <table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>Đơn vị</th></tr></thead>
+  <tbody>${Object.entries(nlMap).map(([ten,kl])=>`<tr><td><strong>${ten}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(kl)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`;
 }
+
+let rauCount=0;
 function addRauRow(){
   const list=document.getElementById('mn-rau-list');if(!list)return;
   const i=list.children.length;
   const div=document.createElement('div');
-  div.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 24px;gap:6px;margin-bottom:6px';
-  div.innerHTML=`<input class="form-control" placeholder="Tên rau" id="mn-r-ten-${i}"><input class="form-control" type="number" value="30" id="mn-r-s-${i}" style="text-align:right"><input class="form-control" type="number" value="30" id="mn-r-m-${i}" style="text-align:right"><input class="form-control" type="number" placeholder="300" id="mn-r-gs-${i}" style="text-align:right"><input class="form-control" type="number" placeholder="300" id="mn-r-gm-${i}" style="text-align:right"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button>`;
+  div.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 24px;gap:8px;margin-bottom:8px';
+  div.innerHTML=`<input class="form-control" placeholder="Tên rau" id="mn-r-ten-${i}"><input class="form-control" type="number" value="30" id="mn-r-s-${i}" style="text-align:center"><input class="form-control" type="number" value="30" id="mn-r-m-${i}" style="text-align:center"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:0">×</button>`;
   list.appendChild(div);
 }
+
 async function saveMonMoi(){
-  const ten=document.getElementById('mn-ten')?.value.trim();if(!ten)return showToast('Vui lòng nhập tên món','error');
+  const ten=document.getElementById('mn-ten')?.value.trim();
+  if(!ten)return showToast('Vui lòng nhập tên món','error');
   const loai=document.getElementById('mn-loai')?.value||'Standard';
   const{data:mon,error}=await db.from('mon_an').insert({ten,loai,active:true}).select().single();
   if(error)return showToast('Lỗi: '+error.message,'error');
@@ -1070,18 +1235,15 @@ async function saveMonMoi(){
   if(p0ten)inserts.push({mon_an_id:mon.id,nhom:'protein',ten:p0ten,dinh_luong_s:parseInt(document.getElementById('mn-p-s-0')?.value)||0,dinh_luong_m:parseInt(document.getElementById('mn-p-m-0')?.value)||0,gia_s:parseInt(document.getElementById('mn-p-gs-0')?.value)||0,gia_m:parseInt(document.getElementById('mn-p-gm-0')?.value)||0,don_vi:'gram'});
   inserts.push({mon_an_id:mon.id,nhom:'tinh_bot',ten:'Cơm gạo lứt',dinh_luong_s:parseInt(document.getElementById('mn-tb-s')?.value)||67,dinh_luong_m:parseInt(document.getElementById('mn-tb-m')?.value)||67,gia_s:parseInt(document.getElementById('mn-tb-gs')?.value)||0,gia_m:parseInt(document.getElementById('mn-tb-gm')?.value)||0,don_vi:'gram'});
   const rauRows=document.getElementById('mn-rau-list')?.children||[];
-  for(let i=0;i<rauRows.length;i++){const t=document.getElementById(`mn-r-ten-${i}`)?.value?.trim();if(!t)continue;inserts.push({mon_an_id:mon.id,nhom:'chat_xo',ten:t,dinh_luong_s:parseInt(document.getElementById(`mn-r-s-${i}`)?.value)||30,dinh_luong_m:parseInt(document.getElementById(`mn-r-m-${i}`)?.value)||30,gia_s:parseInt(document.getElementById(`mn-r-gs-${i}`)?.value)||0,gia_m:parseInt(document.getElementById(`mn-r-gm-${i}`)?.value)||0,don_vi:'gram'});}
+  for(let i=0;i<rauRows.length;i++){
+    const t=document.getElementById(`mn-r-ten-${i}`)?.value?.trim();if(!t)continue;
+    inserts.push({mon_an_id:mon.id,nhom:'chat_xo',ten:t,dinh_luong_s:parseInt(document.getElementById(`mn-r-s-${i}`)?.value)||30,dinh_luong_m:parseInt(document.getElementById(`mn-r-m-${i}`)?.value)||30,gia_s:parseInt(document.getElementById(`mn-r-gs-${i}`)?.value)||0,gia_m:parseInt(document.getElementById(`mn-r-gm-${i}`)?.value)||0,don_vi:'gram'});
+  }
   inserts.push({mon_an_id:mon.id,nhom:'bao_bi',ten:'Hộp + đũa thìa',dinh_luong_s:parseInt(document.getElementById('mn-bb-s')?.value)||0,dinh_luong_m:parseInt(document.getElementById('mn-bb-m')?.value)||0,gia_s:parseInt(document.getElementById('mn-bb-gs')?.value)||0,gia_m:parseInt(document.getElementById('mn-bb-gm')?.value)||0,don_vi:'cái'});
   if(inserts.length)await db.from('mon_an_chi_phi').insert(inserts);
   showToast('Đã thêm món ăn!');closeModal('modal-mon-new');loadThuVienMon();
 }
-async function chonMonVaoLich(monId,tenMon,thu,existId){
-  const tm=new Date();tm.setDate(tm.getDate()-tm.getDay()+1);const tb=tm.toISOString().split('T')[0];
-  if(existId){await db.from('thuc_don_tuan').update({mon_chinh:tenMon,mon_an_id:monId}).eq('id',existId);}
-  else{await db.from('thuc_don_tuan').upsert({tuan:currentTuan,thu,ten_thu:'T'+thu,mon_chinh:tenMon,mon_an_id:monId,tuan_bat_dau:tb},{onConflict:'tuan,thu'});}
-  closeModal('modal-chon-mon');showToast('Đã cập nhật lịch!');loadLichTuan();
-}
-// ── THỰC ĐƠN ─────────────────────────────────
+
 async function loadThucDon(){
   const[{data:td},{data:sx},{data:tuanData}]=await Promise.all([db.from('thuc_don').select('*'),db.from('san_xuat_ngay').select('*').eq('ngay',today()).eq('da_huy',false),db.from('thuc_don_tuan').select('*').order('thu')]);
   allTD=td||[];allSX=sx||[];
@@ -1093,36 +1255,11 @@ async function loadThucDon(){
   document.getElementById('td-nguyenlieu').innerHTML=Object.keys(nl).length?`<table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>ĐV</th></tr></thead><tbody>${Object.entries(nl).map(([m,k])=>`<tr><td><strong>${m}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(k)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`:'<div style="padding:20px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';
 }
 async function editThuMon(thu,current,id){
-  const{data:mons}=await db.from('mon_an').select('*').eq('active',true).order('loai').order('ten');
-  if(!mons||!mons.length){showToast('Chưa có món nào trong thư viện. Vui lòng thêm món trước!','error');return;}
-  document.getElementById('chon-mon-thu').value=thu;
-  document.getElementById('chon-mon-id').value=id||'';
-  const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
-  document.getElementById('chon-mon-title').textContent=`Chọn món — ${TN[thu]} Tuần ${currentTuan}`;
-  document.getElementById('chon-mon-list').innerHTML=mons.map(m=>`
-    <div onclick="chonMonVaoLich('${m.id}','${m.ten.replace(/'/g,"\\'")}',${thu},'${id||''}')"
-      style="padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all 0.15s"
-      onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--accent-soft)'"
-      onmouseout="this.style.borderColor='var(--border)';this.style.background='none'">
-      <div>
-        <div style="font-size:14px;font-weight:600">${m.ten}</div>
-        <div style="font-size:11px;color:var(--text3)">${m.loai||'Standard'}</div>
-      </div>
-      <span class="badge ${m.loai==='Plus'?'gold':'blue'}">${m.loai||'Standard'}</span>
-    </div>`).join('');
-  openModal('modal-chon-mon');
-}
-
-async function chonMonVaoLich(monId,tenMon,thu,existId){
+  const mon=prompt(`Món ăn ngày ${thu===8?'CN':'T'+thu}:`,current||'');if(mon===null)return;
   const tm=new Date();tm.setDate(tm.getDate()-tm.getDay()+1);const tb=tm.toISOString().split('T')[0];
-  if(existId){
-    await db.from('thuc_don_tuan').update({mon_chinh:tenMon,mon_an_id:monId}).eq('id',existId);
-  } else {
-    await db.from('thuc_don_tuan').upsert({tuan:currentTuan,thu,ten_thu:'T'+thu,mon_chinh:tenMon,mon_an_id:monId,tuan_bat_dau:tb},{onConflict:'tuan,thu'});
-  }
-  closeModal('modal-chon-mon');
-  showToast('Đã cập nhật lịch thực đơn!');
-  loadLichTuan();
+  if(id)await db.from('thuc_don_tuan').update({mon_chinh:mon}).eq('id',id);
+  else await db.from('thuc_don_tuan').insert({thu,ten_thu:'T'+thu,mon_chinh:mon,tuan_bat_dau:tb});
+  loadThucDon();
 }
 async function addMon(){
   const ten=document.getElementById('mon-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
@@ -1243,6 +1380,152 @@ async function deleteTC(id){if(!confirm('Xoá?'))return;await db.from('tai_chinh
   allSP=data||[];populateSPSelects();
   loadDashboard();
 })();
+
+// ── IMPORT TXT ────────────────────────────────
+const GIA_SUAT={StandardS:48000,StandardM:56000,PlusS:58000,PlusM:68000};
+let importData=[];
+
+function parseTxtLine(line){
+  const parts=line.split('|').map(s=>s.trim());
+  if(parts.length<7)return null;
+  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao]=parts;
+  if(!ten||!sdt)return null;
+  const soSuat=parseInt(soSuatStr)||0;
+  const goiNorm=goi.toLowerCase().includes('plus')?'Plus':'Standard';
+  const sizeNorm=size.toUpperCase()==='S'?'S':'M';
+  const key=`${goiNorm}${sizeNorm}`;
+  const giaSuat=GIA_SUAT[key]||48000;
+  const tongTien=giaSuat*soSuat;
+  const freeship=soSuat>=14;
+  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
+}
+
+function previewImport(){
+  const txt=document.getElementById('import-txt').value.trim();
+  if(!txt)return showToast('Vui lòng nhập nội dung','error');
+  const lines=txt.split('\n').filter(l=>l.trim());
+  importData=[];const errors=[];
+  lines.forEach((line,i)=>{
+    const parsed=parseTxtLine(line);
+    if(parsed)importData.push(parsed);
+    else if(line.trim())errors.push(`Dòng ${i+1}: "${line.substring(0,50)}..." — sai định dạng`);
+  });
+  document.getElementById('import-count').textContent=importData.length;
+  document.getElementById('import-preview-body').innerHTML=importData.map(d=>`
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 12px;font-size:13px;font-weight:600">${d.ten}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.sdt}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.quan}</td>
+      <td style="padding:8px 12px"><span class="badge ${d.goi==='Plus'?'gold':'blue'}">${d.goiLabel}</span></td>
+      <td style="padding:8px 12px;text-align:center;font-size:12px">${d.size}</td>
+      <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent)">${d.soSuat}</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--green)">${fmt(d.tongTien)}đ${d.freeship?' <span style="font-size:10px;color:var(--accent)">FREESHIP</span>':''}</td>
+      <td style="padding:8px 12px;text-align:center"><span class="badge green">Sẵn sàng</span></td>
+    </tr>`).join('');
+  if(errors.length){
+    document.getElementById('import-errors').style.display='block';
+    document.getElementById('import-errors').innerHTML='<strong>Lỗi định dạng:</strong><br>'+errors.join('<br>');
+  } else {
+    document.getElementById('import-errors').style.display='none';
+  }
+  document.getElementById('import-preview').style.display='block';
+  document.getElementById('btn-confirm-import').style.display=importData.length?'block':'none';
+}
+
+async function confirmImport(){
+  if(!importData.length)return;
+  const btn=document.getElementById('btn-confirm-import');
+  btn.textContent='Đang import...';btn.disabled=true;
+  const today_str=today();
+  let success=0,fail=0;
+  for(const d of importData){
+    try{
+      // Lưu đơn hàng
+      await db.from('don_hang').insert({
+        ten_kh:d.ten,sdt:d.sdt,
+        dia_chi:`${d.diachi}, Quận ${d.quan}`,
+        ngay_dat:today_str,
+        san_pham:`${d.goi} ${d.size}`,
+        tong_don:d.tongTien,
+        so_suat_ban_dau:d.soSuat,
+        ngay_giao_tuan:d.ngayGiao,
+        thanh_toan:'Chưa TT',
+        trang_thai:'Đang chạy',
+        goi:`${d.goi} ${d.size}`,
+      });
+      // Tạo/cập nhật khách hàng
+      let existKH=null;
+      if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).limit(1);if(data&&data.length)existKH=data[0];}
+      if(existKH){
+        const ns=(existKH.suat_con||0)+d.soSuat;
+        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan}).eq('id',existKH.id);
+      } else {
+        const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
+        const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
+        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',active:true});
+      }
+      success++;
+    } catch(e){fail++;console.error(e);}
+  }
+  btn.textContent='✓ Xác nhận import';btn.disabled=false;
+  closeModal('modal-import');
+  resetImport();
+  showToast(`Import xong! ${success} đơn thành công${fail?`, ${fail} lỗi`:''}!`);
+  loadDonHang();
+}
+
+function resetImport(){
+  document.getElementById('import-txt').value='';
+  document.getElementById('import-preview').style.display='none';
+  document.getElementById('btn-confirm-import').style.display='none';
+  importData=[];
+}
+
 </script>
+
+<!-- MODAL IMPORT TXT -->
+<div class="modal-overlay" id="modal-import"><div class="modal" style="width:700px">
+  <h3>📥 Import đơn hàng từ TXT</h3>
+  <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8">
+    <strong>Định dạng mỗi dòng:</strong><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao</code><br><br>
+    <strong>Ví dụ:</strong><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6</code><br>
+    <div style="margin-top:8px;color:var(--text3)">
+      • Gói: Standard hoặc Plus &nbsp;|&nbsp; Size: S, M &nbsp;|&nbsp; Ngày giao: 2,3,4,5,6 (T2→CN=8)
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Dán nội dung file TXT vào đây *</label>
+    <textarea class="form-control" id="import-txt" rows="10" placeholder="Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6
+Trần Văn B | 0987654321 | Cầu Giấy | 45 Trần Duy Hưng | Plus | S | 30 | 2,3,4,5,6
+Lê Thị C | 0909123456 | Thanh Xuân | 67 Nguyễn Trãi | Standard | S | 14 | 2,3,4,5,6" style="font-family:monospace;font-size:12px;resize:vertical"></textarea>
+  </div>
+  <div id="import-preview" style="display:none">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent)">Xem trước <span id="import-count"></span> đơn hàng:</div>
+    <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius)">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg3)">
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Tên KH</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">SĐT</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Quận</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Gói</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Size</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Suất</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;color:var(--text2);font-weight:600">Tổng tiền</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Trạng thái</th>
+        </tr></thead>
+        <tbody id="import-preview-body"></tbody>
+      </table>
+    </div>
+    <div id="import-errors" style="display:none;margin-top:8px;padding:10px 14px;background:var(--red-soft);border:1px solid var(--red);border-radius:var(--radius);font-size:12px;color:var(--red)"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-cancel" onclick="closeModal('modal-import');resetImport()">Huỷ</button>
+    <button class="btn-ghost" onclick="previewImport()" style="border-color:var(--accent);color:var(--accent)">👁 Xem trước</button>
+    <button class="btn-primary" id="btn-confirm-import" style="display:none" onclick="confirmImport()">✓ Xác nhận import</button>
+  </div>
+</div></div>
+
 </body>
 </html>
