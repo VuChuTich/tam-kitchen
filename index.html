@@ -436,6 +436,12 @@ select.form-control option{background:var(--bg2);}
       </select>
       <select class="filter-btn" id="kh-kv-filter" onchange="renderKH()" style="cursor:pointer">
         <option value="">Tất cả khu vực</option>
+        <option value="Thanh Xuân">Thanh Xuân</option>
+        <option value="Cầu Giấy">Cầu Giấy</option>
+        <option value="Đống Đa">Đống Đa</option>
+        <option value="Ba Đình">Ba Đình</option>
+        <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+        <option value="Hoàn Kiếm">Hoàn Kiếm</option>
       </select>
       <select class="filter-btn" id="kh-sort" onchange="renderKH()" style="cursor:pointer">
         <option value="">Sắp xếp</option>
@@ -506,6 +512,12 @@ select.form-control option{background:var(--bg2);}
           </select>
           <select id="sx-kv-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:130px">
             <option value="">Tất cả khu vực</option>
+            <option value="Thanh Xuân">Thanh Xuân</option>
+            <option value="Cầu Giấy">Cầu Giấy</option>
+            <option value="Đống Đa">Đống Đa</option>
+            <option value="Ba Đình">Ba Đình</option>
+            <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+            <option value="Hoàn Kiếm">Hoàn Kiếm</option>
           </select>
           <select id="sx-sort" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
             <option value="">Sắp xếp</option>
@@ -907,15 +919,7 @@ function renderKH(dangSXIds=new Set()){
   const sortKH=document.getElementById('kh-sort')?.value||'';
   if(shipperKHFilter)data=data.filter(k=>k.shipper===shipperKHFilter);
   if(kvKHFilter)data=data.filter(k=>(k.khu_vuc||'').includes(kvKHFilter));
-  // Populate khu vuc dropdown - rebuild mỗi lần
-  const kvSel=document.getElementById('kh-kv-filter');
-  if(kvSel){
-    const curVal=kvSel.value;
-    kvSel.innerHTML='<option value="">Tất cả khu vực</option>';
-    const kvs=[...new Set(allKH.map(k=>k.khu_vuc).filter(Boolean))].sort();
-    kvs.forEach(kv=>{const o=document.createElement('option');o.value=kv;o.textContent=kv;kvSel.appendChild(o);});
-    kvSel.value=curVal;
-  }
+  // khu vuc filter - hardcoded
   // Sort
   if(sortKH==='az')data.sort((a,b)=>a.ten.localeCompare(b.ten,'vi'));
   else if(sortKH==='za')data.sort((a,b)=>b.ten.localeCompare(a.ten,'vi'));
@@ -1155,15 +1159,7 @@ function renderSXTable(){
   const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
   const kvSXFilter=document.getElementById('sx-kv-filter')?.value||'';
   const sortSX=document.getElementById('sx-sort')?.value||'';
-  // Populate khu vuc dropdown - rebuild mỗi lần
-  const kvSXSel=document.getElementById('sx-kv-filter');
-  if(kvSXSel){
-    const curVal=kvSXSel.value;
-    kvSXSel.innerHTML='<option value="">Tất cả khu vực</option>';
-    const kvs=[...new Set(allSX.map(r=>r.khu_vuc).filter(Boolean))].sort();
-    kvs.forEach(kv=>{const o=document.createElement('option');o.value=kv;o.textContent=kv;kvSXSel.appendChild(o);});
-    kvSXSel.value=curVal;
-  }
+  // khu vuc filter - hardcoded
   let sxDisplay=[...allSX];
   if(shipperSXFilter)sxDisplay=sxDisplay.filter(r=>r.shipper===shipperSXFilter);
   if(kvSXFilter)sxDisplay=sxDisplay.filter(r=>(r.khu_vuc||'').includes(kvSXFilter));
