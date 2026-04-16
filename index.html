@@ -905,9 +905,15 @@ function renderKH(dangSXIds=new Set()){
   const sortKH=document.getElementById('kh-sort')?.value||'';
   if(shipperKHFilter)data=data.filter(k=>k.shipper===shipperKHFilter);
   if(kvKHFilter)data=data.filter(k=>(k.khu_vuc||'').includes(kvKHFilter));
-  // Populate khu vuc dropdown
+  // Populate khu vuc dropdown - rebuild mỗi lần
   const kvSel=document.getElementById('kh-kv-filter');
-  if(kvSel&&kvSel.options.length<=1){const kvs=[...new Set(allKH.map(k=>k.khu_vuc).filter(Boolean))].sort();kvs.forEach(kv=>{const o=document.createElement('option');o.value=kv;o.textContent=kv;kvSel.appendChild(o);});}
+  if(kvSel){
+    const curVal=kvSel.value;
+    kvSel.innerHTML='<option value="">Tất cả khu vực</option>';
+    const kvs=[...new Set(allKH.map(k=>k.khu_vuc).filter(Boolean))].sort();
+    kvs.forEach(kv=>{const o=document.createElement('option');o.value=kv;o.textContent=kv;kvSel.appendChild(o);});
+    kvSel.value=curVal;
+  }
   // Sort
   if(sortKH==='az')data.sort((a,b)=>a.ten.localeCompare(b.ten,'vi'));
   else if(sortKH==='za')data.sort((a,b)=>b.ten.localeCompare(a.ten,'vi'));
@@ -1147,11 +1153,14 @@ function renderSXTable(){
   const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
   const kvSXFilter=document.getElementById('sx-kv-filter')?.value||'';
   const sortSX=document.getElementById('sx-sort')?.value||'';
-  // Populate khu vuc dropdown
+  // Populate khu vuc dropdown - rebuild mỗi lần
   const kvSXSel=document.getElementById('sx-kv-filter');
-  if(kvSXSel&&kvSXSel.options.length<=1){
+  if(kvSXSel){
+    const curVal=kvSXSel.value;
+    kvSXSel.innerHTML='<option value="">Tất cả khu vực</option>';
     const kvs=[...new Set(allSX.map(r=>r.khu_vuc).filter(Boolean))].sort();
     kvs.forEach(kv=>{const o=document.createElement('option');o.value=kv;o.textContent=kv;kvSXSel.appendChild(o);});
+    kvSXSel.value=curVal;
   }
   let sxDisplay=[...allSX];
   if(shipperSXFilter)sxDisplay=sxDisplay.filter(r=>r.shipper===shipperSXFilter);
