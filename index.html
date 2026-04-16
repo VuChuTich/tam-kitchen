@@ -1444,7 +1444,10 @@ async function confirmImport(){
   for(const d of importData){
     try{
       // Lưu đơn hàng
-      await db.from('don_hang').insert({
+const{data:lastDH}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+        const nextDHStt=lastDH&&lastDH.length?(lastDH[0].stt||0)+1:1;
+        await db.from('don_hang').insert({
+        stt:nextDHStt,
         ten_kh:d.ten,sdt:d.sdt,
         dia_chi:`${d.diachi}, Quận ${d.quan}`,
         ngay_dat:today_str,
