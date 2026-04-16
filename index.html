@@ -494,6 +494,7 @@ select.form-control option{background:var(--bg2);}
       <span style="font-size:13px;color:var(--text2);font-weight:500">Xem ngày:</span>
       <input type="date" id="sx-pick-date" onchange="loadSanXuat()">
       <button class="btn-ghost btn-sm" onclick="document.getElementById('sx-pick-date').value=today();loadSanXuat()">Hôm nay</button>
+      <button class="btn-ghost btn-sm" onclick="setNgayMai()">Ngày mai →</button>
       <span id="sx-history-badge"></span>
     </div>
     <div class="kpi-grid" id="sx-kpi"><div class="loading"><span class="spinner"></span></div></div>
@@ -1186,7 +1187,13 @@ window.renderSXTable=function renderSXTable(){
         <option value="Shipper 5" ${r.shipper==='Shipper 5'?'selected':''}>Shipper 5</option>
       </select></td>
       <td>${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>
-      ${isToday?`<td>${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}</td>`:''}
+      ${isToday?`<td style="display:flex;gap:4px;flex-wrap:wrap">
+        ${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}
+        ${!r.da_huy&&isSau13h()?`
+          <button class="btn-primary btn-sm" onclick="themSuatSX('${r.id}','${r.khach_hang_id}',${r.so_suat_nhan||1})">+Suất</button>
+          <button class="btn-danger btn-sm" onclick="huyDonChieu('${r.id}','${r.khach_hang_id}')">Huỷ</button>
+        `:''}
+      </td>`:''}
     </tr>`).join('')}</tbody></table>`;
 }
 async function generateSanXuatNgay(dateStr){
@@ -1538,6 +1545,46 @@ function renderSXTable(){
   const b8=isToday&&isBeforeDeadline(8);
   const sxDisplay=shipperSXFilter?allSX.filter(r=>r.shipper===shipperSXFilter):allSX;
   document.getElementById('sx-table-wrap').innerHTML=`<table><thead><tr><th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}</tr></thead><tbody>${sxDisplay.map(r=>`<tr style="${r.da_huy?'opacity:0.45;':''}"><td>${r.khu_vuc||'—'}</td><td><strong>${r.ten_kh}</strong></td><td class="muted">${r.sdt||'—'}</td><td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td><td><span class="badge ${goiColor(r.goi)}">${r.goi||'—'}</span></td><td>${!r.da_huy&&b8?`<div class="qty-ctrl"><button class="qty-btn" onclick="changeSuat('${r.id}',-1,${r.so_suat_nhan||1})">−</button><span class="qty-num">${r.so_suat_nhan||1}</span><button class="qty-btn" onclick="changeSuat('${r.id}',1,${r.so_suat_nhan||1})">+</button></div>`:`<strong>${r.so_suat_nhan||1}</strong>`}</td><td><div style="display:flex;align-items:center;gap:4px">${r.shipper?`<span class="badge green" style="font-size:10px">${r.shipper.replace('Shipper ','SP')}</span>`:`<span style="font-size:11px;color:var(--text3)">—</span>`}<select onchange="updateShipperSX('${r.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:2px 4px;font-size:11px;background:var(--bg3);cursor:pointer;max-width:70px"><option value="">Chọn</option><option value="Shipper 1" ${r.shipper==='Shipper 1'?'selected':''}>SP1</option><option value="Shipper 2" ${r.shipper==='Shipper 2'?'selected':''}>SP2</option><option value="Shipper 3" ${r.shipper==='Shipper 3'?'selected':''}>SP3</option><option value="Shipper 4" ${r.shipper==='Shipper 4'?'selected':''}>SP4</option><option value="Shipper 5" ${r.shipper==='Shipper 5'?'selected':''}>SP5</option></select></div></td><td>${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>${isToday?`<td>${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}</td>`:''}</tr>`).join('')}</tbody></table>`;
+}
+
+
+function setNgayMai(){
+  const tm=new Date();tm.setDate(tm.getDate()+1);
+  document.getElementById('sx-pick-date').value=tm.toISOString().split('T')[0];
+  loadSanXuat();
+}
+
+function isSau13h(){
+  const h=nowHour();return h>=13&&h<22;
+}
+
+async function themSuatSX(sxId, khId, curSuat){
+  if(!isSau13h())return showToast('Chỉ thêm suất từ 13h-22h','error');
+  if(!confirm('Thêm 1 suất cho khách này? Suất sẽ bị trừ từ tài khoản khách hàng.'))return;
+  // Tăng suất trong bảng sản xuất
+  await db.from('san_xuat_ngay').update({so_suat_nhan:curSuat+1}).eq('id',sxId);
+  // Trừ suất khách hàng
+  if(khId){
+    const{data:kh}=await db.from('khach_hang').select('suat_con,trang_thai').eq('id',khId).single();
+    if(kh){
+      const ns=Math.max(0,(kh.suat_con||0)-1);
+      await db.from('khach_hang').update({
+        suat_con:ns,
+        trang_thai:ns<=0?'Hết suất':ns<=5?'Sắp hết':'Đang chạy'
+      }).eq('id',khId);
+    }
+  }
+  showToast('Đã thêm suất!');
+  loadSanXuat();
+}
+
+async function huyDonChieu(sxId, khId){
+  if(!isSau13h())return showToast('Chỉ huỷ từ 13h-22h','error');
+  if(!confirm('Huỷ suất này? Suất sẽ KHÔNG bị trừ của khách hàng.'))return;
+  // Huỷ trong bảng sản xuất - không trừ suất KH
+  await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',sxId);
+  showToast('Đã huỷ! Suất khách hàng được giữ nguyên.','info');
+  loadSanXuat();
 }
 
 // ── INIT ──────────────────────────────────────
