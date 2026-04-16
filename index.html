@@ -922,9 +922,9 @@ function renderDH(){
   if(dhSearch)data=data.filter(d=>(d.ten_kh+d.sdt+'').toLowerCase().includes(dhSearch.toLowerCase()));
   if(dhFilter==='chuatt')data=data.filter(d=>d.thanh_toan==='Chưa TT');
   if(dhFilter==='dangchay')data=data.filter(d=>d.trang_thai==='Đang chạy');
-  document.getElementById('dh-table-wrap').innerHTML=`<table><thead><tr><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Sản phẩm</th><th>Ngày giao</th><th>Tổng đơn</th><th>Suất</th><th>TT</th><th>Trạng thái</th><th></th></tr></thead><tbody>${data.map(d=>{
+  document.getElementById('dh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Sản phẩm</th><th>Ngày giao</th><th>Tổng đơn</th><th>Suất</th><th>TT</th><th>Trạng thái</th><th></th></tr></thead><tbody>${data.map(d=>{
     const days=(d.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
-    return`<tr><td class="muted">${fmtDate(d.ngay_dat)}</td><td><strong>${d.ten_kh}</strong></td><td class="muted">${d.sdt||'—'}</td><td>${d.san_pham?`<span class="badge gold">${d.san_pham}</span>`:'—'}</td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td>${fmt(d.tong_don)} đ</td><td class="muted">${d.so_suat_ban_dau||'—'}</td><td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td><td><span class="badge ${ttColor2(d.trang_thai)}">${d.trang_thai||'—'}</span></td><td><button onclick="deleteDH('${d.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
+    return`<tr><td class="muted">${d.stt||'—'}</td><td class="muted">${fmtDate(d.ngay_dat)}</td><td><strong>${d.ten_kh}</strong></td><td class="muted">${d.sdt||'—'}</td><td>${d.san_pham?`<span class="badge gold">${d.san_pham}</span>`:'—'}</td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td>${fmt(d.tong_don)} đ</td><td class="muted">${d.so_suat_ban_dau||'—'}</td><td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td><td><span class="badge ${ttColor2(d.trang_thai)}">${d.trang_thai||'—'}</span></td><td><button onclick="deleteDH('${d.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
 function searchDH(v){dhSearch=v;renderDH();}
