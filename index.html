@@ -426,7 +426,7 @@ select.form-control option{background:var(--bg2);}
       <button class="filter-btn active" onclick="filterKH(this,'all')">Tất cả</button>
       <button class="filter-btn" onclick="filterKH(this,'low')">Sắp hết (≤5)</button>
       <button class="filter-btn" onclick="filterKH(this,'out')">Hết suất</button>
-      <select class="filter-btn" id="kh-shipper-filter" onchange="renderKH()" style="cursor:pointer">
+      <select class="filter-btn" id="kh-shipper-filter" onchange="loadKhachHang()" style="cursor:pointer">
         <option value="">Tất cả shipper</option>
         <option>Shipper 1</option>
         <option>Shipper 2</option>
@@ -434,7 +434,7 @@ select.form-control option{background:var(--bg2);}
         <option>Shipper 4</option>
         <option>Shipper 5</option>
       </select>
-      <select class="filter-btn" id="kh-kv-filter" onchange="renderKH()" style="cursor:pointer">
+      <select class="filter-btn" id="kh-kv-filter" onchange="loadKhachHang()" style="cursor:pointer">
         <option value="">Tất cả khu vực</option>
         <option value="Thanh Xuân">Thanh Xuân</option>
         <option value="Cầu Giấy">Cầu Giấy</option>
@@ -443,7 +443,7 @@ select.form-control option{background:var(--bg2);}
         <option value="Hai Bà Trưng">Hai Bà Trưng</option>
         <option value="Hoàn Kiếm">Hoàn Kiếm</option>
       </select>
-      <select class="filter-btn" id="kh-sort" onchange="renderKH()" style="cursor:pointer">
+      <select class="filter-btn" id="kh-sort" onchange="loadKhachHang()" style="cursor:pointer">
         <option value="">Sắp xếp</option>
         <option value="az">Tên A→Z</option>
         <option value="za">Tên Z→A</option>
@@ -897,6 +897,7 @@ async function addSanPham(){
 async function deleteSP(id){if(!confirm('Xoá?'))return;await db.from('san_pham').update({active:false}).eq('id',id);showToast('Đã xoá!');loadSanPham();}
 
 // ── KHÁCH HÀNG ────────────────────────────────
+var dangSXIdsGlobal=new Set();
 async function loadKhachHang(){
   if(!allSP.length){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];populateSPSelects();}
   const h=nowHour();
@@ -905,11 +906,12 @@ async function loadKhachHang(){
     (h>=7&&h<13)?db.from('san_xuat_ngay').select('khach_hang_id').eq('ngay',today()).eq('da_huy',false):Promise.resolve({data:[]})
   ]);
   allKH=khData||[];
-  const dangSXIds=new Set((sxData||[]).map(r=>r.khach_hang_id));
-  renderKH(dangSXIds);
+  dangSXIdsGlobal=new Set((sxData||[]).map(r=>r.khach_hang_id));
+  renderKH(dangSXIdsGlobal);
 }
 const TL={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
-function renderKH(dangSXIds=new Set()){
+function renderKH(dangSXIds){
+  if(!dangSXIds)dangSXIds=dangSXIdsGlobal||new Set();
   let data=[...allKH];
   if(khSearch)data=data.filter(k=>(k.ten+k.sdt+k.khu_vuc+'').toLowerCase().includes(khSearch.toLowerCase()));
   if(khFilter==='low')data=data.filter(k=>k.suat_con>0&&k.suat_con<=5);
@@ -950,7 +952,8 @@ function renderKH(dangSXIds=new Set()){
         <option value="Shipper 5" ${k.shipper==='Shipper 5'?'selected':''}>Shipper 5</option>
       </select></td>
       <td><span class="badge ${ttC}">${tt}</span></td>
-      <td style="display:flex;gap:6px">
+      <td style="display:flex;gap:4px;flex-wrap:wrap">
+        <button onclick="openLichSuKH('${k.id}','${k.ten.replace(/'/g,"\'")}')" class="btn-ghost btn-sm">📋</button>
         <button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button>
         <button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button>
       </td>
@@ -1190,10 +1193,12 @@ window.renderSXTable=function renderSXTable(){
       <td>${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>
       ${isToday?`<td style="display:flex;gap:4px;flex-wrap:wrap">
         ${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}
+        ${r.da_huy&&b8?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩ Hoàn tác</button>`:''}
         ${!r.da_huy&&isSau13h()?`
           <button class="btn-primary btn-sm" onclick="themSuatSX('${r.id}','${r.khach_hang_id}',${r.so_suat_nhan||1})">+Suất</button>
           <button class="btn-danger btn-sm" onclick="huyDonChieu('${r.id}','${r.khach_hang_id}')">Huỷ</button>
         `:''}
+        ${r.da_huy?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩ Hoàn tác</button>`:''}
       </td>`:''}
     </tr>`).join('')}</tbody></table>`;
 }
@@ -1549,6 +1554,13 @@ function renderSXTable(){
 }
 
 
+async function hoanTacHuy(sxId){
+  if(!confirm('Hoàn tác huỷ? Khách hàng sẽ được giao lại hôm nay.'))return;
+  await db.from('san_xuat_ngay').update({da_huy:false}).eq('id',sxId);
+  showToast('Đã hoàn tác!');
+  loadSanXuat();
+}
+
 function setNgayMai(){
   const tm=new Date();tm.setDate(tm.getDate()+1);
   document.getElementById('sx-pick-date').value=tm.toISOString().split('T')[0];
@@ -1586,6 +1598,64 @@ async function huyDonChieu(sxId, khId){
   await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',sxId);
   showToast('Đã huỷ! Suất khách hàng được giữ nguyên.','info');
   loadSanXuat();
+}
+
+
+async function hoanTacHuy(sxId){
+  if(!confirm('Khôi phục lại suất ăn này?'))return;
+  await db.from('san_xuat_ngay').update({da_huy:false}).eq('id',sxId);
+  showToast('Đã hoàn tác!','info');
+  loadSanXuat();
+}
+
+async function openLichSuKH(id, ten){
+  document.getElementById('lichsu-title').textContent='Lịch sử — '+ten;
+  document.getElementById('lichsu-content').innerHTML='<div class="loading"><span class="spinner"></span> Đang tải...</div>';
+  openModal('modal-lichsu');
+
+  const[{data:rows},{data:kh}]=await Promise.all([
+    db.from('san_xuat_ngay').select('*').eq('khach_hang_id',id).eq('da_huy',false).eq('da_chot',true).order('ngay',{ascending:false}),
+    db.from('khach_hang').select('*').eq('id',id).single()
+  ]);
+
+  const lichsu=rows||[];
+  const khData=kh||{};
+  const tongSuat=lichsu.reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+
+  if(!lichsu.length){
+    document.getElementById('lichsu-content').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${khData.suat_con||0}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tổng suất mua</div><div class="kpi-value">${khData.tong_suat||0}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Đã dùng</div><div class="kpi-value green">0</div></div>
+      </div>
+      <div style="padding:24px;text-align:center;color:var(--text3)">Chưa có lịch sử sử dụng</div>`;
+    return;
+  }
+
+  document.getElementById('lichsu-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${khData.suat_con||0}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tổng suất mua</div><div class="kpi-value">${khData.tong_suat||0}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Đã dùng</div><div class="kpi-value green">${tongSuat}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Số ngày ăn</div><div class="kpi-value">${lichsu.length}</div></div>
+    </div>
+    <div style="margin-bottom:10px;font-size:12px;color:var(--text2)">Gói: <strong>${khData.goi||'—'}</strong> · Ngày giao: <strong>${(khData.ngay_giao_tuan||'').split(',').map(d=>({2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'})[d]||d).join(' ')}</strong></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ngày</th><th>Thứ</th><th>Gói</th><th style="text-align:center">Số suất</th><th>Địa chỉ giao</th><th>Ghi chú</th></tr></thead>
+      <tbody>${lichsu.map(r=>{
+        const dt=new Date(r.ngay+'T00:00:00');
+        const thu=['CN','T2','T3','T4','T5','T6','T7'][dt.getDay()];
+        return `<tr>
+          <td>${dt.toLocaleDateString('vi-VN')}</td>
+          <td><span class="badge gray">${thu}</span></td>
+          <td><span class="badge ${(r.goi||'').includes('Plus')?'gold':'blue'}">${r.goi||'—'}</span></td>
+          <td style="text-align:center"><strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong></td>
+          <td class="muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td>
+          <td class="muted">${r.ghi_chu||''}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
 }
 
 // ── INIT ──────────────────────────────────────
