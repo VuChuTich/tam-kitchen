@@ -385,6 +385,7 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
       </select>
+      <button class="btn-danger" onclick="xoaTatCaKH()" style="margin-left:auto">🗑 Xoá tất cả KH</button>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -1650,6 +1651,7 @@ function toggleNotifPanel(){
 }
 
 function clearNotifs(){
+  if(!confirm('Xoá tất cả thông báo?'))return;
   notifications=[];
   saveNotifs();
   renderNotifList();
@@ -1664,7 +1666,20 @@ document.addEventListener('click',function(e){
     panel.classList.remove('open');
   }
 });
-
+async function xoaTatCaKH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  let success=0;
+  for(const k of allKH){
+    await db.from('khach_hang').delete().eq('id',k.id);
+    success++;
+  }
+  showToast(`Đã xoá ${success} khách hàng!`);
+  loadKhachHang();
+}
 // ── INIT ──────────────────────────────────────
 (async()=>{
   const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('so_suat');
