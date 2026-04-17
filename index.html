@@ -227,6 +227,28 @@ select.form-control option{background:var(--bg2);}
 .toast.info{border-color:var(--blue);color:var(--blue);}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* THÔNG BÁO */
+.notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;transition:background 0.15s;}
+.notif-btn:hover{background:var(--accent-soft);}
+.notif-btn .bell{font-size:18px;}
+.notif-badge{position:absolute;top:2px;right:2px;width:16px;height:16px;background:var(--red);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;display:none;}
+.notif-badge.show{display:flex;}
+.notif-panel{position:absolute;top:56px;right:16px;width:360px;max-height:480px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:150;display:none;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-header-title{font-size:14px;font-weight:700;}
+.notif-clear{font-size:12px;color:var(--accent);cursor:pointer;background:none;border:none;font-family:inherit;}
+.notif-list{max-height:380px;overflow-y:auto;}
+.notif-item{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;transition:background 0.1s;}
+.notif-item:hover{background:var(--bg3);}
+.notif-item:last-child{border-bottom:none;}
+.notif-item.unread{background:var(--accent-soft);}
+.notif-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.notif-body{}
+.notif-text{font-size:13px;color:var(--text);line-height:1.5;}
+.notif-time{font-size:11px;color:var(--text3);margin-top:2px;}
+.notif-empty{padding:32px;text-align:center;color:var(--text3);font-size:13px;}
 .page.active>*{animation:fadeUp 0.3s ease both;}
 .page.active>*:nth-child(2){animation-delay:0.04s;}
 .page.active>*:nth-child(3){animation-delay:0.08s;}
@@ -285,6 +307,21 @@ select.form-control option{background:var(--bg2);}
     <div class="topbar-right">
       <div class="topbar-date" id="topbar-date"></div>
       <div class="process-status"><div class="process-dot pending" id="process-dot"></div><span id="process-label">Chờ 8h</span></div>
+      <div style="position:relative">
+        <button class="notif-btn" onclick="toggleNotifPanel()">
+          <span class="bell">🔔</span>
+          <span class="notif-badge" id="notif-badge">0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-header">
+            <span class="notif-header-title">Thông báo</span>
+            <button class="notif-clear" onclick="clearNotifs()">Xoá tất cả</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div class="notif-empty">Chưa có thông báo</div>
+          </div>
+        </div>
+      </div>
       <div class="avatar">TK</div>
     </div>
   </header>
@@ -347,7 +384,6 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_asc">Suất tăng dần</option>
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
-        <option value="shipper">Theo shipper</option>
       </select>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
@@ -423,7 +459,6 @@ select.form-control option{background:var(--bg2);}
             <option value="az">Tên A→Z</option>
             <option value="za">Tên Z→A</option>
             <option value="kv">Theo khu vực</option>
-            <option value="shipper">Theo shipper</option>
           </select>
         </div>
         <div style="display:flex;gap:8px;">
@@ -906,7 +941,7 @@ async function addKhachHang(){
   const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
   const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),trang_thai:'Đang chạy',stt:allKH.length+1});
   if(error)return showToast('Lỗi: '+error.message,'error');
-  showToast('Đã thêm khách hàng!');closeModal('modal-kh');
+  showToast('Đã thêm khách hàng!');addNotif('🆕',`Khách hàng mới: <strong>${ten}</strong> · ${document.getElementById('kh-kv').value||''}`);closeModal('modal-kh');
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
   setSelectedDays('kh-day-picker','2,3,4,5,6');loadKhachHang();
 }
@@ -1070,7 +1105,6 @@ window.renderSXTable=function renderSXTable(){
   if(sortSX==='az')sxDisplay.sort((a,b)=>a.ten_kh.localeCompare(b.ten_kh,'vi'));
   else if(sortSX==='za')sxDisplay.sort((a,b)=>b.ten_kh.localeCompare(a.ten_kh,'vi'));
   else if(sortSX==='kv')sxDisplay.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
-  else if(sortSX==='shipper')sxDisplay.sort((a,b)=>(a.shipper||'zzz').localeCompare(b.shipper||'zzz'));
   document.getElementById('sx-table-wrap').innerHTML=`<table><thead><tr>
     <th>STT</th><th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}
   </tr></thead><tbody>${sxDisplay.map((r,idx)=>`
@@ -1109,7 +1143,7 @@ async function generateSanXuatNgay(dateStr){
   const ins=kh.filter(k=>{const days=(k.ngay_giao_tuan||'2,3,4,5,6').split(',').map(Number);return days.includes(dayNum);}).map(k=>({ngay:dateStr,khach_hang_id:k.id,ten_kh:k.ten,khu_vuc:k.khu_vuc,sdt:k.sdt,dia_chi:k.dia_chi,goi:k.goi,so_suat_nhan:1,da_huy:false,da_chot:false}));
   if(ins.length)await db.from('san_xuat_ngay').insert(ins);
 }
-async function huyDon(id){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',id);showToast('Đã huỷ!','info');loadSanXuat();}
+async function huyDon(id){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');const sxItem=allSX.find(s=>s.id===id);await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',id);showToast('Đã huỷ!','info');addNotif('🚫',`Huỷ suất (bảo lưu) · <strong>${sxItem?.ten_kh||''}</strong>`);loadSanXuat();}
 async function changeSuat(id,delta,cur){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');await db.from('san_xuat_ngay').update({so_suat_nhan:Math.max(1,cur+delta)}).eq('id',id);loadSanXuat();}
 async function chotSanXuat(){
   if(!confirm('Chốt sản xuất và trừ suất khách hàng?'))return;
@@ -1128,7 +1162,11 @@ async function resetSanXuatNgayMai(){
   const tm=new Date();tm.setDate(tm.getDate()+1);const ts=tm.toISOString().split('T')[0];
   if(!confirm(`Tạo danh sách sản xuất cho ${fmtDate(ts)}?`))return;
   await db.from('san_xuat_ngay').delete().eq('ngay',ts);
-  await generateSanXuatNgay(ts);showToast('Đã tạo danh sách ngày mai!');
+  await generateSanXuatNgay(ts);
+  const{data:sxTm}=await db.from('san_xuat_ngay').select('*').eq('ngay',ts).eq('da_huy',false);
+  const tongSuatTm=(sxTm||[]).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  addNotif('📋',`Bảng sản xuất <strong>${fmtDate(ts)}</strong> đã tạo · ${(sxTm||[]).length} khách · <strong>${tongSuatTm} suất</strong>`);
+  showToast('Đã tạo danh sách ngày mai!');
 }
 
 // ── THỰC ĐƠN ─────────────────────────────────
@@ -1487,7 +1525,7 @@ async function themSuatSX(sxId, khId, curSuat){
       }).eq('id',khId);
     }
   }
-  showToast('Đã thêm suất!');
+  showToast('Đã thêm suất!');addNotif('➕',`Thêm suất cho <strong>${allSX.find(s=>s.id===sxId)?.ten_kh||''}</strong>`);
   loadSanXuat();
 }
 
@@ -1496,7 +1534,7 @@ async function huyDonChieu(sxId, khId){
   if(!confirm('Huỷ suất này? Suất sẽ KHÔNG bị trừ của khách hàng.'))return;
   // Huỷ trong bảng sản xuất - không trừ suất KH
   await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',sxId);
-  showToast('Đã huỷ! Suất khách hàng được giữ nguyên.','info');
+  showToast('Đã huỷ! Suất khách hàng được giữ nguyên.','info');addNotif('❌',`Huỷ suất (không trừ) · <strong>${allSX.find(s=>s.id===sxId)?.ten_kh||''}</strong>`);
   loadSanXuat();
 }
 
@@ -1558,11 +1596,82 @@ async function openLichSuKH(id, ten){
     </table></div>`;
 }
 
+// ── THÔNG BÁO ─────────────────────────────────
+var notifications = JSON.parse(localStorage.getItem('tam_notifs') || '[]');
+
+function saveNotifs(){
+  try{localStorage.setItem('tam_notifs', JSON.stringify(notifications.slice(0,50)));}catch(e){}
+}
+
+function addNotif(icon, text, type='info'){
+  const n={id:Date.now(),icon,text,time:new Date().toLocaleString('vi-VN'),unread:true,type};
+  notifications.unshift(n);
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+function renderNotifList(){
+  const list=document.getElementById('notif-list');
+  if(!list)return;
+  if(!notifications.length){list.innerHTML='<div class="notif-empty">Chưa có thông báo</div>';return;}
+  list.innerHTML=notifications.map(n=>`
+    <div class="notif-item ${n.unread?'unread':''}" onclick="markRead('${n.id}')">
+      <div class="notif-icon">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function markRead(id){
+  const n=notifications.find(x=>x.id==id);
+  if(n)n.unread=false;
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+function updateNotifBadge(){
+  const unread=notifications.filter(n=>n.unread).length;
+  const badge=document.getElementById('notif-badge');
+  if(!badge)return;
+  if(unread>0){badge.textContent=unread>9?'9+':unread;badge.classList.add('show');}
+  else{badge.classList.remove('show');}
+}
+
+function toggleNotifPanel(){
+  const panel=document.getElementById('notif-panel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    renderNotifList();
+  }
+}
+
+function clearNotifs(){
+  notifications=[];
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+// Close panel when clicking outside
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('notif-panel');
+  const btn=e.target.closest('.notif-btn');
+  if(panel&&panel.classList.contains('open')&&!panel.contains(e.target)&&!btn){
+    panel.classList.remove('open');
+  }
+});
+
 // ── INIT ──────────────────────────────────────
 (async()=>{
   const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('so_suat');
   allSP=data||[];populateSPSelects();
   loadDashboard();
+  renderNotifList();
+  updateNotifBadge();
 })();
 
 // ── IMPORT TXT ────────────────────────────────
@@ -1656,7 +1765,7 @@ async function confirmImport(){
   btn.textContent='✓ Xác nhận import';btn.disabled=false;
   closeModal('modal-import');
   resetImport();
-  showToast(`Import xong! ${success} đơn thành công${fail?`, ${fail} lỗi`:''}!`);
+  showToast(`Import xong! ${success} đơn thành công${fail?`, ${fail} lỗi`:''}!`);addNotif('📦',`Import hàng loạt: <strong>${success} đơn</strong> thành công${fail?` · ${fail} lỗi`:''} · ${importData.length} khách`);
   loadDonHang();
 }
 
