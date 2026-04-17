@@ -400,7 +400,7 @@ select.form-control option{background:var(--bg2);}
       <div class="card-header" style="flex-wrap:wrap;gap:10px">
         <span class="card-title">Danh sách giao hàng</span>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex:1">
-          <select id="sx-shipper-filter" id-filter style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+          <select id="sx-shipper-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
             <option value="">Tất cả shipper</option>
             <option>Shipper 1</option>
             <option>Shipper 2</option>
@@ -417,7 +417,7 @@ select.form-control option{background:var(--bg2);}
             <option value="Hai Bà Trưng">Hai Bà Trưng</option>
             <option value="Hoàn Kiếm">Hoàn Kiếm</option>
           </select>
-          <select id="sx-sort" id-filter style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+          <select id="sx-sort" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
             <option value="">Sắp xếp</option>
             <option value="az">Tên A→Z</option>
             <option value="za">Tên Z→A</option>
@@ -547,17 +547,6 @@ select.form-control option{background:var(--bg2);}
     </div>
   </div>
   <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-ghichu" placeholder="Không ăn bún, thêm thịt..."></div>
-
-<div class="form-group"><label>Phân công Shipper</label>
-  <select class="form-control" id="kh-shipper">
-    <option value="">-- Chọn shipper --</option>
-    <option>Shipper 1</option>
-    <option>Shipper 2</option>
-    <option>Shipper 3</option>
-    <option>Shipper 4</option>
-    <option>Shipper 5</option>
-  </select>
-</div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addKhachHang()">Lưu</button></div>
 </div></div>
 
@@ -913,7 +902,7 @@ async function addKhachHang(){
   const ten=document.getElementById('kh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
   const spId=document.getElementById('kh-sp-id').value,spSel=document.getElementById('kh-sp-id'),spOpt=spSel.options[spSel.selectedIndex];
   const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
-  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),shipper:document.getElementById('kh-shipper').value,trang_thai:'Đang chạy',stt:allKH.length+1});
+  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),trang_thai:'Đang chạy',stt:allKH.length+1});
   if(error)return showToast('Lỗi: '+error.message,'error');
   showToast('Đã thêm khách hàng!');closeModal('modal-kh');
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
