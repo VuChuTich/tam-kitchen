@@ -814,7 +814,7 @@ updateProcessStatus();setInterval(updateProcessStatus,60000);
 
 // ── DASHBOARD ─────────────────────────────────
 async function loadDashboard(){
-  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
+  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*'),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
   allKH=kh||[];allDH=dh||[];allTC=tc||[];
   const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0)+(r.marketing||0),0);
   document.getElementById('dash-kpi').innerHTML=`
@@ -894,7 +894,7 @@ function renderKH(dangSXIds){
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
     return`<tr>
-      <td class="muted">${i+1}</td>
+      <td class="muted">${k.stt||i+1}</td>
       <td>${k.khu_vuc||'—'}</td>
       <td><strong>${k.ten}</strong></td>
       <td class="muted">${k.sdt||'—'}</td>
@@ -1128,43 +1128,102 @@ window.renderSXTable=function renderSXTable(){
   const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
   const kvSXFilter=document.getElementById('sx-kv-filter')?.value||'';
   const sortSX=document.getElementById('sx-sort')?.value||'';
-  // khu vuc filter - hardcoded
+
   let sxDisplay=[...allSX];
   if(shipperSXFilter)sxDisplay=sxDisplay.filter(r=>r.shipper===shipperSXFilter);
   if(kvSXFilter)sxDisplay=sxDisplay.filter(r=>(r.khu_vuc||'').includes(kvSXFilter));
   if(sortSX==='az')sxDisplay.sort((a,b)=>a.ten_kh.localeCompare(b.ten_kh,'vi'));
   else if(sortSX==='za')sxDisplay.sort((a,b)=>b.ten_kh.localeCompare(a.ten_kh,'vi'));
   else if(sortSX==='kv')sxDisplay.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
-  document.getElementById('sx-table-wrap').innerHTML=`<table><thead><tr>
-    <th>STT</th><th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}
-  </tr></thead><tbody>${sxDisplay.map((r,idx)=>`
-    <tr style="${r.da_huy?'opacity:0.45;':''}">
-      <td class="muted">${idx+1}</td>
-      <td>${r.khu_vuc||'—'}</td>
-      <td><strong>${r.ten_kh}</strong></td>
-      <td class="muted">${r.sdt||'—'}</td>
-      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td>
-      <td><span class="badge ${goiColor(r.goi)}">${r.goi||'—'}</span></td>
-      <td>${!r.da_huy&&b8?`<div class="qty-ctrl"><button class="qty-btn" onclick="changeSuat('${r.id}',-1,${r.so_suat_nhan||1})">−</button><span class="qty-num">${r.so_suat_nhan||1}</span><button class="qty-btn" onclick="changeSuat('${r.id}',1,${r.so_suat_nhan||1})">+</button></div>`:`<strong>${r.so_suat_nhan||1}</strong>`}</td>
-      <td><select onchange="updateShipperSX('${r.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:3px 8px;font-size:12px;background:var(--bg3);cursor:pointer">
-        <option value="">— Chọn —</option>
-        <option value="Shipper 1" ${r.shipper==='Shipper 1'?'selected':''}>Shipper 1</option>
-        <option value="Shipper 2" ${r.shipper==='Shipper 2'?'selected':''}>Shipper 2</option>
-        <option value="Shipper 3" ${r.shipper==='Shipper 3'?'selected':''}>Shipper 3</option>
-        <option value="Shipper 4" ${r.shipper==='Shipper 4'?'selected':''}>Shipper 4</option>
-        <option value="Shipper 5" ${r.shipper==='Shipper 5'?'selected':''}>Shipper 5</option>
-      </select></td>
-      <td>${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>
-      ${isToday?`<td style="display:flex;gap:4px;flex-wrap:wrap">
-        ${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}
-        ${r.da_huy&&b8?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩ Hoàn tác</button>`:''}
-        ${!r.da_huy&&isSau13h()?`
-          <button class="btn-primary btn-sm" onclick="themSuatSX('${r.id}','${r.khach_hang_id}',${r.so_suat_nhan||1})">+Suất</button>
-          <button class="btn-danger btn-sm" onclick="huyDonChieu('${r.id}','${r.khach_hang_id}')">Huỷ</button>
-        `:''}
-        ${r.da_huy?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩ Hoàn tác</button>`:''}
-      </td>`:''}
-    </tr>`).join('')}</tbody></table>`;
+  else if(sortSX==='shipper')sxDisplay.sort((a,b)=>(a.shipper||'zzz').localeCompare(b.shipper||'zzz'));
+
+  // Badge color theo gói
+  const goiBadge=g=>{
+    if(!g)return'gray';
+    const gl=g.toLowerCase();
+    if(gl.includes('multi'))return'purple';
+    if(gl.includes('plus m'))return'blue';
+    if(gl.includes('plus s'))return'gold';
+    if(gl.includes('standard m')||gl.includes('stan m'))return'red';
+    if(gl.includes('standard s')||gl.includes('stan s'))return'green';
+    return'gray';
+  };
+
+  // Thống kê tổng theo gói
+  const active=sxDisplay.filter(r=>!r.da_huy);
+  const stats={};
+  active.forEach(r=>{
+    const g=(r.goi||'').toLowerCase();
+    if(g.includes('stan s')||g.includes('standard s'))stats['Stan S']=(stats['Stan S']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('stan m')||g.includes('standard m'))stats['Stan M']=(stats['Stan M']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('plus s'))stats['Plus S']=(stats['Plus S']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('plus m'))stats['Plus M']=(stats['Plus M']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('multi'))stats['Multi']=(stats['Multi']||0)+(r.so_suat_nhan||1);
+    else stats[r.goi||'Khác']=(stats[r.goi||'Khác']||0)+(r.so_suat_nhan||1);
+  });
+  const tongSuat=active.reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+
+  // Stats bar
+  const statColors={'Stan S':'var(--green)','Stan M':'var(--red)','Plus S':'var(--gold)','Plus M':'var(--blue)','Multi':'var(--purple)'};
+  const statsHtml=`<div style="display:flex;gap:12px;align-items:center;padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);flex-wrap:wrap">
+    <span style="font-size:13px;font-weight:700;color:var(--text)">Tổng: <span style="color:var(--accent)">${tongSuat}</span> suất</span>
+    ${Object.entries(stats).map(([g,c])=>`<span style="font-size:12px;padding:3px 10px;border-radius:20px;background:${statColors[g]||'var(--bg4)'};color:#fff;font-weight:600">${g}: ${c}</span>`).join('')}
+  </div>`;
+
+  // Nhóm theo shipper
+  const shippers=[...new Set(sxDisplay.map(r=>r.shipper||'Chưa phân công'))].sort();
+  
+  let tableHtml='';
+  shippers.forEach(shipper=>{
+    const rows=sxDisplay.filter(r=>(r.shipper||'Chưa phân công')===shipper);
+    const shipperTong=rows.filter(r=>!r.da_huy).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+    
+    tableHtml+=`
+    <div style="margin-bottom:4px">
+      <div style="padding:8px 16px;background:var(--accent2);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between">
+        <span>🚴 ${shipper}</span>
+        <span style="background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:20px">${shipperTong} suất · ${rows.filter(r=>!r.da_huy).length} khách</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg3)">
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">STT</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Khu vực</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Tên KH</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">SĐT</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Địa chỉ</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Gói</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:center;border-bottom:1px solid var(--border)">Suất</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Trạng thái</th>
+          ${isToday?'<th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Thao tác</th>':''}
+        </tr></thead>
+        <tbody>
+          ${rows.map((r,idx)=>`
+          <tr style="${r.da_huy?'opacity:0.4;':''}background:${idx%2===0?'var(--bg2)':'var(--bg3)'}">
+            <td style="padding:9px 12px;font-size:12px;color:var(--text3)">${idx+1}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2)">${r.khu_vuc||'—'}</td>
+            <td style="padding:9px 12px;font-size:13px;font-weight:600">${r.ten_kh}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2)">${r.sdt||'—'}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td>
+            <td style="padding:9px 12px"><span class="badge ${goiBadge(r.goi)}">${r.goi||'—'}</span></td>
+            <td style="padding:9px 12px;text-align:center">${!r.da_huy&&b8?`<div class="qty-ctrl"><button class="qty-btn" onclick="changeSuat('${r.id}',-1,${r.so_suat_nhan||1})">−</button><span class="qty-num">${r.so_suat_nhan||1}</span><button class="qty-btn" onclick="changeSuat('${r.id}',1,${r.so_suat_nhan||1})">+</button></div>`:`<strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong>`}</td>
+            <td style="padding:9px 12px">${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>
+            ${isToday?`<td style="padding:9px 12px">
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                ${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}
+                ${r.da_huy?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩</button>`:''}
+                ${!r.da_huy&&isSau13h()?`
+                  <button class="btn-primary btn-sm" onclick="themSuatSX('${r.id}','${r.khach_hang_id}',${r.so_suat_nhan||1})">+Suất</button>
+                  <button class="btn-danger btn-sm" onclick="huyDonChieu('${r.id}','${r.khach_hang_id}')">Huỷ</button>
+                `:''}
+              </div>
+            </td>`:''}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  });
+
+  document.getElementById('sx-table-wrap').innerHTML = statsHtml + tableHtml;
 }
 async function generateSanXuatNgay(dateStr){
   const dow=new Date(dateStr+'T00:00:00').getDay(),dayNum=dow===0?8:dow+1;
