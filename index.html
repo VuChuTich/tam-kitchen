@@ -385,6 +385,7 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
       </select>
+      <button class="btn-danger" onclick="xoaTatCaKH()">🗑 Xoá tất cả KH</button>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -414,6 +415,7 @@ select.form-control option{background:var(--bg2);}
         <option value="date_asc">Cũ nhất</option>
       </select>
       <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
+      <button class="btn-danger" onclick="xoaTatCaDH()">🗑 Xoá tất cả ĐH</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -1077,6 +1079,33 @@ async function addDonHang(){
   setSelectedDays('dh-day-picker','2,3,4,5,6');
   loadDonHang();
 }
+async function xoaTatCaKH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allKH=[];
+  showToast('Đã xoá tất cả khách hàng!');
+  loadKhachHang();
+  loadDashboard();
+}
+
+async function xoaTatCaDH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allDH=[];
+  showToast('Đã xoá tất cả đơn hàng!');
+  loadDonHang();
+}
+  
 async function deleteDH(id){if(!confirm('Xoá?'))return;await db.from('don_hang').delete().eq('id',id);showToast('Đã xoá!');loadDonHang();}
 
 // ── SẢN XUẤT NGÀY ─────────────────────────────
