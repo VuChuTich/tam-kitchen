@@ -1672,12 +1672,9 @@ async function xoaTatCaKH(){
   if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
   if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
   if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
-  let success=0;
-  for(const k of allKH){
-    await db.from('khach_hang').delete().eq('id',k.id);
-    success++;
-  }
-  showToast(`Đã xoá ${success} khách hàng!`);
+  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast(`Đã xoá ${allKH.length} khách hàng!`);
   loadKhachHang();
 }
 // ── INIT ──────────────────────────────────────
