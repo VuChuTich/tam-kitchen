@@ -814,7 +814,7 @@ updateProcessStatus();setInterval(updateProcessStatus,60000);
 
 // ── DASHBOARD ─────────────────────────────────
 async function loadDashboard(){
-  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*'),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
+  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
   allKH=kh||[];allDH=dh||[];allTC=tc||[];
   const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0)+(r.marketing||0),0);
   document.getElementById('dash-kpi').innerHTML=`
@@ -894,7 +894,7 @@ function renderKH(dangSXIds){
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
     return`<tr>
-      <td class="muted">${k.stt||i+1}</td>
+      <td class="muted">${i+1}</td>
       <td>${k.khu_vuc||'—'}</td>
       <td><strong>${k.ten}</strong></td>
       <td class="muted">${k.sdt||'—'}</td>
@@ -1852,13 +1852,13 @@ async function confirmImport(){
   btn.textContent='Đang import...';btn.disabled=true;
   const today_str=today();
   let success=0,fail=0;
+  const{data:lastDH2}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+  let nextDHStt2=(lastDH2&&lastDH2.length?(lastDH2[0].stt||0):0)+1;
   for(const d of importData){
     try{
       // Lưu đơn hàng
-      const{data:lastDH2}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
-      const nextDHStt2=(lastDH2&&lastDH2.length?(lastDH2[0].stt||0):0)+1;
       await db.from('don_hang').insert({
-        stt:nextDHStt2,
+        stt:nextDHStt2++,
         ten_kh:d.ten,sdt:d.sdt,
         dia_chi:`${d.diachi}, Quận ${d.quan}`,
         ngay_dat:today_str,
