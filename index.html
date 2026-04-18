@@ -385,6 +385,7 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
       </select>
+      <button class="btn-danger" onclick="xoaTatCaKH()" style="margin-left:auto">🗑 Xoá tất cả KH</button>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -414,6 +415,7 @@ select.form-control option{background:var(--bg2);}
         <option value="date_asc">Cũ nhất</option>
       </select>
       <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
+      <button class="btn-danger" onclick="xoaTatCaDH()">🗑 Xoá tất cả ĐH</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -1693,6 +1695,33 @@ document.addEventListener('click',function(e){
   }
 });
 
+async function xoaTatCaKH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allKH=[];
+  showToast('Đã xoá tất cả khách hàng!');
+  loadKhachHang();
+  loadDashboard();
+}
+
+async function xoaTatCaDH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allDH=[];
+  showToast('Đã xoá tất cả đơn hàng!');
+  loadDonHang();
+}
+
 // ── INIT ──────────────────────────────────────
 (async()=>{
   const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('so_suat');
@@ -1767,7 +1796,10 @@ async function confirmImport(){
   for(const d of importData){
     try{
       // Lưu đơn hàng
+      const{data:lastDH2}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+      const nextDHStt2=(lastDH2&&lastDH2.length?(lastDH2[0].stt||0):0)+1;
       await db.from('don_hang').insert({
+        stt:nextDHStt2,
         ten_kh:d.ten,sdt:d.sdt,
         dia_chi:`${d.diachi}, Quận ${d.quan}`,
         ngay_dat:today_str,
@@ -1784,7 +1816,7 @@ async function confirmImport(){
       });
       // Tạo/cập nhật khách hàng
       let existKH=null;
-      if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).limit(1);if(data&&data.length)existKH=data[0];}
+      if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).eq('goi',`${d.goi} ${d.size}`);if(data&&data.length)existKH=data[0];}
       if(existKH){
         const ns=(existKH.suat_con||0)+d.soSuat;
         await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan,so_suat_ngay:d.soSuatNgay||1,shipper:d.shipper||existKH.shipper||''}).eq('id',existKH.id);
