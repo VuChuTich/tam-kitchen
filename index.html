@@ -894,7 +894,7 @@ function renderKH(dangSXIds){
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
     return`<tr>
-      <td class="muted">${k.stt||i+1}</td>
+      <td class="muted">${i+1}</td>
       <td>${k.khu_vuc||'—'}</td>
       <td><strong>${k.ten}</strong></td>
       <td class="muted">${k.sdt||'—'}</td>
