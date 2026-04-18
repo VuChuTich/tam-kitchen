@@ -1708,16 +1708,18 @@ let importData=[];
 function parseTxtLine(line){
   const parts=line.split('|').map(s=>s.trim());
   if(parts.length<7)return null;
-  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao]=parts;
+  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao,ghiChu,soSuatNgayStr,shipperStr]=parts;
   if(!ten||!sdt)return null;
   const soSuat=parseInt(soSuatStr)||0;
+  const soSuatNgay=parseInt(soSuatNgayStr)||1;
+  const shipper=shipperStr||'';
   const goiNorm=goi.toLowerCase().includes('plus')?'Plus':'Standard';
   const sizeNorm=size.toUpperCase()==='S'?'S':'M';
   const key=`${goiNorm}${sizeNorm}`;
   const giaSuat=GIA_SUAT[key]||48000;
   const tongTien=giaSuat*soSuat;
   const freeship=soSuat>=14;
-  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
+  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',ghiChu:ghiChu||'',soSuatNgay,shipper,tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
 }
 
 function previewImport(){
@@ -1741,6 +1743,8 @@ function previewImport(){
       <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent)">${d.soSuat}</td>
       <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--green)">${fmt(d.tongTien)}đ${d.freeship?' <span style="font-size:10px;color:var(--accent)">FREESHIP</span>':''}</td>
       <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.ghiChu||'—'}</td>
+      <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--orange)">${d.soSuatNgay||1}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.shipper||'—'}</td>
       <td style="padding:8px 12px;text-align:center"><span class="badge green">Sẵn sàng</span></td>
     </tr>`).join('');
   if(errors.length){
@@ -1774,17 +1778,19 @@ async function confirmImport(){
         trang_thai:'Đang chạy',
         goi:`${d.goi} ${d.size}`,
         ghi_chu:d.ghiChu||'',
+        so_suat_ngay:d.soSuatNgay||1,
+        shipper:d.shipper||'',
       });
       // Tạo/cập nhật khách hàng
       let existKH=null;
       if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).limit(1);if(data&&data.length)existKH=data[0];}
       if(existKH){
         const ns=(existKH.suat_con||0)+d.soSuat;
-        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan}).eq('id',existKH.id);
+        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan,so_suat_ngay:d.soSuatNgay||1,shipper:d.shipper||existKH.shipper||''}).eq('id',existKH.id);
       } else {
         const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
         const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
-        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',ghi_chu_suat_an:d.ghiChu||'',active:true});
+        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',ghi_chu_suat_an:d.ghiChu||'',so_suat_ngay:d.soSuatNgay||1,shipper:d.shipper||'',active:true});
       }
       success++;
     } catch(e){fail++;console.error(e);}
@@ -1836,6 +1842,8 @@ Lê Thị C | 0909123456 | Thanh Xuân | 67 Nguyễn Trãi | Standard | S | 14 |
           <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Suất</th>
           <th style="padding:8px 12px;text-align:right;font-size:11px;color:var(--text2);font-weight:600">Tổng tiền</th>
           <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Ghi chú</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">S/ngày</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Shipper</th>
           <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Trạng thái</th>
         </tr></thead>
         <tbody id="import-preview-body"></tbody>
