@@ -1792,7 +1792,7 @@ async function xoaTatCaDH(){
 
 // ── IMPORT TXT ────────────────────────────────
 const GIA_SUAT={StandardS:48000,StandardM:56000,PlusS:58000,PlusM:68000};
-let importData=[];
+var importData=[];
 
 function parseTxtLine(line){
   const parts=line.split('|').map(s=>s.trim());
