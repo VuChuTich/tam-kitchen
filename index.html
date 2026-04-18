@@ -585,6 +585,16 @@ select.form-control option{background:var(--bg2);}
   </div>
   <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-ghichu" placeholder="Không ăn bún, thêm thịt..."></div>
   <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
+  <div class="form-group"><label>Phân công Shipper</label>
+    <select class="form-control" id="kh-shipper">
+      <option value="">-- Chọn shipper --</option>
+      <option>Shipper 1</option>
+      <option>Shipper 2</option>
+      <option>Shipper 3</option>
+      <option>Shipper 4</option>
+      <option>Shipper 5</option>
+    </select>
+  </div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addKhachHang()">Lưu</button></div>
 </div></div>
 
@@ -613,7 +623,6 @@ select.form-control option{background:var(--bg2);}
   </div>
   <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-edit-ghichu"></div>
   <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-edit-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
-  <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-edit-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh-edit')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="saveKhachHang()">Lưu thay đổi</button></div>
 </div></div>
 
@@ -632,6 +641,16 @@ select.form-control option{background:var(--bg2);}
   </div>
   <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="dh-diachi" placeholder="Toà nhà ABC, 123 đường XYZ"></div>
   <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="dh-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
+  <div class="form-group"><label>Phân công Shipper</label>
+    <select class="form-control" id="dh-shipper">
+      <option value="">-- Chọn shipper --</option>
+      <option>Shipper 1</option>
+      <option>Shipper 2</option>
+      <option>Shipper 3</option>
+      <option>Shipper 4</option>
+      <option>Shipper 5</option>
+    </select>
+  </div>
   <div class="form-group"><label>Ngày giao trong tuần</label>
     <div class="day-picker" id="dh-day-picker">
       <button type="button" class="day-chip selected" data-day="2">T2</button>
@@ -862,11 +881,12 @@ function renderKH(dangSXIds){
   if(kvKHFilter)data=data.filter(k=>(k.khu_vuc||'').includes(kvKHFilter));
   // khu vuc filter - hardcoded
   // Sort
-  if(sortKH==='az')data.sort((a,b)=>a.ten.localeCompare(b.ten,'vi'));
-  else if(sortKH==='za')data.sort((a,b)=>b.ten.localeCompare(a.ten,'vi'));
-  else if(sortKH==='suat_asc')data.sort((a,b)=>(a.suat_con||0)-(b.suat_con||0));
-  else if(sortKH==='suat_desc')data.sort((a,b)=>(b.suat_con||0)-(a.suat_con||0));
-  else if(sortKH==='kv')data.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
+  if(sortKH==='az')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):a.ten.localeCompare(b.ten,'vi'));
+  else if(sortKH==='za')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):b.ten.localeCompare(a.ten,'vi'));
+  else if(sortKH==='suat_asc')data.sort((a,b)=>a.sdt===b.sdt?0:(a.suat_con||0)-(b.suat_con||0));
+  else if(sortKH==='suat_desc')data.sort((a,b)=>a.sdt===b.sdt?0:(b.suat_con||0)-(a.suat_con||0));
+  else if(sortKH==='kv')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
+  else data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.stt||0)-(b.stt||0));
   document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>S/ngày</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
@@ -945,7 +965,7 @@ async function addKhachHang(){
   const ten=document.getElementById('kh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
   const spId=document.getElementById('kh-sp-id').value,spSel=document.getElementById('kh-sp-id'),spOpt=spSel.options[spSel.selectedIndex];
   const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
-  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),so_suat_ngay:parseInt(document.getElementById('kh-sosuat-ngay').value)||1,trang_thai:'Đang chạy',stt:allKH.length+1});
+  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),so_suat_ngay:parseInt(document.getElementById('kh-sosuat-ngay').value)||1,shipper:document.getElementById('kh-shipper')?.value||'',trang_thai:'Đang chạy',stt:allKH.length+1});
   if(error)return showToast('Lỗi: '+error.message,'error');
   showToast('Đã thêm khách hàng!');addNotif('🆕',`Khách hàng mới: <strong>${ten}</strong> · ${document.getElementById('kh-kv').value||''}`);closeModal('modal-kh');
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
@@ -1000,7 +1020,8 @@ async function addDonHang(){
     thanh_toan:document.getElementById('dh-tt').value,
     dia_chi:diachi,
     ngay_giao_tuan:ngayGiao,
-    trang_thai:'Đang chạy'
+    trang_thai:'Đang chạy',
+    shipper:document.getElementById('dh-shipper')?.value||''
   });
   if(error)return showToast('Lỗi đơn hàng: '+error.message,'error');
 
@@ -1687,17 +1708,16 @@ let importData=[];
 function parseTxtLine(line){
   const parts=line.split('|').map(s=>s.trim());
   if(parts.length<7)return null;
-  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao,ghiChu,soSuatNgayStr]=parts;
+  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao]=parts;
   if(!ten||!sdt)return null;
   const soSuat=parseInt(soSuatStr)||0;
-  const soSuatNgay=parseInt(soSuatNgayStr)||1;
   const goiNorm=goi.toLowerCase().includes('plus')?'Plus':'Standard';
   const sizeNorm=size.toUpperCase()==='S'?'S':'M';
   const key=`${goiNorm}${sizeNorm}`;
   const giaSuat=GIA_SUAT[key]||48000;
   const tongTien=giaSuat*soSuat;
   const freeship=soSuat>=14;
-  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',ghiChu:ghiChu||'',soSuatNgay,tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
+  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
 }
 
 function previewImport(){
@@ -1760,11 +1780,11 @@ async function confirmImport(){
       if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).limit(1);if(data&&data.length)existKH=data[0];}
       if(existKH){
         const ns=(existKH.suat_con||0)+d.soSuat;
-        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',so_suat_ngay:d.soSuatNgay,goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan}).eq('id',existKH.id);
+        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan}).eq('id',existKH.id);
       } else {
         const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
         const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
-        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,so_suat_ngay:d.soSuatNgay,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',ghi_chu_suat_an:d.ghiChu||'',active:true});
+        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',ghi_chu_suat_an:d.ghiChu||'',active:true});
       }
       success++;
     } catch(e){fail++;console.error(e);}
@@ -1790,9 +1810,9 @@ function resetImport(){
   <h3>📥 Import đơn hàng từ TXT</h3>
   <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8">
     <strong>Định dạng mỗi dòng:</strong><br>
-    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao | Ghi chú | Suất/ngày</code><br><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao | Ghi chú</code><br><br>
     <strong>Ví dụ:</strong><br>
-    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay | 1</code><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay</code><br>
     <div style="margin-top:8px;color:var(--text3)">
       • Gói: Standard hoặc Plus &nbsp;|&nbsp; Size: S, M &nbsp;|&nbsp; Ngày giao: 2,3,4,5,6 (T2→CN=8)
     </div>
