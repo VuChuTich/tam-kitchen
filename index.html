@@ -415,6 +415,7 @@ select.form-control option{background:var(--bg2);}
         <option value="date_asc">Cũ nhất</option>
       </select>
       <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
+      <button class="btn-danger" onclick="xoaTatCaDH()" style="margin-left:auto">🗑 Xoá tất cả ĐH</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -1676,6 +1677,18 @@ async function xoaTatCaKH(){
   if(error)return showToast('Lỗi: '+error.message,'error');
   showToast(`Đã xoá ${allKH.length} khách hàng!`);
   loadKhachHang();
+}
+
+  async function xoaTatCaDH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast(`Đã xoá ${allDH.length} đơn hàng!`);
+  loadDonHang();
 }
 // ── INIT ──────────────────────────────────────
 (async()=>{
