@@ -1792,7 +1792,7 @@ async function xoaTatCaDH(){
 
 // ── IMPORT TXT ────────────────────────────────
 const GIA_SUAT={StandardS:48000,StandardM:56000,PlusS:58000,PlusM:68000};
-var importData=[];
+let importData=[];
 
 function parseTxtLine(line){
   const parts=line.split('|').map(s=>s.trim());
@@ -1852,12 +1852,17 @@ async function confirmImport(){
   btn.textContent='Đang import...';btn.disabled=true;
   const today_str=today();
   let success=0,fail=0;
-  const{data:lastDH2}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+  const{data:lastDH2,error:sttError}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+  if(sttError){
+    showToast('Lỗi kết nối bảng đơn hàng: '+sttError.message,'error');
+    btn.textContent='✓ Xác nhận import';btn.disabled=false;
+    return;
+  }
   let nextDHStt2=(lastDH2&&lastDH2.length?(lastDH2[0].stt||0):0)+1;
   for(const d of importData){
     try{
       // Lưu đơn hàng
-      await db.from('don_hang').insert({
+      const{error:insertError}=await db.from('don_hang').insert({
         stt:nextDHStt2++,
         ten_kh:d.ten,sdt:d.sdt,
         dia_chi:`${d.diachi}, Quận ${d.quan}`,
@@ -1873,6 +1878,7 @@ async function confirmImport(){
         so_suat_ngay:d.soSuatNgay||1,
         shipper:d.shipper||'',
       });
+      if(insertError)throw new Error(insertError.message);
       // Tạo/cập nhật khách hàng
       let existKH=null;
       if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).eq('goi',`${d.goi} ${d.size}`);if(data&&data.length)existKH=data[0];}
