@@ -385,7 +385,6 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
       </select>
-      <button class="btn-danger" onclick="xoaTatCaKH()" style="margin-left:auto">🗑 Xoá tất cả KH</button>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -415,7 +414,6 @@ select.form-control option{background:var(--bg2);}
         <option value="date_asc">Cũ nhất</option>
       </select>
       <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
-      <button class="btn-danger" onclick="xoaTatCaDH()" style="margin-left:auto">🗑 Xoá tất cả ĐH</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -613,6 +611,7 @@ select.form-control option{background:var(--bg2);}
     </div>
   </div>
   <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-edit-ghichu"></div>
+  <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-edit-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh-edit')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="saveKhachHang()">Lưu thay đổi</button></div>
 </div></div>
 
@@ -865,7 +864,7 @@ function renderKH(dangSXIds){
   else if(sortKH==='suat_asc')data.sort((a,b)=>(a.suat_con||0)-(b.suat_con||0));
   else if(sortKH==='suat_desc')data.sort((a,b)=>(b.suat_con||0)-(a.suat_con||0));
   else if(sortKH==='kv')data.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
-  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
+  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>S/ngày</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
@@ -877,7 +876,7 @@ function renderKH(dangSXIds){
       <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
       <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
       <td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td>
-      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td>
+      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong>${k.so_suat_ngay>1?`<span style="font-size:10px;background:var(--orange-soft);color:var(--orange);padding:2px 6px;border-radius:10px;margin-left:4px">${k.so_suat_ngay} suất/ngày</span>`:''}</td>
       <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td>
       <td><select onchange="updateShipperKH('${k.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:90px">
         <option value="">— Chọn —</option>
@@ -909,6 +908,7 @@ function openEditKH(id){
   document.getElementById('kh-edit-tong').value=k.tong_suat||0;
   document.getElementById('kh-edit-diachi').value=k.dia_chi||'';
   document.getElementById('kh-edit-ghichu').value=k.ghi_chu_suat_an||'';
+  document.getElementById('kh-edit-sosuat-ngay').value=k.so_suat_ngay||1;
   setSelectedDays('kh-edit-day-picker',k.ngay_giao_tuan||'2,3,4,5,6');
   if(k.san_pham_id){const sel=document.getElementById('kh-edit-sp-id');for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===k.san_pham_id){sel.selectedIndex=i;break;}}}
   openModal('modal-kh-edit');
@@ -932,6 +932,7 @@ async function saveKhachHang(){
     dia_chi:document.getElementById('kh-edit-diachi').value,
     ghi_chu_suat_an:document.getElementById('kh-edit-ghichu').value,
     ngay_giao_tuan:getSelectedDays('kh-edit-day-picker'),
+    so_suat_ngay:parseInt(document.getElementById('kh-edit-sosuat-ngay').value)||1,
     trang_thai:trangThai,
   }).eq('id',id);
   if(error)return showToast('Lỗi: '+error.message,'error');
@@ -941,7 +942,7 @@ async function addKhachHang(){
   const ten=document.getElementById('kh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
   const spId=document.getElementById('kh-sp-id').value,spSel=document.getElementById('kh-sp-id'),spOpt=spSel.options[spSel.selectedIndex];
   const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
-  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),trang_thai:'Đang chạy',stt:allKH.length+1});
+  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),so_suat_ngay:parseInt(document.getElementById('kh-sosuat-ngay').value)||1,trang_thai:'Đang chạy',stt:allKH.length+1});
   if(error)return showToast('Lỗi: '+error.message,'error');
   showToast('Đã thêm khách hàng!');addNotif('🆕',`Khách hàng mới: <strong>${ten}</strong> · ${document.getElementById('kh-kv').value||''}`);closeModal('modal-kh');
   document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
@@ -1142,7 +1143,7 @@ async function generateSanXuatNgay(dateStr){
   const dow=new Date(dateStr+'T00:00:00').getDay(),dayNum=dow===0?8:dow+1;
   const{data:kh}=await db.from('khach_hang').select('*').gt('suat_con',0);
   if(!kh||!kh.length)return;
-  const ins=kh.filter(k=>{const days=(k.ngay_giao_tuan||'2,3,4,5,6').split(',').map(Number);return days.includes(dayNum);}).map(k=>({ngay:dateStr,khach_hang_id:k.id,ten_kh:k.ten,khu_vuc:k.khu_vuc,sdt:k.sdt,dia_chi:k.dia_chi,goi:k.goi,so_suat_nhan:1,da_huy:false,da_chot:false}));
+  const ins=kh.filter(k=>{const days=(k.ngay_giao_tuan||'2,3,4,5,6').split(',').map(Number);return days.includes(dayNum);}).map(k=>({ngay:dateStr,khach_hang_id:k.id,ten_kh:k.ten,khu_vuc:k.khu_vuc,sdt:k.sdt,dia_chi:k.dia_chi,goi:k.goi,so_suat_nhan:k.so_suat_ngay||1,da_huy:false,da_chot:false}));
   if(ins.length)await db.from('san_xuat_ngay').insert(ins);
 }
 async function huyDon(id){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');const sxItem=allSX.find(s=>s.id===id);await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',id);showToast('Đã huỷ!','info');addNotif('🚫',`Huỷ suất (bảo lưu) · <strong>${sxItem?.ten_kh||''}</strong>`);loadSanXuat();}
@@ -1652,7 +1653,6 @@ function toggleNotifPanel(){
 }
 
 function clearNotifs(){
-  if(!confirm('Xoá tất cả thông báo?'))return;
   notifications=[];
   saveNotifs();
   renderNotifList();
@@ -1667,29 +1667,7 @@ document.addEventListener('click',function(e){
     panel.classList.remove('open');
   }
 });
-async function xoaTatCaKH(){
-  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
-  if(pass===null)return;
-  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
-  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
-  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
-  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
-  if(error)return showToast('Lỗi: '+error.message,'error');
-  showToast(`Đã xoá ${allKH.length} khách hàng!`);
-  loadKhachHang();
-}
 
-  async function xoaTatCaDH(){
-  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
-  if(pass===null)return;
-  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
-  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
-  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
-  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
-  if(error)return showToast('Lỗi: '+error.message,'error');
-  showToast(`Đã xoá ${allDH.length} đơn hàng!`);
-  loadDonHang();
-}
 // ── INIT ──────────────────────────────────────
 (async()=>{
   const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('so_suat');
