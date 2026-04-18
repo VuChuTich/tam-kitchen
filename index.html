@@ -385,7 +385,6 @@ select.form-control option{background:var(--bg2);}
         <option value="suat_desc">Suất giảm dần</option>
         <option value="kv">Theo khu vực</option>
       </select>
-      <button class="btn-danger" onclick="xoaTatCaKH()">🗑 Xoá tất cả KH</button>
       <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -415,7 +414,6 @@ select.form-control option{background:var(--bg2);}
         <option value="date_asc">Cũ nhất</option>
       </select>
       <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
-      <button class="btn-danger" onclick="xoaTatCaDH()">🗑 Xoá tất cả ĐH</button>
       <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
@@ -814,7 +812,7 @@ updateProcessStatus();setInterval(updateProcessStatus,60000);
 
 // ── DASHBOARD ─────────────────────────────────
 async function loadDashboard(){
-  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
+  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*'),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
   allKH=kh||[];allDH=dh||[];allTC=tc||[];
   const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0)+(r.marketing||0),0);
   document.getElementById('dash-kpi').innerHTML=`
@@ -889,7 +887,7 @@ function renderKH(dangSXIds){
   else if(sortKH==='suat_desc')data.sort((a,b)=>a.sdt===b.sdt?0:(b.suat_con||0)-(a.suat_con||0));
   else if(sortKH==='kv')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
   else data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.stt||0)-(b.stt||0));
-  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>S/ngày</th><th>Ghi chú</th><th>Shipper</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
+  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>S/ngày</th><th>Shipper</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
     const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
     let tt=k.trang_thai;let ttC=ttColor2(tt);
     if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
@@ -898,11 +896,11 @@ function renderKH(dangSXIds){
       <td>${k.khu_vuc||'—'}</td>
       <td><strong>${k.ten}</strong></td>
       <td class="muted">${k.sdt||'—'}</td>
-      <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
+      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
       <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
       <td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td>
-      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong>${k.so_suat_ngay>1?`<span style="font-size:10px;background:var(--orange-soft);color:var(--orange);padding:2px 6px;border-radius:10px;margin-left:4px">${k.so_suat_ngay} suất/ngày</span>`:''}</td>
-      <td class="muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||''}</td>
+      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td>
+      <td style="text-align:center"><strong style="color:var(--orange)">${k.so_suat_ngay||1}</strong></td>
       <td><select onchange="updateShipperKH('${k.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:90px">
         <option value="">— Chọn —</option>
         <option value="Shipper 1" ${k.shipper==='Shipper 1'?'selected':''}>Shipper 1</option>
@@ -911,6 +909,7 @@ function renderKH(dangSXIds){
         <option value="Shipper 4" ${k.shipper==='Shipper 4'?'selected':''}>Shipper 4</option>
         <option value="Shipper 5" ${k.shipper==='Shipper 5'?'selected':''}>Shipper 5</option>
       </select></td>
+      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||'—'}</td>
       <td><span class="badge ${ttC}">${tt}</span></td>
       <td style="display:flex;gap:4px;flex-wrap:wrap">
         <button onclick="openLichSuKH('${k.id}','${k.ten.replace(/'/g,"\'")}')" class="btn-ghost btn-sm">📋</button>
@@ -1079,33 +1078,6 @@ async function addDonHang(){
   setSelectedDays('dh-day-picker','2,3,4,5,6');
   loadDonHang();
 }
-async function xoaTatCaKH(){
-  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
-  if(pass===null)return;
-  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
-  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
-  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
-  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
-  if(error)return showToast('Lỗi: '+error.message,'error');
-  allKH=[];
-  showToast('Đã xoá tất cả khách hàng!');
-  loadKhachHang();
-  loadDashboard();
-}
-
-async function xoaTatCaDH(){
-  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
-  if(pass===null)return;
-  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
-  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
-  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
-  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
-  if(error)return showToast('Lỗi: '+error.message,'error');
-  allDH=[];
-  showToast('Đã xoá tất cả đơn hàng!');
-  loadDonHang();
-}
-  
 async function deleteDH(id){if(!confirm('Xoá?'))return;await db.from('don_hang').delete().eq('id',id);showToast('Đã xoá!');loadDonHang();}
 
 // ── SẢN XUẤT NGÀY ─────────────────────────────
@@ -1845,9 +1817,9 @@ function resetImport(){
   <h3>📥 Import đơn hàng từ TXT</h3>
   <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8">
     <strong>Định dạng mỗi dòng:</strong><br>
-    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao | Ghi chú | Suất/ngày | Shipper</code><br><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao | Ghi chú</code><br><br>
     <strong>Ví dụ:</strong><br>
-    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay | 1 | Shipper 1</code><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay</code><br>
     <div style="margin-top:8px;color:var(--text3)">
       • Gói: Standard hoặc Plus &nbsp;|&nbsp; Size: S, M &nbsp;|&nbsp; Ngày giao: 2,3,4,5,6 (T2→CN=8)
     </div>
