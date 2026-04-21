@@ -123,94 +123,20 @@ td.muted{color:var(--text2);}
 .suat-khu{font-size:11px;color:var(--text3);margin-top:1px;}
 .suat-num{font-size:20px;font-weight:700;min-width:30px;text-align:right;}
 
-/* SẢN XUẤT TUẦN */
-.sxt-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
+/* FINANCE */
+.finance-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.fin-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow);}
+.fin-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.fin-val{font-size:22px;font-weight:700;}
 
-.sxt-wrap {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: auto;
-}
-
-.sxt-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--bg2);
-  font-size: 13px;
-}
-
-.sxt-table thead th {
-  padding: 10px 8px;
-  background: var(--accent2);
-  color: #fff;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  border: 1px solid rgba(255,255,255,0.1);
-  white-space: nowrap;
-}
-
-.sxt-table thead th:first-child {
-  background: var(--accent2);
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  text-align: left;
-}
-
-.sxt-table tbody tr {
-  border-bottom: 1px solid var(--border);
-}
-
-.sxt-table tbody tr:hover {
-  background: var(--bg3) !important;
-}
-
-.sxt-table td {
-  padding: 10px 8px;
-  border: 1px solid var(--border);
-  text-align: center;
-}
-
-.sxt-table td:first-child {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  text-align: left;
-  border-right: 2px solid var(--accent);
-}
-
-.sxt-input {
-  width: 50px;
-  padding: 6px 4px;
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  text-align: center;
-  font-weight: 700;
-  color: var(--accent);
-  background: var(--bg2);
-  font-family: inherit;
-  font-size: 13px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.sxt-input:focus {
-  border-color: var(--accent);
-  background: #fff;
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
-.sxt-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+/* PROD */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.prod-goi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);}
+.prod-goi-title{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.prod-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);}
+.prod-row:last-child{border-bottom:none;}
+.prod-qty{font-size:16px;font-weight:700;color:var(--accent);}
+.prod-unit{font-size:11px;color:var(--text3);}
 
 /* LOADING */
 .loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:13px;}
@@ -245,12 +171,26 @@ select.form-control option{background:var(--bg2);}
 .qty-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
 .qty-num{font-size:14px;font-weight:700;min-width:20px;text-align:center;color:var(--accent);}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 18px;font-size:13px;z-index:300;transform:translateY(20px);opacity:0;transition:all 0.3s;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:var(--green);color:var(--green);}
-.toast.error{border-color:var(--red);color:var(--red);}
-.toast.info{border-color:var(--blue);color:var(--blue);}
+/* SẢN PHẨM */
+.sp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.sp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);}
+.sp-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.sp-ten{font-size:14px;font-weight:600;color:var(--text);}
+.sp-gia{font-size:20px;font-weight:700;color:var(--accent);}
+.sp-suat{font-size:12px;color:var(--text3);}
+.sp-desc{font-size:11px;color:var(--text3);margin-top:4px;}
+
+/* THỰC ĐƠN TUẦN */
+.tuan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px;}
+.thu-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;min-height:80px;}
+.thu-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.thu-mon{font-size:12px;color:var(--text);cursor:pointer;}
+.thu-mon:hover{color:var(--accent);}
+.thu-empty{font-size:11px;color:var(--text3);font-style:italic;cursor:pointer;}
+
+/* INLINE EDIT */
+.inline-edit{background:transparent;border:none;border-bottom:1px dashed var(--border2);color:var(--text);font-family:inherit;font-size:13px;width:60px;text-align:right;outline:none;padding:2px 4px;}
+.inline-edit:focus{border-bottom-color:var(--accent);}
 
 /* PROCESS STATUS */
 .process-status{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--radius);background:var(--bg3);border:1px solid var(--border);font-size:12px;}
@@ -259,21 +199,83 @@ select.form-control option{background:var(--bg2);}
 .process-dot.pending{background:var(--orange);}
 .process-dot.done{background:var(--text3);}
 
+/* SX HISTORY */
 .sx-history-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
 .sx-history-nav input[type=date]{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;}
 .sx-history-nav input[type=date]:focus{border-color:var(--accent);}
 
-.tuan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px;}
-.thu-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;min-height:80px;}
-.thu-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
-.thu-mon{font-size:12px;color:var(--text);cursor:pointer;}
-.thu-mon:hover{color:var(--accent);}
+/* CHẤM CÔNG */
+.cc-wrap{overflow-x:auto;}
+.cc-table{border-collapse:collapse;min-width:100%;}
+.cc-table th{font-size:10px;font-weight:600;color:var(--text2);padding:8px 5px;text-align:center;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap;}
+.cc-table td{padding:7px 5px;text-align:center;border-bottom:1px solid var(--border);font-size:13px;}
+.cc-table tr:hover td{background:var(--bg3);}
+.cc-name{text-align:left!important;font-weight:600;white-space:nowrap;padding-left:16px!important;color:var(--text);}
+.cc-role{font-size:11px;color:var(--text3);font-weight:400;}
+.cc-total{font-weight:700;color:var(--accent);background:var(--bg3)!important;font-size:14px;}
+.cc-check{width:18px;height:18px;cursor:pointer;accent-color:var(--accent);}
+.cc-weekend{background:rgba(0,0,0,0.02);}
+.cc-today th,.cc-today td{background:var(--accent-soft)!important;}
+.cc-month-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.cc-month-label{font-size:14px;font-weight:600;color:var(--text);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 18px;font-size:13px;z-index:300;transform:translateY(20px);opacity:0;transition:all 0.3s;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:var(--red);}
+.toast.info{border-color:var(--blue);color:var(--blue);}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
+/* THÔNG BÁO */
+.notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;transition:background 0.15s;}
+.notif-btn:hover{background:var(--accent-soft);}
+.notif-btn .bell{font-size:18px;}
+.notif-badge{position:absolute;top:2px;right:2px;width:16px;height:16px;background:var(--red);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;display:none;}
+.notif-badge.show{display:flex;}
+.notif-panel{position:absolute;top:56px;right:16px;width:360px;max-height:480px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:150;display:none;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-header-title{font-size:14px;font-weight:700;}
+.notif-clear{font-size:12px;color:var(--accent);cursor:pointer;background:none;border:none;font-family:inherit;}
+.notif-list{max-height:380px;overflow-y:auto;}
+.notif-item{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;transition:background 0.1s;}
+.notif-item:hover{background:var(--bg3);}
+.notif-item:last-child{border-bottom:none;}
+.notif-item.unread{background:var(--accent-soft);}
+.notif-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.notif-body{}
+.notif-text{font-size:13px;color:var(--text);line-height:1.5;}
+.notif-time{font-size:11px;color:var(--text3);margin-top:2px;}
+.notif-empty{padding:32px;text-align:center;color:var(--text3);font-size:13px;}
 .page.active>*{animation:fadeUp 0.3s ease both;}
 .page.active>*:nth-child(2){animation-delay:0.04s;}
 .page.active>*:nth-child(3){animation-delay:0.08s;}
+
+/* THƯ VIỆN MÓN ĂN */
+.mon-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+.mon-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg3);}
+.mon-card-name{font-size:15px;font-weight:700;}
+.mon-card-body{padding:0;}
+.mon-nhom{border-bottom:1px solid var(--border);}
+.mon-nhom:last-child{border-bottom:none;}
+.mon-nhom-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;padding:8px 16px;background:var(--bg3);}
+.mon-nl-row{display:grid;grid-template-columns:1fr 80px 80px 80px 80px;gap:0;border-bottom:1px solid var(--border);}
+.mon-nl-row:last-child{border-bottom:none;}
+.mon-nl-row > div{padding:8px 14px;font-size:13px;display:flex;align-items:center;}
+.mon-nl-row > div:not(:first-child){justify-content:flex-end;color:var(--text2);}
+.mon-nl-row.header > div{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;background:var(--bg);padding:6px 14px;}
+.bien-row{display:flex;gap:12px;padding:10px 16px;background:var(--green-soft);border-top:1px solid var(--border);}
+.bien-item{font-size:12px;}
+.bien-item .label{color:var(--text3);}
+.bien-item .val{font-weight:700;color:var(--accent);}
+.bien-item .val.loss{color:var(--red);}
+/* TABS TD */
+.td-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;}
+.td-tab-btn{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:-2px;transition:all 0.15s;}
+.td-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
+.td-tab-btn:hover{color:var(--text);}
 </style>
 </head>
 <body>
@@ -290,7 +292,6 @@ select.form-control option{background:var(--bg2);}
     <button class="nav-item" onclick="goPage('khachhang',this)"><span class="icon">◎</span> Khách hàng</button>
     <button class="nav-item" onclick="goPage('donhang',this)"><span class="icon">◻</span> Đơn hàng</button>
     <button class="nav-item" onclick="goPage('sanxuat',this)"><span class="icon">◈</span> Sản xuất ngày</button>
-    <button class="nav-item" onclick="goPage('sanxuat-tuan',this)"><span class="icon">◈</span> Sản xuất tuần</button>
     <button class="nav-item" onclick="goPage('thucdon',this)"><span class="icon">◑</span> Thực đơn & Nguyên liệu</button>
     <div class="nav-section-label" style="margin-top:10px">Nhân sự</div>
     <button class="nav-item" onclick="goPage('chamcong',this)"><span class="icon">◉</span> Chấm công</button>
@@ -306,6 +307,21 @@ select.form-control option{background:var(--bg2);}
     <div class="topbar-right">
       <div class="topbar-date" id="topbar-date"></div>
       <div class="process-status"><div class="process-dot pending" id="process-dot"></div><span id="process-label">Chờ 8h</span></div>
+      <div style="position:relative">
+        <button class="notif-btn" onclick="toggleNotifPanel()">
+          <span class="bell">🔔</span>
+          <span class="notif-badge" id="notif-badge">0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-header">
+            <span class="notif-header-title">Thông báo</span>
+            <button class="notif-clear" onclick="clearNotifs()">Xoá tất cả</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div class="notif-empty">Chưa có thông báo</div>
+          </div>
+        </div>
+      </div>
       <div class="avatar">TK</div>
     </div>
   </header>
@@ -319,12 +335,12 @@ select.form-control option{background:var(--bg2);}
         <div class="mini-chart" id="dash-chart"><div class="loading"><span class="spinner"></span></div></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Sắp hết suất (≤5)</span></div>
+        <div class="card-header"><span class="card-title">Sắp hết suất (≤5)</span><button class="card-action" onclick="goPage('khachhang',document.querySelectorAll('.nav-item')[3])">Xem tất cả →</button></div>
         <div class="suat-list" id="dash-saphet"><div class="loading"><span class="spinner"></span></div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Đơn hàng gần đây</span></div>
+      <div class="card-header"><span class="card-title">Đơn hàng gần đây</span><button class="card-action" onclick="goPage('donhang',document.querySelectorAll('.nav-item')[4])">Xem tất cả →</button></div>
       <div class="tbl-wrap" id="dash-donhang"><div class="loading"><span class="spinner"></span></div></div>
     </div>
   </div>
@@ -344,7 +360,33 @@ select.form-control option{background:var(--bg2);}
       <button class="filter-btn active" onclick="filterKH(this,'all')">Tất cả</button>
       <button class="filter-btn" onclick="filterKH(this,'low')">Sắp hết (≤5)</button>
       <button class="filter-btn" onclick="filterKH(this,'out')">Hết suất</button>
-      <button class="btn-primary" onclick="openModal('modal-kh')" style="margin-left:auto">+ Thêm khách</button>
+      <select class="filter-btn" id="kh-shipper-filter" onchange="loadKhachHang()" style="cursor:pointer">
+        <option value="">Tất cả shipper</option>
+        <option>Shipper 1</option>
+        <option>Shipper 2</option>
+        <option>Shipper 3</option>
+        <option>Shipper 4</option>
+        <option>Shipper 5</option>
+      </select>
+      <select class="filter-btn" id="kh-kv-filter" onchange="loadKhachHang()" style="cursor:pointer">
+        <option value="">Tất cả khu vực</option>
+        <option value="Thanh Xuân">Thanh Xuân</option>
+        <option value="Cầu Giấy">Cầu Giấy</option>
+        <option value="Đống Đa">Đống Đa</option>
+        <option value="Ba Đình">Ba Đình</option>
+        <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+        <option value="Hoàn Kiếm">Hoàn Kiếm</option>
+      </select>
+      <select class="filter-btn" id="kh-sort" onchange="loadKhachHang()" style="cursor:pointer">
+        <option value="">Sắp xếp</option>
+        <option value="az">Tên A→Z</option>
+        <option value="za">Tên Z→A</option>
+        <option value="suat_asc">Suất tăng dần</option>
+        <option value="suat_desc">Suất giảm dần</option>
+        <option value="kv">Theo khu vực</option>
+      </select>
+      <button class="btn-danger" onclick="xoaTatCaKH()" style="margin-left:auto">🗑 Xoá tất cả KH</button>
+      <button class="btn-primary" onclick="openModal('modal-kh')">+ Thêm khách</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="kh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
   </div>
@@ -357,57 +399,118 @@ select.form-control option{background:var(--bg2);}
       <button class="filter-btn active" onclick="filterDH(this,'all')">Tất cả</button>
       <button class="filter-btn" onclick="filterDH(this,'chuatt')">Chưa thanh toán</button>
       <button class="filter-btn" onclick="filterDH(this,'dangchay')">Đang chạy</button>
-      <button class="btn-primary" onclick="openModal('modal-dh')" style="margin-left:auto">+ Thêm đơn</button>
+      <select class="filter-btn" id="dh-shipper-filter" onchange="renderDH()" style="cursor:pointer">
+        <option value="">Tất cả shipper</option>
+        <option>Shipper 1</option>
+        <option>Shipper 2</option>
+        <option>Shipper 3</option>
+        <option>Shipper 4</option>
+        <option>Shipper 5</option>
+      </select>
+      <select class="filter-btn" id="dh-sort" onchange="renderDH()" style="cursor:pointer">
+        <option value="">Sắp xếp</option>
+        <option value="az">Tên A→Z</option>
+        <option value="za">Tên Z→A</option>
+        <option value="date_desc">Mới nhất</option>
+        <option value="date_asc">Cũ nhất</option>
+      </select>
+      <button class="btn-ghost" onclick="openModal('modal-import')">📥 Import TXT</button>
+      <button class="btn-danger" onclick="xoaTatCaDH()">🗑 Xoá tất cả ĐH</button>
+      <button class="btn-primary" onclick="openModal('modal-dh')">+ Thêm đơn</button>
     </div>
     <div class="full-card"><div class="tbl-wrap" id="dh-table-wrap"><div class="loading"><span class="spinner"></span></div></div></div>
   </div>
 
-  <!-- SẢN XUẤT NGÀY -->
+  <!-- SẢN XUẤT -->
   <div class="page" id="page-sanxuat">
     <div class="page-header"><h1>Sản xuất hàng ngày</h1><p id="sx-date-label">Hôm nay</p></div>
+    <div id="sx-time-alert"></div>
+    <!-- Chọn ngày xem lịch sử -->
     <div class="sx-history-nav">
       <span style="font-size:13px;color:var(--text2);font-weight:500">Xem ngày:</span>
       <input type="date" id="sx-pick-date" onchange="loadSanXuat()">
       <button class="btn-ghost btn-sm" onclick="document.getElementById('sx-pick-date').value=today();loadSanXuat()">Hôm nay</button>
       <button class="btn-ghost btn-sm" onclick="setNgayMai()">Ngày mai →</button>
+      <span id="sx-history-badge"></span>
     </div>
+    <div class="kpi-grid" id="sx-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div class="prod-grid" id="sx-goi"></div>
     <div class="full-card">
       <div class="card-header" style="flex-wrap:wrap;gap:10px">
         <span class="card-title">Danh sách giao hàng</span>
-        <button class="btn-primary btn-sm" onclick="chotSanXuat()" style="margin-left:auto">Chốt 1h chiều</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex:1">
+          <select id="sx-shipper-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+            <option value="">Tất cả shipper</option>
+            <option>Shipper 1</option>
+            <option>Shipper 2</option>
+            <option>Shipper 3</option>
+            <option>Shipper 4</option>
+            <option>Shipper 5</option>
+          </select>
+          <select id="sx-kv-filter" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:130px">
+            <option value="">Tất cả khu vực</option>
+            <option value="Thanh Xuân">Thanh Xuân</option>
+            <option value="Cầu Giấy">Cầu Giấy</option>
+            <option value="Đống Đa">Đống Đa</option>
+            <option value="Ba Đình">Ba Đình</option>
+            <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+            <option value="Hoàn Kiếm">Hoàn Kiếm</option>
+          </select>
+          <select id="sx-sort" onchange="renderSXTable()" style="border:1px solid var(--border2);border-radius:var(--radius);padding:6px 10px;font-size:12px;background:var(--bg3);cursor:pointer">
+            <option value="">Sắp xếp</option>
+            <option value="az">Tên A→Z</option>
+            <option value="za">Tên Z→A</option>
+            <option value="kv">Theo khu vực</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost btn-sm" onclick="resetSanXuatNgayMai()">Reset ngày mai</button>
+          <button class="btn-primary btn-sm" onclick="chotSanXuat()">Chốt 1h chiều</button>
+        </div>
       </div>
       <div class="tbl-wrap" id="sx-table-wrap"><div class="loading"><span class="spinner"></span></div></div>
-    </div>
-  </div>
-
-  <!-- SẢN XUẤT TUẦN (MỚI) -->
-  <div class="page" id="page-sanxuat-tuan">
-    <div class="page-header">
-      <h1>Sản xuất tuần</h1>
-      <p id="sxt-week-label">Tuần hiện tại</p>
-    </div>
-    <div id="sxt-container">
-      <div class="loading"><span class="spinner"></span> Đang tải...</div>
     </div>
   </div>
 
   <!-- THỰC ĐƠN -->
   <div class="page" id="page-thucdon">
     <div class="page-header"><h1>Thực đơn & Nguyên liệu</h1><p>Lịch tuần · Thư viện món · Nguyên liệu tự động</p></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span style="font-size:13px;color:var(--text2);font-weight:500">Tuần:</span>
-      <button class="filter-btn active" id="btn-tuan-a" onclick="switchTuan('A')">Tuần A</button>
-      <button class="filter-btn" id="btn-tuan-b" onclick="switchTuan('B')">Tuần B</button>
+    <div class="td-tabs">
+      <button class="td-tab-btn active" onclick="switchTDTab('lich',this)">📅 Lịch thực đơn</button>
+      <button class="td-tab-btn" onclick="switchTDTab('thuvien',this)">🍽️ Thư viện món ăn</button>
+      <button class="td-tab-btn" onclick="switchTDTab('nguyenlieu',this)">🛒 Order nguyên liệu</button>
     </div>
-    <div class="tuan-grid" id="tuan-grid"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
-      <div class="full-card">
-        <div class="card-header"><span class="card-title">Định lượng theo gói</span></div>
-        <div class="tbl-wrap" id="td-thucdon"><div class="loading"><span class="spinner"></span></div></div>
+    <!-- TAB LỊCH -->
+    <div id="td-tab-lich">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:13px;color:var(--text2);font-weight:500">Tuần:</span>
+        <button class="filter-btn active" id="btn-tuan-a" onclick="switchTuan('A')">Tuần A</button>
+        <button class="filter-btn" id="btn-tuan-b" onclick="switchTuan('B')">Tuần B</button>
       </div>
+      <div class="tuan-grid" id="tuan-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+        <div class="full-card">
+          <div class="card-header"><span class="card-title">Định lượng theo gói</span></div>
+          <div class="tbl-wrap" id="td-thucdon"><div class="loading"><span class="spinner"></span></div></div>
+        </div>
+        <div class="full-card">
+          <div class="card-header"><span class="card-title">Order nguyên liệu hôm nay</span><span style="font-size:11px;color:var(--text3)">Từ bảng sản xuất</span></div>
+          <div class="tbl-wrap" id="td-nguyenlieu"><div class="loading"><span class="spinner"></span></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- TAB THƯ VIỆN -->
+    <div id="td-tab-thuvien" style="display:none">
+      <div class="toolbar">
+        <button class="btn-primary" onclick="openModal('modal-mon-new')">+ Thêm món ăn</button>
+      </div>
+      <div id="thu-vien-list"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+    <!-- TAB NGUYÊN LIỆU -->
+    <div id="td-tab-nguyenlieu" style="display:none">
       <div class="full-card">
-        <div class="card-header"><span class="card-title">Order nguyên liệu hôm nay</span><span style="font-size:11px;color:var(--text3)">Từ bảng sản xuất</span></div>
-        <div class="tbl-wrap" id="td-nguyenlieu"><div class="loading"><span class="spinner"></span></div></div>
+        <div class="card-header"><span class="card-title">Order nguyên liệu hôm nay</span><span style="font-size:11px;color:var(--text3)">Tính tự động từ bảng sản xuất × định lượng</span></div>
+        <div class="tbl-wrap" id="td-nguyenlieu-full"><div class="loading"><span class="spinner"></span></div></div>
       </div>
     </div>
   </div>
@@ -416,9 +519,9 @@ select.form-control option{background:var(--bg2);}
   <div class="page" id="page-chamcong">
     <div class="page-header"><h1>Chấm công</h1><p id="cc-month-title">Tháng hiện tại</p></div>
     <div class="toolbar">
-      <div style="display:flex;align-items:center;gap:10px">
+      <div class="cc-month-nav">
         <button class="btn-ghost btn-sm" onclick="changeMonth(-1)">← Tháng trước</button>
-        <span id="cc-month-label" style="font-weight:600;color:var(--text);min-width:100px;text-align:center"></span>
+        <span class="cc-month-label" id="cc-month-label"></span>
         <button class="btn-ghost btn-sm" onclick="changeMonth(1)">Tháng sau →</button>
       </div>
       <button class="btn-primary" onclick="openModal('modal-nv')" style="margin-left:auto">+ Thêm nhân viên</button>
@@ -434,7 +537,11 @@ select.form-control option{background:var(--bg2);}
   <!-- TÀI CHÍNH -->
   <div class="page" id="page-taichinh">
     <div class="page-header"><h1>Tài chính nội bộ</h1><p>TÁM Kitchen</p></div>
-    <div class="kpi-grid" id="tc-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div class="finance-grid" id="tc-kpi"><div class="loading"><span class="spinner"></span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <div class="fin-card" id="tc-tylele" style="border-radius:var(--radius-lg)"></div>
+      <div class="fin-card" id="tc-sodu" style="border-radius:var(--radius-lg)"></div>
+    </div>
     <div class="full-card">
       <div class="card-header"><span class="card-title">Sổ thu chi</span><button class="btn-primary btn-sm" onclick="openModal('modal-tc')">+ Thêm giao dịch</button></div>
       <div class="tbl-wrap" id="tc-table-wrap"><div class="loading"><span class="spinner"></span></div></div>
@@ -446,20 +553,25 @@ select.form-control option{background:var(--bg2);}
 <div class="modal-overlay" id="modal-sp"><div class="modal"><h3>Thêm sản phẩm</h3>
   <div class="form-grid">
     <div class="form-group"><label>Tên sản phẩm *</label><input class="form-control" id="sp-ten" placeholder="Standard M - 14 suất"></div>
+    <div class="form-group"><label>Gói</label><select class="form-control" id="sp-goi"><option>Standard</option><option>Plus</option></select></div>
+    <div class="form-group"><label>Size</label><select class="form-control" id="sp-size"><option>S</option><option>M</option></select></div>
     <div class="form-group"><label>Giá 1 suất (đ)</label><input class="form-control" id="sp-gia" type="number" placeholder="56000"></div>
     <div class="form-group"><label>Số suất</label><input class="form-control" id="sp-sosuat" type="number" placeholder="14"></div>
     <div class="form-group"><label>Tổng tiền (đ)</label><input class="form-control" id="sp-tong" type="number" placeholder="784000"></div>
   </div>
+  <div class="form-group"><label>Mô tả</label><input class="form-control" id="sp-mota" placeholder="Sử dụng trong 30 ngày · FREESHIP"></div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-sp')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addSanPham()">Lưu</button></div>
 </div></div>
 
-<!-- MODAL KHÁCH HÀNG -->
+<!-- MODAL KHÁCH HÀNG THÊM MỚI -->
 <div class="modal-overlay" id="modal-kh"><div class="modal"><h3>Thêm khách hàng</h3>
   <div class="form-grid">
     <div class="form-group"><label>Tên *</label><input class="form-control" id="kh-ten" placeholder="Nguyễn Văn A"></div>
     <div class="form-group"><label>SĐT</label><input class="form-control" id="kh-sdt" placeholder="0912345678"></div>
     <div class="form-group"><label>Khu vực</label><input class="form-control" id="kh-kv" placeholder="Láng Hạ"></div>
+    <div class="form-group"><label>Sản phẩm</label><select class="form-control" id="kh-sp-id" onchange="onKhSPChange()"><option value="">-- Chọn gói --</option></select></div>
     <div class="form-group"><label>Suất còn lại</label><input class="form-control" id="kh-con" type="number" placeholder="14"></div>
+    <div class="form-group"><label>Tổng suất</label><input class="form-control" id="kh-tong" type="number" placeholder="14"></div>
   </div>
   <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="kh-diachi" placeholder="Toà nhà ABC, 123 đường XYZ"></div>
   <div class="form-group"><label>Ngày giao trong tuần</label>
@@ -473,7 +585,47 @@ select.form-control option{background:var(--bg2);}
       <button type="button" class="day-chip" data-day="8">CN</button>
     </div>
   </div>
+  <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-ghichu" placeholder="Không ăn bún, thêm thịt..."></div>
+  <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
+  <div class="form-group"><label>Phân công Shipper</label>
+    <select class="form-control" id="kh-shipper">
+      <option value="">-- Chọn shipper --</option>
+      <option>Shipper 1</option>
+      <option>Shipper 2</option>
+      <option>Shipper 3</option>
+      <option>Shipper 4</option>
+      <option>Shipper 5</option>
+    </select>
+  </div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addKhachHang()">Lưu</button></div>
+</div></div>
+
+<!-- MODAL SỬA KHÁCH HÀNG -->
+<div class="modal-overlay" id="modal-kh-edit"><div class="modal"><h3>Chỉnh sửa khách hàng</h3>
+  <input type="hidden" id="kh-edit-id">
+  <div class="form-grid">
+    <div class="form-group"><label>Tên *</label><input class="form-control" id="kh-edit-ten"></div>
+    <div class="form-group"><label>SĐT</label><input class="form-control" id="kh-edit-sdt"></div>
+    <div class="form-group"><label>Khu vực</label><input class="form-control" id="kh-edit-kv"></div>
+    <div class="form-group"><label>Gói ăn</label><select class="form-control" id="kh-edit-sp-id" onchange="onKhEditSPChange()"><option value="">-- Chọn gói --</option></select></div>
+    <div class="form-group"><label>Suất còn lại</label><input class="form-control" id="kh-edit-con" type="number"></div>
+    <div class="form-group"><label>Tổng suất</label><input class="form-control" id="kh-edit-tong" type="number"></div>
+  </div>
+  <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="kh-edit-diachi"></div>
+  <div class="form-group"><label>Ngày giao trong tuần</label>
+    <div class="day-picker" id="kh-edit-day-picker">
+      <button type="button" class="day-chip" data-day="2">T2</button>
+      <button type="button" class="day-chip" data-day="3">T3</button>
+      <button type="button" class="day-chip" data-day="4">T4</button>
+      <button type="button" class="day-chip" data-day="5">T5</button>
+      <button type="button" class="day-chip" data-day="6">T6</button>
+      <button type="button" class="day-chip" data-day="7">T7</button>
+      <button type="button" class="day-chip" data-day="8">CN</button>
+    </div>
+  </div>
+  <div class="form-group"><label>Ghi chú</label><input class="form-control" id="kh-edit-ghichu"></div>
+  <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="kh-edit-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-kh-edit')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="saveKhachHang()">Lưu thay đổi</button></div>
 </div></div>
 
 <!-- MODAL ĐƠN HÀNG -->
@@ -482,9 +634,25 @@ select.form-control option{background:var(--bg2);}
     <div class="form-group"><label>Tên KH *</label><input class="form-control" id="dh-ten" placeholder="Nguyễn Văn A"></div>
     <div class="form-group"><label>SĐT</label><input class="form-control" id="dh-sdt" placeholder="0912345678"></div>
     <div class="form-group"><label>Ngày đặt</label><input class="form-control" id="dh-ngay" type="date"></div>
-    <div class="form-group"><label>Số suất</label><input class="form-control" id="dh-sosuat" type="number" placeholder="14"></div>
+    <div class="form-group"><label>Thanh toán</label><select class="form-control" id="dh-tt"><option>Chưa TT</option><option>Đã TT</option></select></div>
+  </div>
+  <div class="form-group"><label>Sản phẩm *</label><select class="form-control" id="dh-sp-id" onchange="onDHSPChange()"><option value="">-- Chọn gói ăn --</option></select></div>
+  <div class="form-grid" style="margin-top:4px">
+    <div class="form-group"><label>Tổng tiền (tự động)</label><input class="form-control" id="dh-tong" type="number" readonly style="opacity:0.6"></div>
+    <div class="form-group"><label>Số suất (tự động)</label><input class="form-control" id="dh-sosuat" type="number" readonly style="opacity:0.6"></div>
   </div>
   <div class="form-group"><label>Địa chỉ</label><input class="form-control" id="dh-diachi" placeholder="Toà nhà ABC, 123 đường XYZ"></div>
+  <div class="form-group"><label>Số suất/ngày</label><input class="form-control" id="dh-sosuat-ngay" type="number" placeholder="1" value="1" min="1" max="10"></div>
+  <div class="form-group"><label>Phân công Shipper</label>
+    <select class="form-control" id="dh-shipper">
+      <option value="">-- Chọn shipper --</option>
+      <option>Shipper 1</option>
+      <option>Shipper 2</option>
+      <option>Shipper 3</option>
+      <option>Shipper 4</option>
+      <option>Shipper 5</option>
+    </select>
+  </div>
   <div class="form-group"><label>Ngày giao trong tuần</label>
     <div class="day-picker" id="dh-day-picker">
       <button type="button" class="day-chip selected" data-day="2">T2</button>
@@ -497,6 +665,79 @@ select.form-control option{background:var(--bg2);}
     </div>
   </div>
   <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-dh')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addDonHang()">Lưu</button></div>
+</div></div>
+
+<!-- MODAL THÊM MÓN MỚI -->
+<div class="modal-overlay" id="modal-mon-new"><div class="modal" style="width:600px">
+  <h3>Thêm món ăn mới</h3>
+  <div class="form-grid">
+    <div class="form-group"><label>Tên món *</label><input class="form-control" id="mn-ten" placeholder="Đậu phụ xào nấm"></div>
+    <div class="form-group"><label>Loại</label>
+      <select class="form-control" id="mn-loai"><option value="Standard">Standard</option><option value="Plus">Plus</option><option value="Ca hai">Cả hai</option></select>
+    </div>
+  </div>
+  <!-- PROTEIN -->
+  <!-- HEADER CỘT -->
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:14px 0 6px;padding:0 2px">
+    <div style="font-size:11px;font-weight:600;color:var(--text3)">Nguyên liệu</div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Size S (g)</div>
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Size M (g)</div>
+  </div>
+  <!-- PROTEIN -->
+  <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Protein chính</div>
+  <div id="mn-protein-list">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
+      <input class="form-control" placeholder="VD: Đùi gà" id="mn-p-ten-0">
+      <input class="form-control" type="number" placeholder="70" id="mn-p-s-0" style="text-align:center">
+      <input class="form-control" type="number" placeholder="120" id="mn-p-m-0" style="text-align:center">
+    </div>
+  </div>
+  <!-- TINH BỘT -->
+  <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Tinh bột</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
+    <input class="form-control" value="Cơm gạo lứt" id="mn-tb-ten" readonly style="opacity:0.7">
+    <input class="form-control" type="number" value="67" id="mn-tb-s" style="text-align:center">
+    <input class="form-control" type="number" value="67" id="mn-tb-m" style="text-align:center">
+  </div>
+  <!-- CHẤT XƠ -->
+  <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Chất xơ — 5 loại rau</div>
+  <div id="mn-rau-list">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 24px;gap:8px;margin-bottom:8px">
+      <input class="form-control" placeholder="Su su" id="mn-r-ten-0" value="Su su">
+      <input class="form-control" type="number" value="30" id="mn-r-s-0" style="text-align:center">
+      <input class="form-control" type="number" value="30" id="mn-r-m-0" style="text-align:center">
+      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:0">×</button>
+    </div>
+  </div>
+  <button onclick="addRauRow()" class="btn-ghost btn-sm" style="margin-bottom:14px">+ Thêm rau</button>
+  <!-- BAO BÌ -->
+  <div style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Bao bì</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+    <input class="form-control" value="Hộp + đũa thìa" id="mn-bb-ten" readonly style="opacity:0.7">
+    <input class="form-control" type="number" value="67" id="mn-bb-s" style="text-align:center">
+    <input class="form-control" type="number" value="67" id="mn-bb-m" style="text-align:center">
+  </div>
+  <div class="modal-footer" style="margin-top:20px">
+    <button class="btn-cancel" onclick="closeModal('modal-mon-new')">Huỷ</button>
+    <button class="btn-primary" style="margin-left:0" onclick="saveMonMoi()">Lưu món ăn</button>
+  </div>
+</div></div>
+
+<!-- MODAL CHI PHÍ MÓN (SỬA) -->
+<div class="modal-overlay" id="modal-mon-edit"><div class="modal" style="width:600px">
+  <h3 id="mon-edit-title">Chỉnh sửa món ăn</h3>
+  <input type="hidden" id="mon-edit-id">
+  <div id="mon-edit-content"></div>
+  <div class="modal-footer">
+    <button class="btn-cancel" onclick="closeModal('modal-mon-edit')">Huỷ</button>
+    <button class="btn-primary" style="margin-left:0" onclick="saveChiPhiMon()">Lưu</button>
+  </div>
+</div></div>
+
+<!-- MODAL THÊM MÓN (cũ giữ lại cho lịch thực đơn) -->
+<div class="modal-overlay" id="modal-mon"><div class="modal"><h3>Thêm vào lịch thực đơn</h3>
+  <div class="form-group"><label>Tên món</label><input class="form-control" id="mon-ten" placeholder="Đậu phụ xào nấm"></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-mon')">Huỷ</button><button class="btn-primary" style="margin-left:0" onclick="addMon()">Lưu</button></div>
 </div></div>
 
 <!-- MODAL NHÂN VIÊN -->
@@ -526,22 +767,18 @@ select.form-control option{background:var(--bg2);}
 const SUPABASE_URL='https://qwehlngnasxstizulhre.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZWhsbmduYXN4c3RpenVsaHJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDI1MTUsImV4cCI6MjA5MTM3ODUxNX0.ZViu2wnK4MssHFuzaZz8Fg7ftCCOXRXpE4L2H-yX3k0';
 const{createClient}=supabase;const db=createClient(SUPABASE_URL,SUPABASE_KEY);
-var allKH=[],allDH=[],allTC=[],allTD=[],allSP=[],allSX=[],allSXTuan=[];
+var allKH=[],allDH=[],allTC=[],allTD=[],allSP=[],allSX=[];
 var khFilter='all',khSearch='',dhFilter='all',dhSearch='';
 var ccYear=new Date().getFullYear(),ccMonth=new Date().getMonth()+1;
-var currentWeekStart=getMonday(new Date());
 
 const fmt=n=>n?Number(n).toLocaleString('vi-VN'):'0';
 const fmtDate=s=>s?new Date(s).toLocaleDateString('vi-VN'):'—';
 const today=()=>new Date().toISOString().split('T')[0];
 const nowHour=()=>new Date().getHours();
 const isBeforeDeadline=h=>nowHour()<h;
-const goiColor=g=>{if(!g)return'gray';if(g.toLowerCase().includes('plus'))return'gold';return'blue';};
+const goiColor=g=>{if(!g)return'gray';if(g.toLowerCase().includes('plus'))return'gold';if(g.includes('56')||g.includes('Standard M'))return'blue';if(g.includes('68'))return'purple';return'gray';};
 const ttColor=t=>t==='Đã TT'?'green':t==='Chưa TT'?'red':'gray';
-
-function getMonday(date){const d=new Date(date);const day=d.getDay();const diff=d.getDate()-day+(day===0?-6:1);const monday=new Date(d.setDate(diff));return monday.toISOString().split('T')[0];}
-function getDateRange(mondayStr){const dates=[];const start=new Date(mondayStr+'T00:00:00');for(let i=0;i<7;i++){const d=new Date(start);d.setDate(d.getDate()+i);dates.push(d.toISOString().split('T')[0]);}return dates;}
-function formatDayHeader(dateStr){const d=new Date(dateStr+'T00:00:00');const dayName=['CN','T2','T3','T4','T5','T6','T7'][d.getDay()];return `${dayName} ${d.getDate()}/${d.getMonth()+1}`;}
+const ttColor2=t=>t==='Đang chạy'?'blue':t==='Sắp hết'?'orange':t==='Hết suất'?'red':'gray';
 
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.className='toast',3000);}
 function openModal(id){document.getElementById(id).classList.add('open');}
@@ -549,73 +786,1183 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 document.querySelectorAll('.day-picker').forEach(dp=>{dp.querySelectorAll('.day-chip').forEach(c=>{c.addEventListener('click',()=>c.classList.toggle('selected'));});});
 function getSelectedDays(pid){return[...document.querySelectorAll(`#${pid} .day-chip.selected`)].map(c=>c.dataset.day).join(',');}
+function setSelectedDays(pid,val){const days=(val||'').split(',');document.querySelectorAll(`#${pid} .day-chip`).forEach(c=>c.classList.toggle('selected',days.includes(c.dataset.day)));}
 
-const pageTitles={dashboard:'Dashboard',sanpham:'Sản phẩm',khachhang:'Khách hàng',donhang:'Đơn hàng',sanxuat:'Sản xuất ngày','sanxuat-tuan':'Sản xuất tuần',thucdon:'Thực đơn & Nguyên liệu',chamcong:'Chấm công',taichinh:'Tài chính'};
-function goPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');if(btn)btn.classList.add('active');document.getElementById('topbar-title').textContent=pageTitles[id]||id;window.scrollTo(0,0);const L={dashboard:loadDashboard,sanpham:loadSanPham,khachhang:loadKhachHang,donhang:loadDonHang,sanxuat:loadSanXuat,'sanxuat-tuan':loadSanXuatTuan,thucdon:loadThucDon,chamcong:loadChamCong,taichinh:loadTaiChinh};if(L[id])L[id]();}
+const pageTitles={dashboard:'Dashboard',sanpham:'Sản phẩm',khachhang:'Khách hàng',donhang:'Đơn hàng',sanxuat:'Sản xuất ngày',thucdon:'Thực đơn & Nguyên liệu',chamcong:'Chấm công',taichinh:'Tài chính'};
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('topbar-title').textContent=pageTitles[id]||id;
+  window.scrollTo(0,0);
+  const L={dashboard:loadDashboard,sanpham:loadSanPham,khachhang:loadKhachHang,donhang:loadDonHang,sanxuat:loadSanXuat,thucdon:loadThucDon,chamcong:loadChamCong,taichinh:loadTaiChinh};
+  if(L[id])L[id]();
+}
 
 const d=new Date();
 document.getElementById('topbar-date').textContent=d.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 document.querySelectorAll('input[type=date]').forEach(i=>i.value=today());
 
-function updateProcessStatus(){const h=nowHour(),dot=document.getElementById('process-dot'),lbl=document.getElementById('process-label');if(h<8){dot.className='process-dot pending';lbl.textContent='Chờ 8h';}else if(h<13){dot.className='process-dot active';lbl.textContent='Đang chạy';}else{dot.className='process-dot done';lbl.textContent='Đã chốt';}}
+function updateProcessStatus(){
+  const h=nowHour(),dot=document.getElementById('process-dot'),lbl=document.getElementById('process-label');
+  if(h<8){dot.className='process-dot pending';lbl.textContent='Chờ 8h';}
+  else if(h<13){dot.className='process-dot active';lbl.textContent='Đang chạy';}
+  else{dot.className='process-dot done';lbl.textContent='Đã chốt';}
+}
 updateProcessStatus();setInterval(updateProcessStatus,60000);
 
-// ────── DASHBOARD ──────────
-async function loadDashboard(){const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);allKH=kh||[];allDH=dh||[];allTC=tc||[];const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0)+(r.marketing||0),0);document.getElementById('dash-kpi').innerHTML=`<div class="kpi-card"><div class="kpi-label">Doanh thu</div><div class="kpi-value gold">${fmt(dt)}</div><div class="kpi-sub">đồng</div></div><div class="kpi-card"><div class="kpi-label">Lợi nhuận</div><div class="kpi-value green">${fmt(dt-ct)}</div><div class="kpi-sub">đồng</div></div><div class="kpi-card"><div class="kpi-label">Tổng khách</div><div class="kpi-value">${allKH.length}</div><div class="kpi-sub">khách hàng</div></div><div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${allKH.reduce((s,r)=>s+(r.suat_con||0),0)}</div><div class="kpi-sub">suất tổng</div></div>`;document.getElementById('dash-chart').innerHTML='<div style="color:var(--text3);padding:10px">Biểu đồ phân bổ</div>';document.getElementById('dash-donhang').innerHTML=renderDonHangTable(allDH.slice(0,5));}
+// ── DASHBOARD ─────────────────────────────────
+async function loadDashboard(){
+  const[{data:kh},{data:dh},{data:tc}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true),db.from('don_hang').select('*').order('ngay_dat',{ascending:false}).limit(5),db.from('tai_chinh').select('*')]);
+  allKH=kh||[];allDH=dh||[];allTC=tc||[];
+  const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0)+(r.marketing||0),0);
+  document.getElementById('dash-kpi').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">Doanh thu</div><div class="kpi-value gold">${fmt(dt)}</div><div class="kpi-sub">đồng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Lợi nhuận</div><div class="kpi-value green">${fmt(dt-ct)}</div><div class="kpi-sub">đồng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Tổng khách</div><div class="kpi-value">${allKH.length}</div><div class="kpi-sub">khách hàng</div></div>
+    <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${allKH.reduce((s,r)=>s+(r.suat_con||0),0)}</div><div class="kpi-sub">suất tổng</div></div>`;
+  const gc={};allKH.forEach(k=>{if(k.goi&&k.suat_con>0)gc[k.goi]=(gc[k.goi]||0)+1;});
+  const mx=Math.max(...Object.values(gc),1);
+  const cl={'35K':'#3d7a5c','56K':'#2980b9','49K':'#7d5fa0','68K':'#d47c3a','Standard':'#3d7a5c','Plus':'#d47c3a'};
+  document.getElementById('dash-chart').innerHTML=Object.entries(gc).map(([g,c])=>`<div class="bar-row"><div class="bar-label">${g}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/mx*100)}%;background:${cl[g]||'var(--accent)'}"></div></div><div class="bar-val">${c} KH</div></div>`).join('')||'<div style="color:var(--text3);padding:10px">Chưa có dữ liệu</div>';
+  const sh=allKH.filter(k=>k.suat_con>=0&&k.suat_con<=5).sort((a,b)=>a.suat_con-b.suat_con).slice(0,6);
+  document.getElementById('dash-saphet').innerHTML=sh.length?sh.map(k=>`<div class="suat-item"><div><div class="suat-name">${k.ten}</div><div class="suat-khu">${k.khu_vuc||''} · ${k.goi||''}</div></div><div style="display:flex;align-items:center;gap:6px"><div class="suat-num" style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=2?'var(--orange)':'var(--accent)'}">${k.suat_con}</div><div style="font-size:11px;color:var(--text3)">còn</div></div></div>`).join(''):'<div style="padding:16px;color:var(--text3)">Không có khách nào sắp hết</div>';
+  document.getElementById('dash-donhang').innerHTML=renderDonHangTable(allDH.slice(0,5));
+}
 
-function renderDonHangTable(data){return`<table><thead><tr><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Suất</th></tr></thead><tbody>${data.map(d=>`<tr><td class="muted">${fmtDate(d.ngay_dat)}</td><td>${d.ten_kh}</td><td class="muted">${d.sdt||'—'}</td><td>${d.so_suat_ban_dau||'—'}</td></tr>`).join('')}</tbody></table>`;}
+// ── SẢN PHẨM ─────────────────────────────────
+async function loadSanPham(){
+  const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('size').order('so_suat');
+  allSP=data||[];renderSanPham();populateSPSelects();
+}
+function renderSanPham(){
+  const groups={};allSP.forEach(sp=>{const k=`${sp.goi} - Size ${sp.size}`;if(!groups[k])groups[k]=[];groups[k].push(sp);});
+  document.getElementById('sp-list').innerHTML=Object.entries(groups).map(([grp,items])=>`<div style="margin-bottom:24px"><div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--accent-soft)">${grp} · ${items[0].gia/1000}K/suất</div><div class="sp-grid">${items.map(sp=>`<div class="sp-card"><div class="sp-card-header"><div><div class="sp-ten">${sp.ten}</div><div class="sp-desc">${sp.mo_ta||''}</div></div><button onclick="deleteSP('${sp.id}')" class="btn-danger btn-sm">Xoá</button></div><div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><div class="sp-gia">${fmt(sp.tong_tien)}đ</div><div class="sp-suat">${sp.so_suat} suất</div></div></div>`).join('')}</div></div>`).join('')||'<div class="loading">Chưa có sản phẩm</div>';
+}
+function populateSPSelects(){
+  const opts='<option value="">-- Chọn gói ăn --</option>'+allSP.map(sp=>`<option value="${sp.id}" data-gia="${sp.gia}" data-tong="${sp.tong_tien}" data-suat="${sp.so_suat}" data-goi="${sp.goi}" data-size="${sp.size}">${sp.ten} — ${fmt(sp.tong_tien)}đ</option>`).join('');
+  ['kh-sp-id','kh-edit-sp-id','dh-sp-id'].forEach(id=>{if(document.getElementById(id))document.getElementById(id).innerHTML=opts;});
+}
+function onKhSPChange(){const s=document.getElementById('kh-sp-id'),o=s.options[s.selectedIndex];if(o.value){document.getElementById('kh-tong').value=o.dataset.suat;document.getElementById('kh-con').value=o.dataset.suat;}}
+function onKhEditSPChange(){const s=document.getElementById('kh-edit-sp-id'),o=s.options[s.selectedIndex];if(o.value){document.getElementById('kh-edit-tong').value=o.dataset.suat;}}
+function onDHSPChange(){const s=document.getElementById('dh-sp-id'),o=s.options[s.selectedIndex];if(o.value){document.getElementById('dh-tong').value=o.dataset.tong;document.getElementById('dh-sosuat').value=o.dataset.suat;}}
+async function addSanPham(){
+  const ten=document.getElementById('sp-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const{error}=await db.from('san_pham').insert({ten,goi:document.getElementById('sp-goi').value,size:document.getElementById('sp-size').value,gia:parseInt(document.getElementById('sp-gia').value)||0,so_suat:parseInt(document.getElementById('sp-sosuat').value)||0,tong_tien:parseInt(document.getElementById('sp-tong').value)||0,mo_ta:document.getElementById('sp-mota').value});
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã thêm sản phẩm!');closeModal('modal-sp');loadSanPham();
+}
+async function deleteSP(id){if(!confirm('Xoá?'))return;await db.from('san_pham').update({active:false}).eq('id',id);showToast('Đã xoá!');loadSanPham();}
 
-// ────── SẢN PHẨM ──────────
-async function loadSanPham(){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];document.getElementById('sp-list').innerHTML=allSP.length?allSP.map(sp=>`<div style="padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px"><strong>${sp.ten}</strong><div style="font-size:12px;color:var(--text3);margin-top:4px">${sp.so_suat} suất · ${fmt(sp.gia||0)}/suất</div></div>`).join(''):'<div class="loading">Chưa có sản phẩm</div>';}
-async function addSanPham(){const ten=document.getElementById('sp-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');const{error}=await db.from('san_pham').insert({ten,gia:parseInt(document.getElementById('sp-gia').value)||0,so_suat:parseInt(document.getElementById('sp-sosuat').value)||0,tong_tien:parseInt(document.getElementById('sp-tong').value)||0});if(error)return showToast('Lỗi: '+error.message,'error');showToast('Đã thêm sản phẩm!');closeModal('modal-sp');loadSanPham();}
-
-// ────── KHÁCH HÀNG ──────────
-async function loadKhachHang(){const{data:khData}=await db.from('khach_hang').select('*').eq('active',true).order('stt');allKH=khData||[];renderKH();}
-function renderKH(){let data=[...allKH];if(khSearch)data=data.filter(k=>(k.ten+k.sdt+'').toLowerCase().includes(khSearch.toLowerCase()));if(khFilter==='low')data=data.filter(k=>k.suat_con>0&&k.suat_con<=5);if(khFilter==='out')data=data.filter(k=>k.suat_con<=0);document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Tên</th><th>SĐT</th><th>Khu vực</th><th>Suất</th><th></th></tr></thead><tbody>${data.map((k,i)=>`<tr><td class="muted">${i+1}</td><td><strong>${k.ten}</strong></td><td class="muted">${k.sdt||'—'}</td><td>${k.khu_vuc||'—'}</td><td><strong style="color:var(--accent)">${k.suat_con}</strong></td><td><button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`).join('')}</tbody></table>`;}
+// ── KHÁCH HÀNG ────────────────────────────────
+var dangSXIdsGlobal=new Set();
+async function loadKhachHang(){
+  if(!allSP.length){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];populateSPSelects();}
+  const h=nowHour();
+  const[{data:khData},{data:sxData}]=await Promise.all([
+    db.from('khach_hang').select('*').eq('active',true).order('stt'),
+    (h>=7&&h<13)?db.from('san_xuat_ngay').select('khach_hang_id').eq('ngay',today()).eq('da_huy',false):Promise.resolve({data:[]})
+  ]);
+  allKH=khData||[];
+  dangSXIdsGlobal=new Set((sxData||[]).map(r=>r.khach_hang_id));
+  renderKH(dangSXIdsGlobal);
+}
+const TL={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
+function renderKH(dangSXIds){
+  if(!dangSXIds)dangSXIds=dangSXIdsGlobal||new Set();
+  let data=[...allKH];
+  if(khSearch)data=data.filter(k=>(k.ten+k.sdt+k.khu_vuc+'').toLowerCase().includes(khSearch.toLowerCase()));
+  if(khFilter==='low')data=data.filter(k=>k.suat_con>0&&k.suat_con<=5);
+  if(khFilter==='out')data=data.filter(k=>k.suat_con<=0);
+  const h=nowHour();
+  const shipperKHFilter=document.getElementById('kh-shipper-filter')?.value||'';
+  const kvKHFilter=document.getElementById('kh-kv-filter')?.value||'';
+  const sortKH=document.getElementById('kh-sort')?.value||'';
+  if(shipperKHFilter)data=data.filter(k=>k.shipper===shipperKHFilter);
+  if(kvKHFilter)data=data.filter(k=>(k.khu_vuc||'').includes(kvKHFilter));
+  // khu vuc filter - hardcoded
+  // Sort
+  if(sortKH==='az')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):a.ten.localeCompare(b.ten,'vi'));
+  else if(sortKH==='za')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):b.ten.localeCompare(a.ten,'vi'));
+  else if(sortKH==='suat_asc')data.sort((a,b)=>a.sdt===b.sdt?0:(a.suat_con||0)-(b.suat_con||0));
+  else if(sortKH==='suat_desc')data.sort((a,b)=>a.sdt===b.sdt?0:(b.suat_con||0)-(a.suat_con||0));
+  else if(sortKH==='kv')data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
+  else data.sort((a,b)=>a.sdt===b.sdt?(a.goi||'').localeCompare(b.goi||'','vi'):(a.stt||0)-(b.stt||0));
+  document.getElementById('kh-table-wrap').innerHTML=`<table><thead><tr><th>STT</th><th>Khu vực</th><th>Tên</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Ngày giao</th><th>Suất còn</th><th>S/ngày</th><th>Shipper</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>${data.map((k,i)=>{
+    const days=(k.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
+    let tt=k.trang_thai;let ttC=ttColor2(tt);
+    if(h>=7&&h<13&&dangSXIds.has(k.id)&&k.suat_con>0){tt='Đang sản xuất';ttC='purple';}
+    return`<tr>
+      <td class="muted">${i+1}</td>
+      <td>${k.khu_vuc||'—'}</td>
+      <td><strong>${k.ten}</strong></td>
+      <td class="muted">${k.sdt||'—'}</td>
+      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.dia_chi||'—'}</td>
+      <td><span class="badge ${goiColor(k.goi)}">${k.goi||'—'}</span></td>
+      <td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td>
+      <td><strong style="color:${k.suat_con<=0?'var(--red)':k.suat_con<=5?'var(--orange)':'var(--green)'};font-size:15px">${k.suat_con}</strong></td>
+      <td style="text-align:center"><strong style="color:var(--orange)">${k.so_suat_ngay||1}</strong></td>
+      <td><select onchange="updateShipperKH('${k.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-size:12px;background:var(--bg3);cursor:pointer;min-width:90px">
+        <option value="">— Chọn —</option>
+        <option value="Shipper 1" ${k.shipper==='Shipper 1'?'selected':''}>Shipper 1</option>
+        <option value="Shipper 2" ${k.shipper==='Shipper 2'?'selected':''}>Shipper 2</option>
+        <option value="Shipper 3" ${k.shipper==='Shipper 3'?'selected':''}>Shipper 3</option>
+        <option value="Shipper 4" ${k.shipper==='Shipper 4'?'selected':''}>Shipper 4</option>
+        <option value="Shipper 5" ${k.shipper==='Shipper 5'?'selected':''}>Shipper 5</option>
+      </select></td>
+      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.ghi_chu_suat_an||'—'}</td>
+      <td><span class="badge ${ttC}">${tt}</span></td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap">
+        <button onclick="openLichSuKH('${k.id}','${k.ten.replace(/'/g,"\'")}')" class="btn-ghost btn-sm">📋</button>
+        <button onclick="openEditKH('${k.id}')" class="btn-edit btn-sm">Sửa</button>
+        <button onclick="deleteKH('${k.id}')" class="btn-danger btn-sm">Xoá</button>
+      </td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
 function searchKH(v){khSearch=v;loadKhachHang();}
 function filterKH(btn,type){document.querySelectorAll('#page-khachhang .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');khFilter=type;loadKhachHang();}
-async function addKhachHang(){const ten=document.getElementById('kh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,tong_suat:parseInt(document.getElementById('kh-con').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),trang_thai:'Đang chạy',stt:allKH.length+1});if(error)return showToast('Lỗi: '+error.message,'error');showToast('Đã thêm khách hàng!');closeModal('modal-kh');loadKhachHang();}
+
+function openEditKH(id){
+  const k=allKH.find(x=>x.id===id);if(!k)return;
+  document.getElementById('kh-edit-id').value=k.id;
+  document.getElementById('kh-edit-ten').value=k.ten||'';
+  document.getElementById('kh-edit-sdt').value=k.sdt||'';
+  document.getElementById('kh-edit-kv').value=k.khu_vuc||'';
+  document.getElementById('kh-edit-con').value=k.suat_con||0;
+  document.getElementById('kh-edit-tong').value=k.tong_suat||0;
+  document.getElementById('kh-edit-diachi').value=k.dia_chi||'';
+  document.getElementById('kh-edit-ghichu').value=k.ghi_chu_suat_an||'';
+  document.getElementById('kh-edit-sosuat-ngay').value=k.so_suat_ngay||1;
+  setSelectedDays('kh-edit-day-picker',k.ngay_giao_tuan||'2,3,4,5,6');
+  if(k.san_pham_id){const sel=document.getElementById('kh-edit-sp-id');for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===k.san_pham_id){sel.selectedIndex=i;break;}}}
+  openModal('modal-kh-edit');
+}
+async function saveKhachHang(){
+  const id=document.getElementById('kh-edit-id').value;
+  const spId=document.getElementById('kh-edit-sp-id').value;
+  const spSel=document.getElementById('kh-edit-sp-id');
+  const spOpt=spSel.options[spSel.selectedIndex];
+  const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
+  const suatCon=parseInt(document.getElementById('kh-edit-con').value)||0;
+  const trangThai=suatCon<=0?'Hết suất':suatCon<=5?'Sắp hết':'Đang chạy';
+  const{error}=await db.from('khach_hang').update({
+    ten:document.getElementById('kh-edit-ten').value,
+    sdt:document.getElementById('kh-edit-sdt').value,
+    khu_vuc:document.getElementById('kh-edit-kv').value,
+    goi:goi||undefined,
+    san_pham_id:spId||null,
+    suat_con:suatCon,
+    tong_suat:parseInt(document.getElementById('kh-edit-tong').value)||0,
+    dia_chi:document.getElementById('kh-edit-diachi').value,
+    ghi_chu_suat_an:document.getElementById('kh-edit-ghichu').value,
+    ngay_giao_tuan:getSelectedDays('kh-edit-day-picker'),
+    so_suat_ngay:parseInt(document.getElementById('kh-edit-sosuat-ngay').value)||1,
+    trang_thai:trangThai,
+  }).eq('id',id);
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã cập nhật khách hàng!');closeModal('modal-kh-edit');loadKhachHang();
+}
+async function addKhachHang(){
+  const ten=document.getElementById('kh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const spId=document.getElementById('kh-sp-id').value,spSel=document.getElementById('kh-sp-id'),spOpt=spSel.options[spSel.selectedIndex];
+  const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
+  const{error}=await db.from('khach_hang').insert({ten,sdt:document.getElementById('kh-sdt').value,khu_vuc:document.getElementById('kh-kv').value,goi,san_pham_id:spId||null,tong_suat:parseInt(document.getElementById('kh-tong').value)||0,suat_con:parseInt(document.getElementById('kh-con').value)||0,dia_chi:document.getElementById('kh-diachi').value,ghi_chu_suat_an:document.getElementById('kh-ghichu').value,ngay_giao_tuan:getSelectedDays('kh-day-picker'),so_suat_ngay:parseInt(document.getElementById('kh-sosuat-ngay').value)||1,shipper:document.getElementById('kh-shipper')?.value||'',trang_thai:'Đang chạy',stt:allKH.length+1});
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã thêm khách hàng!');addNotif('🆕',`Khách hàng mới: <strong>${ten}</strong> · ${document.getElementById('kh-kv').value||''}`);closeModal('modal-kh');
+  document.querySelectorAll('#modal-kh input,#modal-kh select').forEach(i=>i.value='');
+  setSelectedDays('kh-day-picker','2,3,4,5,6');loadKhachHang();
+}
 async function deleteKH(id){if(!confirm('Xoá khách hàng này?'))return;await db.from('khach_hang').delete().eq('id',id);showToast('Đã xoá!');loadKhachHang();}
 
-// ────── ĐƠN HÀNG ──────────
-async function loadDonHang(){const{data}=await db.from('don_hang').select('*').order('ngay_dat',{ascending:false});allDH=data||[];renderDH();}
-function renderDH(){let data=[...allDH];if(dhSearch)data=data.filter(d=>(d.ten_kh+d.sdt+'').toLowerCase().includes(dhSearch.toLowerCase()));if(dhFilter==='chuatt')data=data.filter(d=>d.thanh_toan==='Chưa TT');if(dhFilter==='dangchay')data=data.filter(d=>d.trang_thai==='Đang chạy');document.getElementById('dh-table-wrap').innerHTML=`<table><thead><tr><th>Ngày</th><th>Tên</th><th>SĐT</th><th>Suất</th><th>TT</th><th></th></tr></thead><tbody>${data.map(d=>`<tr><td class="muted">${fmtDate(d.ngay_dat)}</td><td><strong>${d.ten_kh}</strong></td><td class="muted">${d.sdt||'—'}</td><td>${d.so_suat_ban_dau||'—'}</td><td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td><td><button onclick="deleteDH('${d.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`).join('')}</tbody></table>`;}
+// ── ĐƠN HÀNG ─────────────────────────────────
+async function loadDonHang(){
+  if(!allSP.length){const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];populateSPSelects();}
+  const{data}=await db.from('don_hang').select('*').order('ngay_dat',{ascending:false});allDH=data||[];renderDH();
+}
+function renderDonHangTable(data){
+  return`<table><thead><tr><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Sản phẩm</th><th>Tổng đơn</th><th>TT</th><th>Trạng thái</th></tr></thead><tbody>${data.map(d=>`<tr><td class="muted">${fmtDate(d.ngay_dat)}</td><td>${d.ten_kh}</td><td class="muted">${d.sdt||'—'}</td><td>${d.san_pham?`<span class="badge gold">${d.san_pham}</span>`:'—'}</td><td>${fmt(d.tong_don)} đ</td><td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td><td><span class="badge ${ttColor2(d.trang_thai)}">${d.trang_thai||'—'}</span></td></tr>`).join('')}</tbody></table>`;
+}
+function renderDH(){
+  let data=[...allDH];
+  if(dhSearch)data=data.filter(d=>(d.ten_kh+d.sdt+'').toLowerCase().includes(dhSearch.toLowerCase()));
+  if(dhFilter==='chuatt')data=data.filter(d=>d.thanh_toan==='Chưa TT');
+  if(dhFilter==='dangchay')data=data.filter(d=>d.trang_thai==='Đang chạy');
+  const shipperDHFilter=document.getElementById('dh-shipper-filter')?.value||''
+  const sortDH=document.getElementById('dh-sort')?.value||'';
+  if(shipperDHFilter)data=data.filter(d=>d.shipper===shipperDHFilter);
+  if(sortDH==='az')data.sort((a,b)=>a.ten_kh.localeCompare(b.ten_kh,'vi'));
+  else if(sortDH==='za')data.sort((a,b)=>b.ten_kh.localeCompare(a.ten_kh,'vi'));
+  else if(sortDH==='date_desc')data.sort((a,b)=>new Date(b.ngay_dat)-new Date(a.ngay_dat));
+  else if(sortDH==='date_asc')data.sort((a,b)=>new Date(a.ngay_dat)-new Date(b.ngay_dat));
+  document.getElementById('dh-table-wrap').innerHTML=`<table><thead><tr><th>Ngày</th><th>Tên KH</th><th>SĐT</th><th>Sản phẩm</th><th>Ngày giao</th><th>Tổng đơn</th><th>Suất</th><th>TT</th><th>Trạng thái</th><th></th></tr></thead><tbody>${data.map(d=>{
+    const days=(d.ngay_giao_tuan||'').split(',').filter(Boolean).map(x=>TL[x]||x).join(' ');
+    return`<tr><td class="muted">${fmtDate(d.ngay_dat)}</td><td><strong>${d.ten_kh}</strong></td><td class="muted">${d.sdt||'—'}</td><td>${d.san_pham?`<span class="badge gold">${d.san_pham}</span>`:'—'}</td><td><span style="font-size:11px;color:var(--text2)">${days||'—'}</span></td><td>${fmt(d.tong_don)} đ</td><td class="muted">${d.so_suat_ban_dau||'—'}</td><td><span class="badge ${ttColor(d.thanh_toan)}">${d.thanh_toan||'—'}</span></td><td><span class="badge ${ttColor2(d.trang_thai)}">${d.trang_thai||'—'}</span></td><td><button onclick="deleteDH('${d.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
 function searchDH(v){dhSearch=v;renderDH();}
 function filterDH(btn,type){document.querySelectorAll('#page-donhang .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dhFilter=type;renderDH();}
-async function addDonHang(){const ten=document.getElementById('dh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');const ngayGiao=getSelectedDays('dh-day-picker');const{error}=await db.from('don_hang').insert({ten_kh:ten,sdt:document.getElementById('dh-sdt').value,ngay_dat:document.getElementById('dh-ngay').value,so_suat_ban_dau:parseInt(document.getElementById('dh-sosuat').value)||0,dia_chi:document.getElementById('dh-diachi').value,ngay_giao_tuan:ngayGiao,thanh_toan:'Chưa TT',trang_thai:'Đang chạy'});if(error)return showToast('Lỗi: '+error.message,'error');showToast('Đã thêm đơn hàng!');closeModal('modal-dh');loadDonHang();}
+async function addDonHang(){
+  const ten=document.getElementById('dh-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const spSel=document.getElementById('dh-sp-id'),spOpt=spSel.options[spSel.selectedIndex],spId=spSel.value;
+  const sdt=document.getElementById('dh-sdt').value.trim();
+  const diachi=document.getElementById('dh-diachi').value;
+  const soSuat=parseInt(document.getElementById('dh-sosuat').value)||0;
+  const ngayGiao=getSelectedDays('dh-day-picker');
+  const goi=spId?`${spOpt.dataset.goi} ${spOpt.dataset.size}`:'';
+
+  // Lưu đơn hàng
+  const{error}=await db.from('don_hang').insert({
+    ten_kh:ten,sdt,
+    ngay_dat:document.getElementById('dh-ngay').value,
+    tong_don:parseInt(document.getElementById('dh-tong').value)||0,
+    san_pham:spId?spOpt.text.split('—')[0].trim():'',
+    san_pham_id:spId||null,
+    so_suat_ban_dau:soSuat,
+    thanh_toan:document.getElementById('dh-tt').value,
+    dia_chi:diachi,
+    ngay_giao_tuan:ngayGiao,
+    trang_thai:'Đang chạy',
+    shipper:document.getElementById('dh-shipper')?.value||''
+  });
+  if(error)return showToast('Lỗi đơn hàng: '+error.message,'error');
+
+  // Tự động tạo/cập nhật khách hàng
+  if(ten&&soSuat>0){
+    // Kiểm tra khách hàng đã tồn tại chưa (theo SĐT hoặc tên)
+    let existKH=null;
+    if(sdt){
+      const{data:bySDT}=await db.from('khach_hang').select('*').eq('sdt',sdt).eq('active',true).limit(1);
+      if(bySDT&&bySDT.length>0)existKH=bySDT[0];
+    }
+    if(!existKH){
+      const{data:byTen}=await db.from('khach_hang').select('*').eq('ten',ten).eq('active',true).limit(1);
+      if(byTen&&byTen.length>0)existKH=byTen[0];
+    }
+
+    if(existKH){
+      // Cộng thêm suất vào khách hàng đã có
+      const newSuat=(existKH.suat_con||0)+soSuat;
+      const newTong=(existKH.tong_suat||0)+soSuat;
+      await db.from('khach_hang').update({
+        suat_con:newSuat,
+        tong_suat:newTong,
+        trang_thai:newSuat<=0?'Hết suất':newSuat<=5?'Sắp hết':'Đang chạy',
+        san_pham_id:spId||existKH.san_pham_id,
+        goi:goi||existKH.goi,
+        ngay_giao_tuan:ngayGiao||existKH.ngay_giao_tuan,
+        dia_chi:diachi||existKH.dia_chi,
+      }).eq('id',existKH.id);
+      showToast(`Đã thêm đơn + cộng ${soSuat} suất cho ${ten}!`);
+    } else {
+      // Tạo mới khách hàng
+      const{data:allKHData}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
+      const nextStt=(allKHData&&allKHData.length>0?(allKHData[0].stt||0):0)+1;
+      await db.from('khach_hang').insert({
+        stt:nextStt,ten,sdt,
+        khu_vuc:'',goi,
+        san_pham_id:spId||null,
+        tong_suat:soSuat,suat_con:soSuat,
+        dia_chi:diachi,
+        ngay_giao_tuan:ngayGiao,
+        trang_thai:soSuat<=5?'Sắp hết':'Đang chạy',
+        active:true,
+      });
+      showToast(`Đã thêm đơn + tạo mới khách hàng ${ten}!`);
+    }
+  } else {
+    showToast('Đã thêm đơn hàng!');
+  }
+
+  closeModal('modal-dh');
+  document.querySelectorAll('#modal-dh input,#modal-dh select').forEach(i=>{if(!i.readOnly)i.value='';});
+  setSelectedDays('dh-day-picker','2,3,4,5,6');
+  loadDonHang();
+}
 async function deleteDH(id){if(!confirm('Xoá?'))return;await db.from('don_hang').delete().eq('id',id);showToast('Đã xoá!');loadDonHang();}
 
-// ────── SẢN XUẤT NGÀY ──────────
-async function loadSanXuat(){const pickEl=document.getElementById('sx-pick-date');const selDate=pickEl.value||today();const isToday=selDate===today();document.getElementById('sx-date-label').textContent=new Date(selDate+'T00:00:00').toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'numeric',year:'numeric'});document.getElementById('sx-table-wrap').innerHTML='<div class="loading"><span class="spinner"></span> Đang tải...</div>';}
-function setNgayMai(){const tm=new Date();tm.setDate(tm.getDate()+1);document.getElementById('sx-pick-date').value=tm.toISOString().split('T')[0];loadSanXuat();}
-async function chotSanXuat(){showToast('Chốt thành công!');}
+// ── SẢN XUẤT NGÀY ─────────────────────────────
+async function loadSanXuat(){
+  const pickEl=document.getElementById('sx-pick-date');
+  const selDate=pickEl.value||today();
+  const isToday=selDate===today();
 
-// ────── SẢN XUẤT TUẦN (MAIN) ──────────
-async function loadSanXuatTuan(){const mondayStr=currentWeekStart;const dates=getDateRange(mondayStr);const[{data:khData},{data:sxtData}]=await Promise.all([db.from('khach_hang').select('*').eq('active',true).gt('suat_con',0).order('stt'),db.from('san_xuat_tuan').select('*').gte('ngay_bat_dau',mondayStr).lte('ngay_bat_dau',dates[6])]);allKH=khData||[];allSXTuan=sxtData||[];const endDate=new Date(dates[6]);endDate.setDate(endDate.getDate()+1);const endStr=endDate.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});const startStr=new Date(mondayStr).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});document.getElementById('sxt-week-label').textContent=`Tuần: ${startStr} → ${endStr}`;renderSXTuanTable(khData,sxtData,dates);}
+  document.getElementById('sx-date-label').textContent=new Date(selDate+'T00:00:00').toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'numeric',year:'numeric'});
+  const badge=document.getElementById('sx-history-badge');
+  badge.innerHTML=isToday?'':`<span class="badge orange">Xem lịch sử</span>`;
 
-async function renderSXTuanTable(khData,sxtData,dates){let html=`<div class="sxt-toolbar"><button class="btn-ghost btn-sm" onclick="changeSXTuanWeek(-1)">← Tuần trước</button><span style="font-weight:600;color:var(--text);min-width:200px;text-align:center">${document.getElementById('sxt-week-label').textContent}</span><button class="btn-ghost btn-sm" onclick="changeSXTuanWeek(1)">Tuần sau →</button><button class="btn-primary btn-sm" onclick="syncSXTuanToNgay()" style="margin-left:auto">🔄 Cập nhật sang sản xuất ngày</button></div><div class="full-card"><div class="sxt-wrap"><table class="sxt-table"><thead><tr><th style="min-width:140px;position:sticky;left:0;z-index:2">STT · Tên KH</th><th style="min-width:80px">Tổng đầu kỳ</th>${dates.map(d=>`<th style="min-width:100px;text-align:center"><strong style="color:var(--accent)">${formatDayHeader(d)}</strong></th>`).join('')}<th style="min-width:100px;text-align:center">Tổng dùng</th><th style="min-width:100px;text-align:center;background:var(--green-soft)">Còn lại</th></tr></thead><tbody>${khData.map((kh,idx)=>{const khSXTuan=sxtData.filter(s=>s.khach_hang_id===kh.id&&s.ngay_bat_dau===currentWeekStart);const suatByDay={};let totalDung=0;dates.forEach(d=>{const sxt=khSXTuan.find(s=>s.ngay===d);suatByDay[d]=sxt?(sxt.so_suat||0):0;totalDung+=suatByDay[d];});const suatConLai=Math.max(0,(kh.suat_con||0)-totalDung);const bgColor=idx%2===0?'var(--bg2)':'var(--bg3)';return `<tr style="background:${bgColor}"><td style="position:sticky;left:0;z-index:1;background:${bgColor};border-right:2px solid var(--border);padding:10px 12px"><div style="font-weight:700;color:var(--text)">${idx+1}. ${kh.ten}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${kh.khu_vuc||''}</div></td><td style="padding:10px 8px;text-align:center;font-weight:700;color:var(--accent);font-size:14px">${kh.suat_con||0}</td>${dates.map(d=>`<td style="padding:10px 4px;text-align:center"><input type="number" class="sxt-input" value="${suatByDay[d]}" min="0" max="${kh.suat_con||0}" onchange="updateSuatTuan('${kh.id}','${d}',this.value,${kh.suat_con})"></td>`).join('')}<td style="padding:10px 8px;text-align:center;font-weight:700;color:var(--orange)">${totalDung}</td><td style="padding:10px 8px;text-align:center;font-weight:700;color:${suatConLai<=0?'var(--red)':suatConLai<=5?'var(--orange)':'var(--green)'};background:var(--green-soft);border-radius:6px">${suatConLai}</td></tr>`;}).join('')}</tbody></table></div></div>`;document.getElementById('sxt-container').innerHTML=html;}
+  const h=nowHour(),alertDiv=document.getElementById('sx-time-alert');
+  if(isToday){
+    if(h<8)alertDiv.innerHTML=`<div class="time-alert">⏰ Trước 8h — Khách có thể huỷ hoặc tăng suất hôm nay</div>`;
+    else if(h<13)alertDiv.innerHTML=`<div class="time-alert" style="background:var(--green-soft);border-color:var(--green);color:var(--green)">✓ Sau 8h — Đơn đã chốt. Nhấn "Chốt 1h chiều" để cập nhật</div>`;
+    else alertDiv.innerHTML=`<div class="time-alert" style="background:var(--blue-soft);border-color:var(--blue);color:var(--blue)">✓ Đã qua 13h — Quy trình hôm nay hoàn tất</div>`;
+  } else {
+    alertDiv.innerHTML=`<div class="time-alert" style="background:var(--blue-soft);border-color:var(--blue);color:var(--blue)">📋 Đang xem lịch sử ngày ${fmtDate(selDate)}</div>`;
+  }
 
-async function updateSuatTuan(khId,dateStr,newSuat,totalSuat){const val=Math.max(0,Math.min(parseInt(newSuat)||0,totalSuat));const{data:existing}=await db.from('san_xuat_tuan').select('id').eq('khach_hang_id',khId).eq('ngay',dateStr).eq('ngay_bat_dau',currentWeekStart).single();if(existing){await db.from('san_xuat_tuan').update({so_suat:val}).eq('id',existing.id);}else{const{data:kh}=await db.from('khach_hang').select('*').eq('id',khId).single();if(kh){await db.from('san_xuat_tuan').insert({khach_hang_id:khId,ngay_bat_dau:currentWeekStart,ngay:dateStr,so_suat:val,ten_kh:kh.ten,khu_vuc:kh.khu_vuc,sdt:kh.sdt,dia_chi:kh.dia_chi,goi:kh.goi,shipper:kh.shipper||''});}}showToast('Đã cập nhật!','info');loadSanXuatTuan();}
+  let{data:sxData}=await db.from('san_xuat_ngay').select('*').eq('ngay',selDate);
+  if(isToday&&(!sxData||sxData.length===0)){await generateSanXuatNgay(selDate);const{data:fresh}=await db.from('san_xuat_ngay').select('*').eq('ngay',selDate);sxData=fresh||[];}
+  allSX=sxData||[];
 
-async function syncSXTuanToNgay(){if(!confirm('Cập nhật sản xuất ngày dựa trên dữ liệu tuần này?'))return;const{data:sxtData}=await db.from('san_xuat_tuan').select('*').eq('ngay_bat_dau',currentWeekStart);if(!sxtData||!sxtData.length)return showToast('Không có dữ liệu tuần để cập nhật','error');let synced=0;for(const sxt of sxtData){if(sxt.so_suat<=0)continue;const{data:existing}=await db.from('san_xuat_ngay').select('id').eq('khach_hang_id',sxt.khach_hang_id).eq('ngay',sxt.ngay).single();if(existing){await db.from('san_xuat_ngay').update({so_suat_nhan:sxt.so_suat}).eq('id',existing.id);}else{await db.from('san_xuat_ngay').insert({khach_hang_id:sxt.khach_hang_id,ngay:sxt.ngay,ten_kh:sxt.ten_kh,khu_vuc:sxt.khu_vuc,sdt:sxt.sdt,dia_chi:sxt.dia_chi,goi:sxt.goi,so_suat_nhan:sxt.so_suat,shipper:sxt.shipper,da_huy:false,da_chot:false});}synced++;}showToast(`Đã cập nhật ${synced} đơn!`);loadSanXuatTuan();}
+  const active=allSX.filter(r=>!r.da_huy);
+  const tongSuat=active.reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  const gm={};active.forEach(r=>{if(r.goi)gm[r.goi]=(gm[r.goi]||0)+(r.so_suat_nhan||1);});
 
-function changeSXTuanWeek(delta){const d=new Date(currentWeekStart+'T00:00:00');d.setDate(d.getDate()+delta*7);currentWeekStart=d.toISOString().split('T')[0];loadSanXuatTuan();}
+  document.getElementById('sx-kpi').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">Tổng suất</div><div class="kpi-value gold">${tongSuat}</div><div class="kpi-sub">${active.length} khách · ${allSX.filter(r=>r.da_huy).length} huỷ</div></div>
+    ${Object.entries(gm).slice(0,3).map(([g,c])=>`<div class="kpi-card"><div class="kpi-label">Gói ${g}</div><div class="kpi-value">${c}</div><div class="kpi-sub">suất</div></div>`).join('')}`;
 
-// ────── THỰC ĐƠN ──────────
-function switchTuan(t){document.getElementById('btn-tuan-a').classList.toggle('active',t==='A');document.getElementById('btn-tuan-b').classList.toggle('active',t==='B');}
-async function loadThucDon(){document.getElementById('tuan-grid').innerHTML='<div style="color:var(--text3)">Thực đơn</div>';}
+  const gi={'35K':[['Ức gà sốt tiêu đen',70],['Cơm gạo lứt',67],['Rau chung',120]],'56K':[['Ức gà sốt tiêu đen',100],['Cơm gạo lứt',67],['Rau chung',120]],'49K':[['Đùi gà sốt tiêu đen',80],['Cơm gạo lứt',67],['Ngô',30]],'68K':[['Đùi gà sốt tiêu đen',120],['Cơm gạo lứt',67],['Ngô',30]]};
+  document.getElementById('sx-goi').innerHTML=Object.entries(gm).map(([g,c])=>{const rows=gi[g.replace('+','')]||[];return`<div class="prod-goi"><div class="prod-goi-title">${g} — ${c} suất</div>${rows.map(([m,dl])=>`<div class="prod-row"><span>${m}</span><span style="font-size:12px;color:var(--text3)">${dl}g/suất</span><span><span class="prod-qty">${dl*c}</span><span class="prod-unit"> g</span></span></div>`).join('')}</div>`;}).join('');
 
-// ────── CHẤM CÔNG ──────────
-function changeMonth(delta){ccMonth+=delta;if(ccMonth>12){ccMonth=1;ccYear++;}if(ccMonth<1){ccMonth=12;ccYear--;}loadChamCong();}
-async function loadChamCong(){document.getElementById('cc-month-label').textContent=`Tháng ${ccMonth}/${ccYear}`;document.getElementById('cc-table-wrap').innerHTML='<div style="padding:20px;color:var(--text3)">Bảng chấm công</div>';}
-async function addNhanVien(){const ten=document.getElementById('nv-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');const{error}=await db.from('nhan_vien').insert({ten,vai_tro:document.getElementById('nv-vaitro').value});if(error)return showToast('Lỗi: '+error.message,'error');showToast('Đã thêm nhân viên!');closeModal('modal-nv');loadChamCong();}
+  const b8=isToday&&isBeforeDeadline(8);
+  const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
+  renderSXTable();
+}
 
-// ────── TÀI CHÍNH ──────────
-async function loadTaiChinh(){const{data}=await db.from('tai_chinh').select('*').order('ngay',{ascending:false});allTC=data||[];const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0),0),mk=allTC.reduce((s,r)=>s+(r.marketing||0),0),ln=dt-ct-mk;document.getElementById('tc-kpi').innerHTML=`<div class="kpi-card"><div class="kpi-label">Doanh thu</div><div class="kpi-value" style="color:var(--accent)">${fmt(dt)} đ</div></div><div class="kpi-card"><div class="kpi-label">Chi tiêu</div><div class="kpi-value" style="color:var(--red)">${fmt(ct)} đ</div></div><div class="kpi-card"><div class="kpi-label">Marketing</div><div class="kpi-value" style="color:var(--orange)">${fmt(mk)} đ</div></div><div class="kpi-card"><div class="kpi-label">Lợi nhuận</div><div class="kpi-value" style="color:var(--green)">${fmt(ln)} đ</div></div>`;document.getElementById('tc-table-wrap').innerHTML=`<table><thead><tr><th>Ngày</th><th>Nội dung</th><th>Doanh thu</th></tr></thead><tbody>${allTC.map(r=>`<tr><td class="muted">${fmtDate(r.ngay)}</td><td>${r.noi_dung}</td><td style="color:var(--green)">${r.doanh_thu>0?fmt(r.doanh_thu):''}</td></tr>`).join('')}</tbody></table>`;}
-async function addTaiChinh(){const nd=document.getElementById('tc-nd').value.trim();if(!nd)return showToast('Vui lòng nhập nội dung','error');const{error}=await db.from('tai_chinh').insert({ngay:document.getElementById('tc-ngay').value,noi_dung:nd,doanh_thu:parseInt(document.getElementById('tc-dt').value)||0,chi_tieu:parseInt(document.getElementById('tc-ct').value)||0,marketing:parseInt(document.getElementById('tc-mk').value)||0});if(error)return showToast('Lỗi: '+error.message,'error');showToast('Đã thêm!');closeModal('modal-tc');document.querySelectorAll('#modal-tc input').forEach(i=>i.value='');loadTaiChinh();}
+window.renderSXTable=function renderSXTable(){
+  const selDate=document.getElementById('sx-pick-date')?.value||today();
+  const isToday=selDate===today();
+  const b8=isToday&&isBeforeDeadline(8);
+  const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
+  const kvSXFilter=document.getElementById('sx-kv-filter')?.value||'';
+  const sortSX=document.getElementById('sx-sort')?.value||'';
 
-// ────── INIT ──────────
-(async()=>{const{data}=await db.from('san_pham').select('*').eq('active',true);allSP=data||[];loadDashboard();})();
+  let sxDisplay=[...allSX];
+  if(shipperSXFilter)sxDisplay=sxDisplay.filter(r=>r.shipper===shipperSXFilter);
+  if(kvSXFilter)sxDisplay=sxDisplay.filter(r=>(r.khu_vuc||'').includes(kvSXFilter));
+  if(sortSX==='az')sxDisplay.sort((a,b)=>a.ten_kh.localeCompare(b.ten_kh,'vi'));
+  else if(sortSX==='za')sxDisplay.sort((a,b)=>b.ten_kh.localeCompare(a.ten_kh,'vi'));
+  else if(sortSX==='kv')sxDisplay.sort((a,b)=>(a.khu_vuc||'').localeCompare(b.khu_vuc||'','vi'));
+  else if(sortSX==='shipper')sxDisplay.sort((a,b)=>(a.shipper||'zzz').localeCompare(b.shipper||'zzz'));
+
+  // Badge color theo gói
+  const goiBadge=g=>{
+    if(!g)return'gray';
+    const gl=g.toLowerCase();
+    if(gl.includes('multi'))return'purple';
+    if(gl.includes('plus m'))return'blue';
+    if(gl.includes('plus s'))return'gold';
+    if(gl.includes('standard m')||gl.includes('stan m'))return'red';
+    if(gl.includes('standard s')||gl.includes('stan s'))return'green';
+    return'gray';
+  };
+
+  // Thống kê tổng theo gói
+  const active=sxDisplay.filter(r=>!r.da_huy);
+  const stats={};
+  active.forEach(r=>{
+    const g=(r.goi||'').toLowerCase();
+    if(g.includes('stan s')||g.includes('standard s'))stats['Stan S']=(stats['Stan S']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('stan m')||g.includes('standard m'))stats['Stan M']=(stats['Stan M']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('plus s'))stats['Plus S']=(stats['Plus S']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('plus m'))stats['Plus M']=(stats['Plus M']||0)+(r.so_suat_nhan||1);
+    else if(g.includes('multi'))stats['Multi']=(stats['Multi']||0)+(r.so_suat_nhan||1);
+    else stats[r.goi||'Khác']=(stats[r.goi||'Khác']||0)+(r.so_suat_nhan||1);
+  });
+  const tongSuat=active.reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+
+  // Stats bar
+  const statColors={'Stan S':'var(--green)','Stan M':'var(--red)','Plus S':'var(--gold)','Plus M':'var(--blue)','Multi':'var(--purple)'};
+  const statsHtml=`<div style="display:flex;gap:12px;align-items:center;padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);flex-wrap:wrap">
+    <span style="font-size:13px;font-weight:700;color:var(--text)">Tổng: <span style="color:var(--accent)">${tongSuat}</span> suất</span>
+    ${Object.entries(stats).map(([g,c])=>`<span style="font-size:12px;padding:3px 10px;border-radius:20px;background:${statColors[g]||'var(--bg4)'};color:#fff;font-weight:600">${g}: ${c}</span>`).join('')}
+  </div>`;
+
+  // Nhóm theo shipper
+  const shippers=[...new Set(sxDisplay.map(r=>r.shipper||'Chưa phân công'))].sort();
+  
+  let tableHtml='';
+  shippers.forEach(shipper=>{
+    const rows=sxDisplay.filter(r=>(r.shipper||'Chưa phân công')===shipper);
+    const shipperTong=rows.filter(r=>!r.da_huy).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+    
+    tableHtml+=`
+    <div style="margin-bottom:4px">
+      <div style="padding:8px 16px;background:var(--accent2);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between">
+        <span>🚴 ${shipper}</span>
+        <span style="background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:20px">${shipperTong} suất · ${rows.filter(r=>!r.da_huy).length} khách</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg3)">
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">STT</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Khu vực</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Tên KH</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">SĐT</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Địa chỉ</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Gói</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:center;border-bottom:1px solid var(--border)">Suất</th>
+          <th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Trạng thái</th>
+          ${isToday?'<th style="padding:8px 12px;font-size:11px;color:var(--text2);text-align:left;border-bottom:1px solid var(--border)">Thao tác</th>':''}
+        </tr></thead>
+        <tbody>
+          ${rows.map((r,idx)=>`
+          <tr style="${r.da_huy?'opacity:0.4;':''}background:${idx%2===0?'var(--bg2)':'var(--bg3)'}">
+            <td style="padding:9px 12px;font-size:12px;color:var(--text3)">${idx+1}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2)">${r.khu_vuc||'—'}</td>
+            <td style="padding:9px 12px;font-size:13px;font-weight:600">${r.ten_kh}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2)">${r.sdt||'—'}</td>
+            <td style="padding:9px 12px;font-size:12px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td>
+            <td style="padding:9px 12px"><span class="badge ${goiBadge(r.goi)}">${r.goi||'—'}</span></td>
+            <td style="padding:9px 12px;text-align:center">${!r.da_huy&&b8?`<div class="qty-ctrl"><button class="qty-btn" onclick="changeSuat('${r.id}',-1,${r.so_suat_nhan||1})">−</button><span class="qty-num">${r.so_suat_nhan||1}</span><button class="qty-btn" onclick="changeSuat('${r.id}',1,${r.so_suat_nhan||1})">+</button></div>`:`<strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong>`}</td>
+            <td style="padding:9px 12px">${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>
+            ${isToday?`<td style="padding:9px 12px">
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                ${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}
+                ${r.da_huy?`<button class="btn-ghost btn-sm" onclick="hoanTacHuy('${r.id}')">↩</button>`:''}
+                ${!r.da_huy&&isSau13h()?`
+                  <button class="btn-primary btn-sm" onclick="themSuatSX('${r.id}','${r.khach_hang_id}',${r.so_suat_nhan||1})">+Suất</button>
+                  <button class="btn-danger btn-sm" onclick="huyDonChieu('${r.id}','${r.khach_hang_id}')">Huỷ</button>
+                `:''}
+              </div>
+            </td>`:''}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  });
+
+  document.getElementById('sx-table-wrap').innerHTML = statsHtml + tableHtml;
+}
+async function generateSanXuatNgay(dateStr){
+  const dow=new Date(dateStr+'T00:00:00').getDay(),dayNum=dow===0?8:dow+1;
+  const{data:kh}=await db.from('khach_hang').select('*').gt('suat_con',0);
+  if(!kh||!kh.length)return;
+  const ins=kh.filter(k=>{const days=(k.ngay_giao_tuan||'2,3,4,5,6').split(',').map(Number);return days.includes(dayNum);}).map(k=>({ngay:dateStr,khach_hang_id:k.id,ten_kh:k.ten,khu_vuc:k.khu_vuc,sdt:k.sdt,dia_chi:k.dia_chi,goi:k.goi,so_suat_nhan:k.so_suat_ngay||1,da_huy:false,da_chot:false}));
+  if(ins.length)await db.from('san_xuat_ngay').insert(ins);
+}
+async function huyDon(id){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');const sxItem=allSX.find(s=>s.id===id);await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',id);showToast('Đã huỷ!','info');addNotif('🚫',`Huỷ suất (bảo lưu) · <strong>${sxItem?.ten_kh||''}</strong>`);loadSanXuat();}
+async function changeSuat(id,delta,cur){if(!isBeforeDeadline(8))return showToast('Đã qua 8h','error');await db.from('san_xuat_ngay').update({so_suat_nhan:Math.max(1,cur+delta)}).eq('id',id);loadSanXuat();}
+async function chotSanXuat(){
+  if(!confirm('Chốt sản xuất và trừ suất khách hàng?'))return;
+  const{data:sxList}=await db.from('san_xuat_ngay').select('*').eq('ngay',today()).eq('da_huy',false).eq('da_chot',false);
+  if(!sxList||!sxList.length)return showToast('Không có đơn nào cần chốt','info');
+  for(const sx of sxList){
+    const{data:kh}=await db.from('khach_hang').select('suat_con').eq('id',sx.khach_hang_id).single();
+    if(!kh)continue;
+    const ns=Math.max(0,(kh.suat_con||0)-(sx.so_suat_nhan||1));
+    await db.from('khach_hang').update({suat_con:ns,trang_thai:ns<=0?'Hết suất':ns<=5?'Sắp hết':'Đang chạy'}).eq('id',sx.khach_hang_id);
+    await db.from('san_xuat_ngay').update({da_chot:true}).eq('id',sx.id);
+  }
+  showToast(`Đã chốt ${sxList.length} đơn!`);loadSanXuat();
+}
+async function resetSanXuatNgayMai(){
+  const tm=new Date();tm.setDate(tm.getDate()+1);const ts=tm.toISOString().split('T')[0];
+  if(!confirm(`Tạo danh sách sản xuất cho ${fmtDate(ts)}?`))return;
+  await db.from('san_xuat_ngay').delete().eq('ngay',ts);
+  await generateSanXuatNgay(ts);
+  const{data:sxTm}=await db.from('san_xuat_ngay').select('*').eq('ngay',ts).eq('da_huy',false);
+  const tongSuatTm=(sxTm||[]).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  addNotif('📋',`Bảng sản xuất <strong>${fmtDate(ts)}</strong> đã tạo · ${(sxTm||[]).length} khách · <strong>${tongSuatTm} suất</strong>`);
+  showToast('Đã tạo danh sách ngày mai!');
+}
+
+// ── THỰC ĐƠN ─────────────────────────────────
+var currentTuan='A';
+
+function switchTDTab(tab,btn){
+  ['lich','thuvien','nguyenlieu'].forEach(t=>{const el=document.getElementById('td-tab-'+t);if(el)el.style.display='none';});
+  const target=document.getElementById('td-tab-'+tab);if(target)target.style.display='block';
+  document.querySelectorAll('.td-tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='lich')loadThucDon();
+  if(tab==='thuvien')loadThuVienMon();
+  if(tab==='nguyenlieu')loadNguyenLieuTab();
+}
+
+function switchTuan(t){
+  currentTuan=t;
+  const a=document.getElementById('btn-tuan-a'),b=document.getElementById('btn-tuan-b');
+  if(a)a.classList.toggle('active',t==='A');
+  if(b)b.classList.toggle('active',t==='B');
+  loadLichTuan();
+}
+
+async function loadLichTuan(){
+  const{data:tuanData}=await db.from('thuc_don_tuan').select('*').eq('tuan',currentTuan);
+  const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
+  const grid=document.getElementById('tuan-grid');
+  if(!grid)return;
+  grid.innerHTML=[2,3,4,5,6,7,8].map(t=>{
+    const item=tuanData?.find(x=>x.thu===t);
+    return`<div class="thu-card"><div class="thu-label">${TN[t]}</div>${item?`<div class="thu-mon" onclick="editThuMon(${t},'${(item.mon_chinh||'').replace(/'/g,"\\'")}','${item.id}')">${item.mon_chinh||'Chưa có'}</div>`:`<div class="thu-empty" onclick="editThuMon(${t},'',null)">+ Thêm món</div>`}</div>`;
+  }).join('');
+}
+
+async function loadThuVienMon(){
+  const el=document.getElementById('thu-vien-list');
+  if(!el)return;
+  el.innerHTML='<div class="loading"><span class="spinner"></span> Đang tải...</div>';
+  const[{data:monList},{data:cpList}]=await Promise.all([
+    db.from('mon_an').select('*').eq('active',true).order('loai').order('ten'),
+    db.from('mon_an_chi_phi').select('*')
+  ]);
+  const mons=monList||[];const cps=cpList||[];
+  if(!mons.length){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">Chưa có món ăn nào. Nhấn "+ Thêm món ăn" để bắt đầu.</div>';return;}
+  const nhomLabel={protein:'PROTEIN',tinh_bot:'TINH BỘT',chat_xo:'CHẤT XƠ — 5 LOẠI · 150G',bao_bi:'BAO BÌ'};
+  const nhomOrder=['protein','tinh_bot','chat_xo','bao_bi'];
+  el.innerHTML=mons.map(m=>{
+    const mcp=cps.filter(c=>c.mon_an_id===m.id);
+    const isPlus=m.loai==='Plus';
+    const giaBanS=isPlus?58000:48000,giaBanM=isPlus?68000:56000;
+    const chiPhiS=mcp.reduce((s,c)=>s+(c.gia_s||0),0);
+    const chiPhiM=mcp.reduce((s,c)=>s+(c.gia_m||0),0);
+    const bienS=giaBanS>0?Math.round((giaBanS-chiPhiS)/giaBanS*100):0;
+    const bienM=giaBanM>0?Math.round((giaBanM-chiPhiM)/giaBanM*100):0;
+    return`<div class="mon-card">
+      <div class="mon-card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="mon-card-name">${m.ten}</div>
+          <span class="badge ${isPlus?'gold':'blue'}">${m.loai||'Standard'}</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="openEditMon('${m.id}','${m.ten.replace(/'/g,"\\'")}')" class="btn-edit btn-sm">Sửa</button>
+          <button onclick="deleteMonMoi('${m.id}')" class="btn-danger btn-sm">Xoá</button>
+        </div>
+      </div>
+      <div class="mon-nl-row header"><div>Nguyên liệu</div><div>Size S</div><div>Size M</div><div>Giá S</div><div>Giá M</div></div>
+      ${nhomOrder.map(nhom=>{
+        const rows=mcp.filter(c=>c.nhom===nhom);if(!rows.length)return'';
+        return`<div class="mon-nhom"><div class="mon-nhom-title">${nhomLabel[nhom]}</div>${rows.map(r=>`<div class="mon-nl-row"><div>${r.ten}</div><div>${r.dinh_luong_s||0}g</div><div>${r.dinh_luong_m||0}g</div><div>${fmt(r.gia_s||0)}đ</div><div>${fmt(r.gia_m||0)}đ</div></div>`).join('')}</div>`;
+      }).join('')}
+      <div class="bien-row">
+        <div class="bien-item"><span class="label">Chi phí S: </span><span class="val">${fmt(chiPhiS)}đ</span></div>
+        <div class="bien-item"><span class="label">Giá bán S: </span><span class="val">${fmt(giaBanS)}đ</span></div>
+        <div class="bien-item"><span class="label">Biên S: </span><span class="val ${bienS<0?'loss':''}">${bienS}%</span></div>
+        <div class="bien-item" style="margin-left:16px"><span class="label">Chi phí M: </span><span class="val">${fmt(chiPhiM)}đ</span></div>
+        <div class="bien-item"><span class="label">Giá bán M: </span><span class="val">${fmt(giaBanM)}đ</span></div>
+        <div class="bien-item"><span class="label">Biên M: </span><span class="val ${bienM<0?'loss':''}">${bienM}%</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openEditMon(id,ten){
+  document.getElementById('mon-edit-title').textContent='Chỉnh sửa — '+ten;
+  document.getElementById('mon-edit-id').value=id;
+  const{data:cps}=await db.from('mon_an_chi_phi').select('*').eq('mon_an_id',id);
+  const nhomLabel={protein:'PROTEIN',tinh_bot:'TINH BỘT',chat_xo:'CHẤT XƠ',bao_bi:'BAO BÌ'};
+  document.getElementById('mon-edit-content').innerHTML=(cps||[]).map((c,i)=>`
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${nhomLabel[c.nhom]||c.nhom} — ${c.ten}</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px">
+        <input class="form-control" value="${c.ten}" id="me-ten-${i}">
+        <input class="form-control" type="number" value="${c.dinh_luong_s||0}" id="me-s-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.dinh_luong_m||0}" id="me-m-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.gia_s||0}" id="me-gs-${i}" style="text-align:right">
+        <input class="form-control" type="number" value="${c.gia_m||0}" id="me-gm-${i}" style="text-align:right">
+      </div>
+    </div>`).join('');
+  document.getElementById('mon-edit-content').dataset.cps=JSON.stringify(cps||[]);
+  openModal('modal-mon-edit');
+}
+
+async function saveChiPhiMon(){
+  const id=document.getElementById('mon-edit-id').value;
+  const cps=JSON.parse(document.getElementById('mon-edit-content').dataset.cps||'[]');
+  for(let i=0;i<cps.length;i++){
+    await db.from('mon_an_chi_phi').update({
+      ten:document.getElementById(`me-ten-${i}`)?.value||cps[i].ten,
+      dinh_luong_s:parseInt(document.getElementById(`me-s-${i}`)?.value)||0,
+      dinh_luong_m:parseInt(document.getElementById(`me-m-${i}`)?.value)||0,
+      gia_s:parseInt(document.getElementById(`me-gs-${i}`)?.value)||0,
+      gia_m:parseInt(document.getElementById(`me-gm-${i}`)?.value)||0,
+    }).eq('id',cps[i].id);
+  }
+  showToast('Đã cập nhật!');closeModal('modal-mon-edit');loadThuVienMon();
+}
+
+async function deleteMonMoi(id){
+  if(!confirm('Xoá món ăn này?'))return;
+  await db.from('mon_an').update({active:false}).eq('id',id);
+  showToast('Đã xoá!');loadThuVienMon();
+}
+
+async function loadNguyenLieuTab(){
+  const el=document.getElementById('td-nguyenlieu-full');if(!el)return;
+  const[{data:sx},{data:cps}]=await Promise.all([
+    db.from('san_xuat_ngay').select('goi,so_suat_nhan').eq('ngay',today()).eq('da_huy',false),
+    db.from('mon_an_chi_phi').select('*')
+  ]);
+  if(!sx||!sx.length){el.innerHTML='<div style="padding:24px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';return;}
+  const suatS=(sx||[]).filter(r=>(r.goi||'').includes('S')).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  const suatM=(sx||[]).filter(r=>(r.goi||'').includes('M')).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  const suatTong=(sx||[]).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+  const nlMap={};
+  (cps||[]).forEach(c=>{
+    const total=(c.dinh_luong_s||0)*suatS+(c.dinh_luong_m||0)*suatM;
+    if(total>0)nlMap[c.ten]=(nlMap[c.ten]||0)+total;
+  });
+  el.innerHTML=`<div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);display:flex;gap:20px">
+    <span>Tổng suất: <strong>${suatTong}</strong></span><span>Size S: <strong>${suatS}</strong></span><span>Size M: <strong>${suatM}</strong></span>
+  </div>
+  <table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>Đơn vị</th></tr></thead>
+  <tbody>${Object.entries(nlMap).map(([ten,kl])=>`<tr><td><strong>${ten}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(kl)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`;
+}
+
+let rauCount=0;
+function addRauRow(){
+  const list=document.getElementById('mn-rau-list');if(!list)return;
+  const i=list.children.length;
+  const div=document.createElement('div');
+  div.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 24px;gap:8px;margin-bottom:8px';
+  div.innerHTML=`<input class="form-control" placeholder="Tên rau" id="mn-r-ten-${i}"><input class="form-control" type="number" value="30" id="mn-r-s-${i}" style="text-align:center"><input class="form-control" type="number" value="30" id="mn-r-m-${i}" style="text-align:center"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:0">×</button>`;
+  list.appendChild(div);
+}
+
+async function saveMonMoi(){
+  const ten=document.getElementById('mn-ten')?.value.trim();
+  if(!ten)return showToast('Vui lòng nhập tên món','error');
+  const loai=document.getElementById('mn-loai')?.value||'Standard';
+  const{data:mon,error}=await db.from('mon_an').insert({ten,loai,active:true}).select().single();
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  const inserts=[];
+  const p0ten=document.getElementById('mn-p-ten-0')?.value?.trim();
+  if(p0ten)inserts.push({mon_an_id:mon.id,nhom:'protein',ten:p0ten,dinh_luong_s:parseInt(document.getElementById('mn-p-s-0')?.value)||0,dinh_luong_m:parseInt(document.getElementById('mn-p-m-0')?.value)||0,gia_s:parseInt(document.getElementById('mn-p-gs-0')?.value)||0,gia_m:parseInt(document.getElementById('mn-p-gm-0')?.value)||0,don_vi:'gram'});
+  inserts.push({mon_an_id:mon.id,nhom:'tinh_bot',ten:'Cơm gạo lứt',dinh_luong_s:parseInt(document.getElementById('mn-tb-s')?.value)||67,dinh_luong_m:parseInt(document.getElementById('mn-tb-m')?.value)||67,gia_s:parseInt(document.getElementById('mn-tb-gs')?.value)||0,gia_m:parseInt(document.getElementById('mn-tb-gm')?.value)||0,don_vi:'gram'});
+  const rauRows=document.getElementById('mn-rau-list')?.children||[];
+  for(let i=0;i<rauRows.length;i++){
+    const t=document.getElementById(`mn-r-ten-${i}`)?.value?.trim();if(!t)continue;
+    inserts.push({mon_an_id:mon.id,nhom:'chat_xo',ten:t,dinh_luong_s:parseInt(document.getElementById(`mn-r-s-${i}`)?.value)||30,dinh_luong_m:parseInt(document.getElementById(`mn-r-m-${i}`)?.value)||30,gia_s:parseInt(document.getElementById(`mn-r-gs-${i}`)?.value)||0,gia_m:parseInt(document.getElementById(`mn-r-gm-${i}`)?.value)||0,don_vi:'gram'});
+  }
+  inserts.push({mon_an_id:mon.id,nhom:'bao_bi',ten:'Hộp + đũa thìa',dinh_luong_s:parseInt(document.getElementById('mn-bb-s')?.value)||0,dinh_luong_m:parseInt(document.getElementById('mn-bb-m')?.value)||0,gia_s:parseInt(document.getElementById('mn-bb-gs')?.value)||0,gia_m:parseInt(document.getElementById('mn-bb-gm')?.value)||0,don_vi:'cái'});
+  if(inserts.length)await db.from('mon_an_chi_phi').insert(inserts);
+  showToast('Đã thêm món ăn!');closeModal('modal-mon-new');loadThuVienMon();
+}
+
+async function loadThucDon(){
+  const[{data:td},{data:sx},{data:tuanData}]=await Promise.all([db.from('thuc_don').select('*'),db.from('san_xuat_ngay').select('*').eq('ngay',today()).eq('da_huy',false),db.from('thuc_don_tuan').select('*').order('thu')]);
+  allTD=td||[];allSX=sx||[];
+  const TN={2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'};
+  document.getElementById('tuan-grid').innerHTML=[2,3,4,5,6,7,8].map(t=>{const item=tuanData?.find(x=>x.thu===t);return`<div class="thu-card"><div class="thu-label">${TN[t]}</div>${item?`<div class="thu-mon" onclick="editThuMon(${t},'${(item.mon_chinh||'').replace(/'/g,"\\'")}','${item.id}')">${item.mon_chinh||'Chưa có'}</div>`:`<div class="thu-empty" onclick="editThuMon(${t},'',null)">+ Thêm món</div>`}</div>`;}).join('');
+  document.getElementById('td-thucdon').innerHTML=`<table><thead><tr><th>Gói</th><th>Món ăn</th><th style="text-align:right">Định lượng</th><th></th></tr></thead><tbody>${allTD.map(t=>`<tr><td><span class="badge ${goiColor(t.goi)}">${t.goi}</span></td><td>${t.mon_an}</td><td style="text-align:right"><input class="inline-edit" value="${t.dinh_luong||0}" onchange="updateDinhLuong('${t.id}',this.value)">g</td><td><button onclick="deleteMon('${t.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px">Xoá</button></td></tr>`).join('')}</tbody></table>`;
+  const gm={};allSX.forEach(r=>{if(r.goi)gm[r.goi]=(gm[r.goi]||0)+(r.so_suat_nhan||1);});
+  const nl={};allTD.forEach(t=>{const c=gm[t.goi]||(t.goi==='Chung'||t.goi==='Tất cả'?Object.values(gm).reduce((s,v)=>s+v,0):0);const tot=(t.dinh_luong||0)*c;if(tot>0)nl[t.mon_an]=(nl[t.mon_an]||0)+tot;});
+  document.getElementById('td-nguyenlieu').innerHTML=Object.keys(nl).length?`<table><thead><tr><th>Nguyên liệu</th><th style="text-align:right">Tổng cần</th><th>ĐV</th></tr></thead><tbody>${Object.entries(nl).map(([m,k])=>`<tr><td><strong>${m}</strong></td><td style="text-align:right;font-weight:700;color:var(--accent)">${fmt(k)}</td><td class="muted">gram</td></tr>`).join('')}</tbody></table>`:'<div style="padding:20px;color:var(--text3)">Chưa có dữ liệu sản xuất hôm nay</div>';
+}
+async function editThuMon(thu,current,id){
+  const mon=prompt(`Món ăn ngày ${thu===8?'CN':'T'+thu}:`,current||'');if(mon===null)return;
+  const tm=new Date();tm.setDate(tm.getDate()-tm.getDay()+1);const tb=tm.toISOString().split('T')[0];
+  if(id)await db.from('thuc_don_tuan').update({mon_chinh:mon}).eq('id',id);
+  else await db.from('thuc_don_tuan').insert({thu,ten_thu:'T'+thu,mon_chinh:mon,tuan_bat_dau:tb});
+  loadThucDon();
+}
+async function addMon(){
+  const ten=document.getElementById('mon-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const{error}=await db.from('thuc_don').insert({goi:document.getElementById('mon-goi').value,mon_an:ten,dinh_luong:parseInt(document.getElementById('mon-dl').value)||0,don_vi:document.getElementById('mon-dv').value||'gram'});
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã thêm món!');closeModal('modal-mon');loadThucDon();
+}
+async function updateDinhLuong(id,val){await db.from('thuc_don').update({dinh_luong:parseInt(val)||0}).eq('id',id);showToast('Đã cập nhật!','info');}
+async function deleteMon(id){if(!confirm('Xoá?'))return;await db.from('thuc_don').delete().eq('id',id);loadThucDon();}
+
+// ── CHẤM CÔNG ─────────────────────────────────
+function changeMonth(delta){
+  ccMonth+=delta;
+  if(ccMonth>12){ccMonth=1;ccYear++;}
+  if(ccMonth<1){ccMonth=12;ccYear--;}
+  loadChamCong();
+}
+
+async function loadChamCong(){
+  const monthLabel=`Tháng ${ccMonth}/${ccYear}`;
+  document.getElementById('cc-month-label').textContent=monthLabel;
+  document.getElementById('cc-month-title').textContent=monthLabel;
+
+  const daysInMonth=new Date(ccYear,ccMonth,0).getDate();
+  const todayStr=today();
+
+  const[{data:nvList},{data:ccData}]=await Promise.all([
+    db.from('nhan_vien').select('*').eq('active',true).order('ten'),
+    db.from('cham_cong').select('*').gte('ngay',`${ccYear}-${String(ccMonth).padStart(2,'0')}-01`).lte('ngay',`${ccYear}-${String(ccMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`)
+  ]);
+  const nvs=nvList||[];const ccs=ccData||[];
+
+  // Tổng công summary
+  const totalMap={};nvs.forEach(nv=>{totalMap[nv.id]=ccs.filter(c=>c.nhan_vien_id===nv.id&&c.co_mat).length;});
+  document.getElementById('cc-summary-header').innerHTML=`<span class="card-title">Bảng chấm công — ${monthLabel}</span><span style="font-size:12px;color:var(--text2)">Tổng: ${Object.values(totalMap).reduce((s,v)=>s+v,0)} ngày công</span>`;
+
+  // Build header dates
+  const days=[];
+  for(let i=1;i<=daysInMonth;i++){
+    const dt=new Date(ccYear,ccMonth-1,i);
+    const dow=dt.getDay();
+    days.push({d:i,dow,isWeekend:dow===0||dow===6,isToday:`${ccYear}-${String(ccMonth).padStart(2,'0')}-${String(i).padStart(2,'0')}`===todayStr});
+  }
+  const dowNames=['CN','T2','T3','T4','T5','T6','T7'];
+
+  let html=`<table class="cc-table"><thead><tr>
+    <th style="text-align:left;padding-left:16px;min-width:140px">Nhân viên</th>
+    ${days.map(({d,dow,isWeekend,isToday})=>`<th style="${isWeekend?'color:var(--orange)':''}${isToday?';background:var(--accent-soft);color:var(--accent)':''}">${d}<br><span style="font-weight:400;font-size:9px">${dowNames[dow]}</span></th>`).join('')}
+    <th style="min-width:60px">Tổng</th><th></th>
+  </tr></thead><tbody>`;
+
+  nvs.forEach(nv=>{
+    const total=totalMap[nv.id]||0;
+    html+=`<tr><td class="cc-name">${nv.ten}<br><span class="cc-role">${nv.vai_tro}</span></td>`;
+    days.forEach(({d,isWeekend,isToday})=>{
+      const dateStr=`${ccYear}-${String(ccMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const cc=ccs.find(c=>c.nhan_vien_id===nv.id&&c.ngay===dateStr);
+      const checked=cc?cc.co_mat:false;
+      html+=`<td style="${isWeekend?'background:rgba(0,0,0,0.02)':''}${isToday?';background:var(--accent-soft)':''}">
+        <input type="checkbox" class="cc-check" ${checked?'checked':''} onchange="toggleChamCong('${nv.id}','${dateStr}',this.checked,'${cc?.id||''}')">
+      </td>`;
+    });
+    html+=`<td class="cc-total">${total}</td><td><button onclick="deleteNV('${nv.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('cc-table-wrap').innerHTML=html;
+}
+
+async function toggleChamCong(nvId,ngay,coMat,existingId){
+  if(existingId){
+    await db.from('cham_cong').update({co_mat:coMat}).eq('id',existingId);
+  } else {
+    const{data,error}=await db.from('cham_cong').insert({nhan_vien_id:nvId,ngay,co_mat:coMat}).select();
+    if(!error&&data){
+      // Cập nhật id mới vào checkbox
+      loadChamCong();return;
+    }
+  }
+  // Cập nhật tổng nhẹ
+  const{data:ccData}=await db.from('cham_cong').select('*').gte('ngay',`${ccYear}-${String(ccMonth).padStart(2,'0')}-01`).lte('ngay',`${ccYear}-${String(ccMonth).padStart(2,'0')}-${new Date(ccYear,ccMonth,0).getDate()}`);
+  if(!ccData)return;
+  const{data:nvList}=await db.from('nhan_vien').select('id').eq('active',true);
+  if(!nvList)return;
+  const totalMap={};nvList.forEach(nv=>{totalMap[nv.id]=ccData.filter(c=>c.nhan_vien_id===nv.id&&c.co_mat).length;});
+  const total=Object.values(totalMap).reduce((s,v)=>s+v,0);
+  document.getElementById('cc-summary-header').innerHTML=`<span class="card-title">Bảng chấm công — Tháng ${ccMonth}/${ccYear}</span><span style="font-size:12px;color:var(--text2)">Tổng: ${total} ngày công</span>`;
+}
+
+async function addNhanVien(){
+  const ten=document.getElementById('nv-ten').value.trim();if(!ten)return showToast('Vui lòng nhập tên','error');
+  const{error}=await db.from('nhan_vien').insert({ten,vai_tro:document.getElementById('nv-vaitro').value});
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã thêm nhân viên!');closeModal('modal-nv');document.getElementById('nv-ten').value='';loadChamCong();
+}
+async function deleteNV(id){if(!confirm('Xoá nhân viên?'))return;await db.from('nhan_vien').update({active:false}).eq('id',id);showToast('Đã xoá!');loadChamCong();}
+
+// ── TÀI CHÍNH ─────────────────────────────────
+async function loadTaiChinh(){
+  const{data}=await db.from('tai_chinh').select('*').order('ngay',{ascending:false});allTC=data||[];
+  const dt=allTC.reduce((s,r)=>s+(r.doanh_thu||0),0),ct=allTC.reduce((s,r)=>s+(r.chi_tieu||0),0),mk=allTC.reduce((s,r)=>s+(r.marketing||0),0),dtu=allTC.reduce((s,r)=>s+(r.dau_tu||0),0),ln=dt-ct-mk-dtu;
+  document.getElementById('tc-kpi').innerHTML=`<div class="fin-card"><div class="fin-label">Doanh thu</div><div class="fin-val" style="color:var(--accent)">${fmt(dt)} đ</div></div><div class="fin-card"><div class="fin-label">Chi tiêu</div><div class="fin-val" style="color:var(--red)">${fmt(ct)} đ</div></div><div class="fin-card"><div class="fin-label">Marketing</div><div class="fin-val" style="color:var(--orange)">${fmt(mk)} đ</div></div><div class="fin-card"><div class="fin-label">Lợi nhuận</div><div class="fin-val" style="color:var(--green)">${fmt(ln)} đ</div></div>`;
+  const p=n=>dt?Math.round(n/dt*100):0;
+  document.getElementById('tc-tylele').innerHTML=`<div class="fin-label" style="margin-bottom:10px">Tỷ lệ chi phí / doanh thu</div>${[['Chi tiêu',ct,'var(--red)'],['Marketing',mk,'var(--orange)'],['Lợi nhuận',ln,'var(--green)']].map(([l,v,c])=>`<div class="bar-row"><div class="bar-label" style="width:80px;text-align:left;font-size:12px;color:var(--text2)">${l}</div><div class="bar-track" style="flex:1"><div class="bar-fill" style="width:${p(v)}%;background:${c}"></div></div><div class="bar-val">${p(v)}%</div></div>`).join('')}`;
+  document.getElementById('tc-sodu').innerHTML=`<div class="fin-label" style="margin-bottom:10px">Tổng lợi nhuận</div><div style="font-size:28px;font-weight:700;color:${ln>=0?'var(--accent)':'var(--red)'}">${fmt(ln)} đ</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Doanh thu: ${fmt(dt)} · Chi phí: ${fmt(ct+mk+dtu)} đ</div>`;
+  document.getElementById('tc-table-wrap').innerHTML=`<table><thead><tr><th>Ngày</th><th>Nội dung</th><th style="text-align:right">Doanh thu</th><th style="text-align:right">Chi tiêu</th><th style="text-align:right">Marketing</th><th></th></tr></thead><tbody>${allTC.map(r=>`<tr><td class="muted">${fmtDate(r.ngay)}</td><td>${r.noi_dung}</td><td style="text-align:right;color:${r.doanh_thu>0?'var(--green)':'var(--text3)'}">${r.doanh_thu>0?fmt(r.doanh_thu):''}</td><td style="text-align:right;color:${r.chi_tieu>0?'var(--red)':'var(--text3)'}">${r.chi_tieu>0?fmt(r.chi_tieu):''}</td><td style="text-align:right;color:${r.marketing>0?'var(--orange)':'var(--text3)'}">${r.marketing>0?fmt(r.marketing):''}</td><td><button onclick="deleteTC('${r.id}')" class="btn-danger btn-sm">Xoá</button></td></tr>`).join('')}</tbody></table>`;
+}
+async function addTaiChinh(){
+  const nd=document.getElementById('tc-nd').value.trim();if(!nd)return showToast('Vui lòng nhập nội dung','error');
+  const{error}=await db.from('tai_chinh').insert({ngay:document.getElementById('tc-ngay').value,noi_dung:nd,doanh_thu:parseInt(document.getElementById('tc-dt').value)||0,chi_tieu:parseInt(document.getElementById('tc-ct').value)||0,marketing:parseInt(document.getElementById('tc-mk').value)||0});
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  showToast('Đã thêm!');closeModal('modal-tc');document.querySelectorAll('#modal-tc input').forEach(i=>i.value='');loadTaiChinh();
+}
+async function deleteTC(id){if(!confirm('Xoá?'))return;await db.from('tai_chinh').delete().eq('id',id);showToast('Đã xoá!');loadTaiChinh();}
+
+
+async function updateShipperKH(id,val){
+  await db.from('khach_hang').update({shipper:val}).eq('id',id);
+  const kh=allKH.find(k=>k.id===id);if(kh)kh.shipper=val;
+  showToast('Đã cập nhật shipper!','info');
+}
+async function updateShipperSX(id,val){
+  await db.from('san_xuat_ngay').update({shipper:val}).eq('id',id);
+  const sx=allSX.find(s=>s.id===id);if(sx)sx.shipper=val;
+  showToast('Đã cập nhật shipper!','info');
+}
+function renderSXTable(){
+  const shipperSXFilter=document.getElementById('sx-shipper-filter')?.value||'';
+  const isToday=document.getElementById('sx-pick-date').value===today();
+  const b8=isToday&&isBeforeDeadline(8);
+  const sxDisplay=shipperSXFilter?allSX.filter(r=>r.shipper===shipperSXFilter):allSX;
+  document.getElementById('sx-table-wrap').innerHTML=`<table><thead><tr><th>Khu vực</th><th>Tên KH</th><th>SĐT</th><th>Địa chỉ</th><th>Gói</th><th>Số suất</th><th>Shipper</th><th>Trạng thái</th>${isToday?'<th>Thao tác</th>':''}</tr></thead><tbody>${sxDisplay.map(r=>`<tr style="${r.da_huy?'opacity:0.45;':''}"><td>${r.khu_vuc||'—'}</td><td><strong>${r.ten_kh}</strong></td><td class="muted">${r.sdt||'—'}</td><td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td><td><span class="badge ${goiColor(r.goi)}">${r.goi||'—'}</span></td><td>${!r.da_huy&&b8?`<div class="qty-ctrl"><button class="qty-btn" onclick="changeSuat('${r.id}',-1,${r.so_suat_nhan||1})">−</button><span class="qty-num">${r.so_suat_nhan||1}</span><button class="qty-btn" onclick="changeSuat('${r.id}',1,${r.so_suat_nhan||1})">+</button></div>`:`<strong>${r.so_suat_nhan||1}</strong>`}</td><td><div style="display:flex;align-items:center;gap:4px">${r.shipper?`<span class="badge green" style="font-size:10px">${r.shipper.replace('Shipper ','SP')}</span>`:`<span style="font-size:11px;color:var(--text3)">—</span>`}<select onchange="updateShipperSX('${r.id}',this.value)" style="border:1px solid var(--border2);border-radius:6px;padding:2px 4px;font-size:11px;background:var(--bg3);cursor:pointer;max-width:70px"><option value="">Chọn</option><option value="Shipper 1" ${r.shipper==='Shipper 1'?'selected':''}>SP1</option><option value="Shipper 2" ${r.shipper==='Shipper 2'?'selected':''}>SP2</option><option value="Shipper 3" ${r.shipper==='Shipper 3'?'selected':''}>SP3</option><option value="Shipper 4" ${r.shipper==='Shipper 4'?'selected':''}>SP4</option><option value="Shipper 5" ${r.shipper==='Shipper 5'?'selected':''}>SP5</option></select></div></td><td>${r.da_huy?'<span class="badge red">Đã huỷ</span>':r.da_chot?'<span class="badge green">Đã chốt</span>':'<span class="badge green">Giao hôm nay</span>'}</td>${isToday?`<td>${!r.da_huy&&b8?`<button class="btn-danger btn-sm" onclick="huyDon('${r.id}')">Huỷ</button>`:''}</td>`:''}</tr>`).join('')}</tbody></table>`;
+}
+
+
+async function hoanTacHuy(sxId){
+  if(!confirm('Hoàn tác huỷ? Khách hàng sẽ được giao lại hôm nay.'))return;
+  await db.from('san_xuat_ngay').update({da_huy:false}).eq('id',sxId);
+  showToast('Đã hoàn tác!');
+  loadSanXuat();
+}
+
+function setNgayMai(){
+  const tm=new Date();tm.setDate(tm.getDate()+1);
+  document.getElementById('sx-pick-date').value=tm.toISOString().split('T')[0];
+  loadSanXuat();
+}
+
+function isSau13h(){
+  const h=nowHour();return h>=13&&h<22;
+}
+
+async function themSuatSX(sxId, khId, curSuat){
+  if(!isSau13h())return showToast('Chỉ thêm suất từ 13h-22h','error');
+  if(!confirm('Thêm 1 suất cho khách này? Suất sẽ bị trừ từ tài khoản khách hàng.'))return;
+  // Tăng suất trong bảng sản xuất
+  await db.from('san_xuat_ngay').update({so_suat_nhan:curSuat+1}).eq('id',sxId);
+  // Trừ suất khách hàng
+  if(khId){
+    const{data:kh}=await db.from('khach_hang').select('suat_con,trang_thai').eq('id',khId).single();
+    if(kh){
+      const ns=Math.max(0,(kh.suat_con||0)-1);
+      await db.from('khach_hang').update({
+        suat_con:ns,
+        trang_thai:ns<=0?'Hết suất':ns<=5?'Sắp hết':'Đang chạy'
+      }).eq('id',khId);
+    }
+  }
+  showToast('Đã thêm suất!');addNotif('➕',`Thêm suất cho <strong>${allSX.find(s=>s.id===sxId)?.ten_kh||''}</strong>`);
+  loadSanXuat();
+}
+
+async function huyDonChieu(sxId, khId){
+  if(!isSau13h())return showToast('Chỉ huỷ từ 13h-22h','error');
+  if(!confirm('Huỷ suất này? Suất sẽ KHÔNG bị trừ của khách hàng.'))return;
+  // Huỷ trong bảng sản xuất - không trừ suất KH
+  await db.from('san_xuat_ngay').update({da_huy:true}).eq('id',sxId);
+  showToast('Đã huỷ! Suất khách hàng được giữ nguyên.','info');addNotif('❌',`Huỷ suất (không trừ) · <strong>${allSX.find(s=>s.id===sxId)?.ten_kh||''}</strong>`);
+  loadSanXuat();
+}
+
+
+async function hoanTacHuy(sxId){
+  if(!confirm('Khôi phục lại suất ăn này?'))return;
+  await db.from('san_xuat_ngay').update({da_huy:false}).eq('id',sxId);
+  showToast('Đã hoàn tác!','info');
+  loadSanXuat();
+}
+
+async function openLichSuKH(id, ten){
+  document.getElementById('lichsu-title').textContent='Lịch sử — '+ten;
+  document.getElementById('lichsu-content').innerHTML='<div class="loading"><span class="spinner"></span> Đang tải...</div>';
+  openModal('modal-lichsu');
+
+  const[{data:rows},{data:kh}]=await Promise.all([
+    db.from('san_xuat_ngay').select('*').eq('khach_hang_id',id).eq('da_huy',false).eq('da_chot',true).order('ngay',{ascending:false}),
+    db.from('khach_hang').select('*').eq('id',id).single()
+  ]);
+
+  const lichsu=rows||[];
+  const khData=kh||{};
+  const tongSuat=lichsu.reduce((s,r)=>s+(r.so_suat_nhan||1),0);
+
+  if(!lichsu.length){
+    document.getElementById('lichsu-content').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${khData.suat_con||0}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tổng suất mua</div><div class="kpi-value">${khData.tong_suat||0}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Đã dùng</div><div class="kpi-value green">0</div></div>
+      </div>
+      <div style="padding:24px;text-align:center;color:var(--text3)">Chưa có lịch sử sử dụng</div>`;
+    return;
+  }
+
+  document.getElementById('lichsu-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="kpi-card"><div class="kpi-label">Suất còn lại</div><div class="kpi-value gold">${khData.suat_con||0}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tổng suất mua</div><div class="kpi-value">${khData.tong_suat||0}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Đã dùng</div><div class="kpi-value green">${tongSuat}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Số ngày ăn</div><div class="kpi-value">${lichsu.length}</div></div>
+    </div>
+    <div style="margin-bottom:10px;font-size:12px;color:var(--text2)">Gói: <strong>${khData.goi||'—'}</strong> · Ngày giao: <strong>${(khData.ngay_giao_tuan||'').split(',').map(d=>({2:'T2',3:'T3',4:'T4',5:'T5',6:'T6',7:'T7',8:'CN'})[d]||d).join(' ')}</strong></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ngày</th><th>Thứ</th><th>Gói</th><th style="text-align:center">Số suất</th><th>Địa chỉ giao</th><th>Ghi chú</th></tr></thead>
+      <tbody>${lichsu.map(r=>{
+        const dt=new Date(r.ngay+'T00:00:00');
+        const thu=['CN','T2','T3','T4','T5','T6','T7'][dt.getDay()];
+        return `<tr>
+          <td>${dt.toLocaleDateString('vi-VN')}</td>
+          <td><span class="badge gray">${thu}</span></td>
+          <td><span class="badge ${(r.goi||'').includes('Plus')?'gold':'blue'}">${r.goi||'—'}</span></td>
+          <td style="text-align:center"><strong style="color:var(--accent)">${r.so_suat_nhan||1}</strong></td>
+          <td class="muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dia_chi||'—'}</td>
+          <td class="muted">${r.ghi_chu||''}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+}
+
+// ── THÔNG BÁO ─────────────────────────────────
+var notifications = JSON.parse(localStorage.getItem('tam_notifs') || '[]');
+
+function saveNotifs(){
+  try{localStorage.setItem('tam_notifs', JSON.stringify(notifications.slice(0,50)));}catch(e){}
+}
+
+function addNotif(icon, text, type='info'){
+  const n={id:Date.now(),icon,text,time:new Date().toLocaleString('vi-VN'),unread:true,type};
+  notifications.unshift(n);
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+function renderNotifList(){
+  const list=document.getElementById('notif-list');
+  if(!list)return;
+  if(!notifications.length){list.innerHTML='<div class="notif-empty">Chưa có thông báo</div>';return;}
+  list.innerHTML=notifications.map(n=>`
+    <div class="notif-item ${n.unread?'unread':''}" onclick="markRead('${n.id}')">
+      <div class="notif-icon">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function markRead(id){
+  const n=notifications.find(x=>x.id==id);
+  if(n)n.unread=false;
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+function updateNotifBadge(){
+  const unread=notifications.filter(n=>n.unread).length;
+  const badge=document.getElementById('notif-badge');
+  if(!badge)return;
+  if(unread>0){badge.textContent=unread>9?'9+':unread;badge.classList.add('show');}
+  else{badge.classList.remove('show');}
+}
+
+function toggleNotifPanel(){
+  const panel=document.getElementById('notif-panel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    renderNotifList();
+  }
+}
+
+function clearNotifs(){
+  notifications=[];
+  saveNotifs();
+  renderNotifList();
+  updateNotifBadge();
+}
+
+// Close panel when clicking outside
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('notif-panel');
+  const btn=e.target.closest('.notif-btn');
+  if(panel&&panel.classList.contains('open')&&!panel.contains(e.target)&&!btn){
+    panel.classList.remove('open');
+  }
+});
+
+async function xoaTatCaKH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ khách hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allKH.length} khách hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('khach_hang').update({active:false}).eq('active',true);
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allKH=[];
+  showToast('Đã xoá tất cả khách hàng!');
+  loadKhachHang();
+  loadDashboard();
+}
+
+async function xoaTatCaDH(){
+  const pass=prompt('Nhập mật khẩu để xoá toàn bộ đơn hàng:');
+  if(pass===null)return;
+  if(pass!=='d17m3n0')return showToast('Sai mật khẩu!','error');
+  if(!confirm(`Xoá TOÀN BỘ ${allDH.length} đơn hàng? Hành động này KHÔNG THỂ hoàn tác!`))return;
+  if(!confirm('Xác nhận lần 2 — Bạn chắc chắn muốn xoá tất cả?'))return;
+  const{error}=await db.from('don_hang').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  if(error)return showToast('Lỗi: '+error.message,'error');
+  allDH=[];
+  showToast('Đã xoá tất cả đơn hàng!');
+  loadDonHang();
+}
+
+// ── INIT ──────────────────────────────────────
+(async()=>{
+  const{data}=await db.from('san_pham').select('*').eq('active',true).order('goi').order('so_suat');
+  allSP=data||[];populateSPSelects();
+  loadDashboard();
+  renderNotifList();
+  updateNotifBadge();
+})();
+
+// ── IMPORT TXT ────────────────────────────────
+const GIA_SUAT={StandardS:48000,StandardM:56000,PlusS:58000,PlusM:68000};
+let importData=[];
+
+function parseTxtLine(line){
+  const parts=line.split('|').map(s=>s.trim());
+  if(parts.length<7)return null;
+  const[ten,sdt,quan,diachi,goi,size,soSuatStr,ngayGiao,ghiChu,soSuatNgayStr,shipperStr]=parts;
+  if(!ten||!sdt)return null;
+  const soSuat=parseInt(soSuatStr)||0;
+  const soSuatNgay=parseInt(soSuatNgayStr)||1;
+  const shipper=shipperStr||'';
+  const goiNorm=goi.toLowerCase().includes('plus')?'Plus':'Standard';
+  const sizeNorm=size.toUpperCase()==='S'?'S':'M';
+  const key=`${goiNorm}${sizeNorm}`;
+  const giaSuat=GIA_SUAT[key]||48000;
+  const tongTien=giaSuat*soSuat;
+  const freeship=soSuat>=14;
+  return{ten,sdt,quan:quan||'',diachi:diachi||'',goi:goiNorm,size:sizeNorm,soSuat,ngayGiao:ngayGiao||'2,3,4,5,6',ghiChu:ghiChu||'',soSuatNgay,shipper,tongTien,freeship,goiLabel:`${goiNorm} ${sizeNorm}`};
+}
+
+function previewImport(){
+  const txt=document.getElementById('import-txt').value.trim();
+  if(!txt)return showToast('Vui lòng nhập nội dung','error');
+  const lines=txt.split('\n').filter(l=>l.trim());
+  importData=[];const errors=[];
+  lines.forEach((line,i)=>{
+    const parsed=parseTxtLine(line);
+    if(parsed)importData.push(parsed);
+    else if(line.trim())errors.push(`Dòng ${i+1}: "${line.substring(0,50)}..." — sai định dạng`);
+  });
+  document.getElementById('import-count').textContent=importData.length;
+  document.getElementById('import-preview-body').innerHTML=importData.map(d=>`
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 12px;font-size:13px;font-weight:600">${d.ten}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.sdt}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.quan}</td>
+      <td style="padding:8px 12px"><span class="badge ${d.goi==='Plus'?'gold':'blue'}">${d.goiLabel}</span></td>
+      <td style="padding:8px 12px;text-align:center;font-size:12px">${d.size}</td>
+      <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent)">${d.soSuat}</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--green)">${fmt(d.tongTien)}đ${d.freeship?' <span style="font-size:10px;color:var(--accent)">FREESHIP</span>':''}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.ghiChu||'—'}</td>
+      <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--orange)">${d.soSuatNgay||1}</td>
+      <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${d.shipper||'—'}</td>
+      <td style="padding:8px 12px;text-align:center"><span class="badge green">Sẵn sàng</span></td>
+    </tr>`).join('');
+  if(errors.length){
+    document.getElementById('import-errors').style.display='block';
+    document.getElementById('import-errors').innerHTML='<strong>Lỗi định dạng:</strong><br>'+errors.join('<br>');
+  } else {
+    document.getElementById('import-errors').style.display='none';
+  }
+  document.getElementById('import-preview').style.display='block';
+  document.getElementById('btn-confirm-import').style.display=importData.length?'block':'none';
+}
+
+async function confirmImport(){
+  if(!importData.length)return;
+  const btn=document.getElementById('btn-confirm-import');
+  btn.textContent='Đang import...';btn.disabled=true;
+  const today_str=today();
+  let success=0,fail=0;
+  const{data:lastDH2,error:sttError}=await db.from('don_hang').select('stt').order('stt',{ascending:false}).limit(1);
+  if(sttError){
+    showToast('Lỗi kết nối bảng đơn hàng: '+sttError.message,'error');
+    btn.textContent='✓ Xác nhận import';btn.disabled=false;
+    return;
+  }
+  let nextDHStt2=(lastDH2&&lastDH2.length?(lastDH2[0].stt||0):0)+1;
+  for(const d of importData){
+    try{
+      // Lưu đơn hàng
+      const{error:insertError}=await db.from('don_hang').insert({
+        stt:nextDHStt2++,
+        ten_kh:d.ten,sdt:d.sdt,
+        dia_chi:`${d.diachi}, Quận ${d.quan}`,
+        ngay_dat:today_str,
+        san_pham:`${d.goi} ${d.size}`,
+        tong_don:d.tongTien,
+        so_suat_ban_dau:d.soSuat,
+        ngay_giao_tuan:d.ngayGiao,
+        thanh_toan:'Chưa TT',
+        trang_thai:'Đang chạy',
+        goi:`${d.goi} ${d.size}`,
+        ghi_chu:d.ghiChu||'',
+        so_suat_ngay:d.soSuatNgay||1,
+        shipper:d.shipper||'',
+      });
+      if(insertError)throw new Error(insertError.message);
+      // Tạo/cập nhật khách hàng
+      let existKH=null;
+      if(d.sdt){const{data}=await db.from('khach_hang').select('*').eq('sdt',d.sdt).eq('active',true).eq('goi',`${d.goi} ${d.size}`);if(data&&data.length)existKH=data[0];}
+      if(existKH){
+        const ns=(existKH.suat_con||0)+d.soSuat;
+        await db.from('khach_hang').update({suat_con:ns,tong_suat:(existKH.tong_suat||0)+d.soSuat,trang_thai:ns<=5?'Sắp hết':'Đang chạy',goi:`${d.goi} ${d.size}`,ngay_giao_tuan:d.ngayGiao,dia_chi:`${d.diachi}, Quận ${d.quan}`,khu_vuc:d.quan,so_suat_ngay:d.soSuatNgay||1,shipper:d.shipper||existKH.shipper||''}).eq('id',existKH.id);
+      } else {
+        const{data:lastKH}=await db.from('khach_hang').select('stt').order('stt',{ascending:false}).limit(1);
+        const nextStt=lastKH&&lastKH.length?(lastKH[0].stt||0)+1:1;
+        await db.from('khach_hang').insert({stt:nextStt,ten:d.ten,sdt:d.sdt,khu_vuc:d.quan,dia_chi:`${d.diachi}, Quận ${d.quan}`,goi:`${d.goi} ${d.size}`,tong_suat:d.soSuat,suat_con:d.soSuat,ngay_giao_tuan:d.ngayGiao,trang_thai:d.soSuat<=5?'Sắp hết':'Đang chạy',ghi_chu_suat_an:d.ghiChu||'',so_suat_ngay:d.soSuatNgay||1,shipper:d.shipper||'',active:true});
+      }
+      success++;
+    } catch(e){fail++;console.error(e);}
+  }
+  btn.textContent='✓ Xác nhận import';btn.disabled=false;
+  closeModal('modal-import');
+  resetImport();
+  showToast(`Import xong! ${success} đơn thành công${fail?`, ${fail} lỗi`:''}!`);addNotif('📦',`Import hàng loạt: <strong>${success} đơn</strong> thành công${fail?` · ${fail} lỗi`:''} · ${importData.length} khách`);
+  loadDonHang();
+}
+
+function resetImport(){
+  document.getElementById('import-txt').value='';
+  document.getElementById('import-preview').style.display='none';
+  document.getElementById('btn-confirm-import').style.display='none';
+  importData=[];
+}
+
 </script>
+
+<!-- MODAL IMPORT TXT -->
+<div class="modal-overlay" id="modal-import"><div class="modal" style="width:700px">
+  <h3>📥 Import đơn hàng từ TXT</h3>
+  <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.8">
+    <strong>Định dạng mỗi dòng:</strong><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:12px;display:inline-block;margin-top:4px">Tên KH | SĐT | Quận | Địa chỉ | Gói | Size | Số suất | Ngày giao | Ghi chú</code><br><br>
+    <strong>Ví dụ:</strong><br>
+    <code style="background:var(--bg4);padding:4px 8px;border-radius:6px;font-size:11px;display:inline-block;margin-top:4px">Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay</code><br>
+    <div style="margin-top:8px;color:var(--text3)">
+      • Gói: Standard hoặc Plus &nbsp;|&nbsp; Size: S, M &nbsp;|&nbsp; Ngày giao: 2,3,4,5,6 (T2→CN=8)
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Dán nội dung file TXT vào đây *</label>
+    <textarea class="form-control" id="import-txt" rows="10" placeholder="Nguyễn Thị A | 0912345678 | Đống Đa | 123 Láng Hạ | Standard | M | 14 | 2,3,4,5,6 | Không ăn cay
+Trần Văn B | 0987654321 | Cầu Giấy | 45 Trần Duy Hưng | Plus | S | 30 | 2,3,4,5,6 |
+Lê Thị C | 0909123456 | Thanh Xuân | 67 Nguyễn Trãi | Standard | S | 14 | 2,3,4,5,6 | Thêm thịt" style="font-family:monospace;font-size:12px;resize:vertical"></textarea>
+  </div>
+  <div id="import-preview" style="display:none">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent)">Xem trước <span id="import-count"></span> đơn hàng:</div>
+    <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius)">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg3)">
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Tên KH</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">SĐT</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Quận</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Gói</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Size</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Suất</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;color:var(--text2);font-weight:600">Tổng tiền</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Ghi chú</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">S/ngày</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:var(--text2);font-weight:600">Shipper</th>
+          <th style="padding:8px 12px;text-align:center;font-size:11px;color:var(--text2);font-weight:600">Trạng thái</th>
+        </tr></thead>
+        <tbody id="import-preview-body"></tbody>
+      </table>
+    </div>
+    <div id="import-errors" style="display:none;margin-top:8px;padding:10px 14px;background:var(--red-soft);border:1px solid var(--red);border-radius:var(--radius);font-size:12px;color:var(--red)"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-cancel" onclick="closeModal('modal-import');resetImport()">Huỷ</button>
+    <button class="btn-ghost" onclick="previewImport()" style="border-color:var(--accent);color:var(--accent)">👁 Xem trước</button>
+    <button class="btn-primary" id="btn-confirm-import" style="display:none" onclick="confirmImport()">✓ Xác nhận import</button>
+  </div>
+</div></div>
+
+
+<!-- MODAL LỊCH SỬ KHÁCH HÀNG -->
+<div class="modal-overlay" id="modal-lichsu"><div class="modal" style="width:680px">
+  <h3 id="lichsu-title">Lịch sử sử dụng</h3>
+  <div id="lichsu-content"><div class="loading"><span class="spinner"></span> Đang tải...</div></div>
+  <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-lichsu')">Đóng</button></div>
+</div></div>
+
 </body>
 </html>
