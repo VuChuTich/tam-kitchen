@@ -1101,8 +1101,15 @@ async function loadSanXuat(){
     alertDiv.innerHTML=`<div class="time-alert" style="background:var(--blue-soft);border-color:var(--blue);color:var(--blue)">📋 Đang xem lịch sử ngày ${fmtDate(selDate)}</div>`;
   }
 
-  let{data:sxData}=await db.from('san_xuat_ngay').select('*').eq('ngay',selDate);
-  if(isToday&&(!sxData||sxData.length===0)){await generateSanXuatNgay(selDate);const{data:fresh}=await db.from('san_xuat_ngay').select('*').eq('ngay',selDate);sxData=fresh||[];}
+if(isToday&&(!sxData||sxData.length===0)){
+  // Xóa dữ liệu sản xuất cũ (trước hôm nay)
+  await db.from('san_xuat_ngay').delete().lt('ngay',selDate);
+  
+  // Generate dữ liệu mới cho hôm nay
+  await generateSanXuatNgay(selDate);
+  const{data:fresh}=await db.from('san_xuat_ngay').select('*').eq('ngay',selDate);
+  sxData=fresh||[];
+}
   allSX=sxData||[];
 
   const active=allSX.filter(r=>!r.da_huy);
@@ -1250,8 +1257,11 @@ async function chotSanXuat(){
 async function resetSanXuatNgayMai(){
   const tm=new Date();tm.setDate(tm.getDate()+1);const ts=tm.toISOString().split('T')[0];
   if(!confirm(`Tạo danh sách sản xuất cho ${fmtDate(ts)}?`))return;
-  await db.from('san_xuat_ngay').delete().eq('ngay',ts);
-  await generateSanXuatNgay(ts);
+// Xóa dữ liệu cũ của ngày mai (nếu có)
+await db.from('san_xuat_ngay').delete().eq('ngay',ts);
+
+// Generate dữ liệu mới
+await generateSanXuatNgay(ts);
   const{data:sxTm}=await db.from('san_xuat_ngay').select('*').eq('ngay',ts).eq('da_huy',false);
   const tongSuatTm=(sxTm||[]).reduce((s,r)=>s+(r.so_suat_nhan||1),0);
   addNotif('📋',`Bảng sản xuất <strong>${fmtDate(ts)}</strong> đã tạo · ${(sxTm||[]).length} khách · <strong>${tongSuatTm} suất</strong>`);
@@ -1907,6 +1917,18 @@ function resetImport(){
   importData=[];
 }
 
+  // Hàm xóa dữ liệu sản xuất > 30 ngày
+async function cleanupOldSanXuat(){
+  const thirtyDaysAgo=new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+  const cutoffDate=thirtyDaysAgo.toISOString().split('T')[0];
+  
+  await db.from('san_xuat_ngay').delete().lt('ngay',cutoffDate);
+}
+
+// Tự động xóa mỗi 6 giờ
+setInterval(cleanupOldSanXuat, 6*60*60*1000);
+  
 </script>
 
 <!-- MODAL IMPORT TXT -->
